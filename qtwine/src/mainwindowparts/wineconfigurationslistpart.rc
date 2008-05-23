@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
+<gui name="wineconfigurationsspart" version="1">
+	<ToolBar name="mainToolBar" >
+		<Action name="create_configuration"/>
+		<Separator/>
+		<Action name="configuration_properties"/>
+		<Action name="delete_configuration"/>
+	</ToolBar>
+	<MenuBar>
+		<Menu name="viewMenu">
+			<text>View</text>
+			<Action name="view_mode"/>
+			<Action name="metabar_position"/>
+		</Menu>
+		<Menu name="configurationMenu" >
+			<text>Configuration</text>
+			<Action name="create_configuration"/>
+			<Separator/>
+			<Action name="configuration_properties"/>
+			<Action name="delete_configuration"/>
+			<Separator/>
+			<Action name="browse_cfg_dir"/>
+			<Action name="virtual_reboot"/>
+			<Action name="import_regfile"/>
+			<Action name="update_registry"/>
+		</Menu>
+		<Menu name="winelibTools">
+			<text>Wine's tools</text>
+			<Action name="run_winelib_winecfg"/>
+			<Action name="run_winelib_regedit"/>
+			<Action name="run_winelib_taskmgr"/>
+			<Action name="run_winelib_cmd"/>
+			<Action name="run_winelib_control"/>
+			<Action name="run_winelib_uninstaller"/>
+			<Action name="run_winelib_oleview"/>
+			<Separator/>
+			<Action name="run_winelib_progman"/>
+			<Action name="run_winelib_winefile"/>
+			<Action name="run_winelib_iexplore"/>
+			<Action name="run_winelib_notepad"/>
+			<Action name="run_winelib_wordpad"/>
+			<Action name="run_winelib_winemine"/>
+			<Action name="run_winelib_clock"/>
+		</Menu>
+	</MenuBar>
+	<Menu name="listView_context_menu_selected" >
+		<Action name="configuration_properties"/>
+		<Action name="delete_configuration"/>
+		<Separator/>
+		<Action name="browse_cfg_dir"/>
+		<Action name="virtual_reboot"/>
+		<Action name="import_regfile"/>
+		<Action name="update_registry"/>
+		<Separator/>
+		<Action name="create_configuration"/>
+	</Menu>
+	<Menu name="listView_context_menu_deselected" >
+		<Action name="create_configuration"/>
+	</Menu>
+</gui>

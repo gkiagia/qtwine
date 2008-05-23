@@ -1,0 +1,3 @@
+ADD_SUBDIRECTORY(libqtwine)
+ADD_SUBDIRECTORY(qtwine)
+ADD_SUBDIRECTORY(terminal-helper)

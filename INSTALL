@@ -1,0 +1,27 @@
+=======================
+To install from source:
+=======================
+Extract the source, open a terminal in the source directory and type:
+$ mkdir b
+$ cd b
+$ cmake ..
+$ make
+$ su
+# make install
+
+This will install qtwine in /usr/local/bin. To change the target prefix
+directory, run "ccmake .." after "cmake ..", change CMAKE_INSTALL_PREFIX
+and press c and g.
+
+You will need Qt 4.3.0 or later libraries and headers to compile successfully.
+
+=============
+To uninstall:
+=============
+Just delete the executables "qtwine" and "qtwine-terminal-helper"
+from $CMAKE_INSTALL_PREFIX/bin (by default /usr/local/bin).
+
+Other data you may want to delete too, include:
+- Settings, which are saved in ~/.config
+- User data, which are saved in ~/.qtwine
+

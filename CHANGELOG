@@ -1,0 +1,52 @@
+Changes in trunk:
+ - Split the project into a shared library and an executable.
+ - Port to the KDE4 api.
+ - Code now requires Qt 4.4 or later.
+
+Changes in 0.4:
+ - Code rewritten from scratch.
+ - Redesigned GUI.
+ - The wine configurations directory is now in ~/.qtwine/configurations.
+ - Added support for using custom wine installations other than the ones at /usr or /usr/local.
+ - Added support for detecting debian's wine packages and getting rid of the ugly green windows from codeweavers.
+ - Added support for creating and shortcuts to installed windows applications.
+ - Fixed more bugs of the *.reg file installer when using windows 5.x registry files.
+ - Changed command line options to be more useful.
+ - Added a dbus interface (warning: work in progress, it may not work as expected!!).
+ - Some features like the settings dialog and the shell script exporter were removed because I simply didn't port them :P. They will be added again in 0.5
+ - Many more minor enhancements.
+
+Changes in 0.3.1:
+ - Added option to specify the location of the wine binary
+ - Fixed some bugs
+
+Changes in 0.3:
+ - Now using Qt4 model/view architecture for handling configurations
+ - Wine's default configuration (~/.wine) can now be used and there is the ability to turn it on/off
+ - The directory where configurations rely can now be changed from the options dialog.
+ - QtWine now has the ability to create small shell scripts that launch windows applications.
+ - Added new command line options. --workdir allows changing the working directory of the windows application that will be executed and --options opens the options dialog. Run qtwine --help to see more information on command line options.
+ - Additionally, the --log=/path/to/logfile.log option has been changed so that instead of the equal sign (=) you use a space like this --log /path/to/logfile.log
+ - Fixed preview of binary .reg files created with windows regedit 5 and later (Windows 2k, XP, 2003, Vista)
+ - Tuned for Wine 0.9.21 and later. The DOS Prompt button now runs cmd.exe instead of wcmd.exe
+ - Added buttons for launching the following winelib applications: wordpad, iexplore, oleview and clock :-)
+ - All windows and dialogs are now resizable
+ - Dropped the create configuration wizard. Created a new simpler dialog for creating configurations.
+ - As a result of the above change, Qt3 support libraries are no longer needed.
+ - Sidenet was removed. There is no plan to use sidenet or wine tools in the future.
+ - Reactos explorer button was removed
+ - Many fixes in the code.
+
+Changes in 0.2
+- Removed the fake terminal and added support for real ones (konsole, xterm, rxvt, etc).
+- Added support for logging wine's output to a file.
+- Added support for using filemanagers other than konqueror when clicking the "browse" button in manager.
+- Added an options dialog for setting which terminal and file manager to use.
+- Improved command line parsing and added new command line options.
+- Launcher and reginstaller now remember their settings (i.e. which checkboxes were on, what text was in the lineEdits).
+- Reginstaller now shows a preview of the .reg file next to the configurations list.
+- Added a "Run windows application" menu option in manager for easy launching of windows apps.
+- Added a "Create" button in launcher to allow creating a new configuration instantly, just before running a windows app.
+- Some parts of the code were rewritten. The startwine class became WineLauncher and was rewritten from scratch.
+- Added some tooltips
+- Also: removed libc.so.6 (because it was causing trouble) and added libstdc++.so.6 in the binary package.

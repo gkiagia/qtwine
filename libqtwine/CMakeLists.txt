@@ -1,0 +1,2 @@
+PROJECT(libqtwine)
+ADD_SUBDIRECTORY(src)

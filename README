@@ -1,0 +1,32 @@
+============
+Installation
+============
+See INSTALL.
+
+=====
+Usage
+=====
+When qtwine is run without any arguments, it opens the main window.
+
+To run a windows *.exe program, type:
+        qtwine program.exe
+
+To install a windows registry (*.reg) file in one of your wine configurations, type:
+        qtwine file.reg
+
+To launch an .exe file without seeing the qtwine gui, type:
+        qtwine --configuration configuration_name_or_id program.exe arguments
+    or  qtwine -c configuration_name_or_id program.exe arguments
+
+In the last case, arguments are the arguments passed to program.exe.
+If some of the arguments are unix filenames, they are converted to the windows format automatically.
+If the filenames, though, point to nonexistent files, they are not converted.
+
+To use the wine's default configuration (~/.wine) use:
+        qtwine -c 1 program.exe
+
+I recommend associating *.exe and *.reg files with qtwine so that when you
+click a *.exe file in you file manager (ex. konqueror), qtwine launches
+to run the *.exe file in its environment.
+
+For more options, run "qtwine -h".
