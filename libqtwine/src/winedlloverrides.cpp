@@ -45,49 +45,31 @@ WineDllOverrides & WineDllOverrides::operator=(const WineDllOverrides & other)
 	return *this;
 }
 
-/*! Creates a new WineDllOverrides object which initializes
- * itself by parsing the \a dllOverridesStr string. \sa parseString()
- */
 WineDllOverrides::WineDllOverrides(const QString & dllOverridesStr)
 	: d(new WineDllOverridesPrivate)
 {
 	parseString(dllOverridesStr);
 }
 
-/*! \overload */
 WineDllOverrides::WineDllOverrides(const char * dllOverridesStr)
 	: d(new WineDllOverridesPrivate)
 {
 	parseString(dllOverridesStr);
 }
 
-/*! Parses the string \a dllOverridesStr which must be in the
- * same format that wine would expect to see in the WINEDLLOVERRIDES
- * environment variable and adds the overrides listed in the string
- * to the list of overrides that this class holds.
- */
 bool WineDllOverrides::parseString(const QString & dllOverridesStr)
 {
 	return d->parseString(dllOverridesStr);
 }
 
-/*! Adds an override for the library \a dll to be loaded in the order
- * that \a t defines. This is the same as using operator<<().
- */
-void WineDllOverrides::addOverride(const QString & dll, DllOverrideType t)
+void WineDllOverrides::addOverride(const QString & dll, DllOverrideType typ)
 {
 	Q_UNUSED(dll);
-	Q_UNUSED(t);
+	Q_UNUSED(type);
 	kDebug() << "Not implemented yet";
 	return;
 }
 
-/*! Cast operator. Casts this class to a QString
- * that lists all the overrides in the format that wine
- * expects to see in the WINEDLLOVERRIDES environment variable.
- * This is used to set this environment variable before loading
- * wine.
- */
 WineDllOverrides::operator QString() const
 {
 	return d->toString();

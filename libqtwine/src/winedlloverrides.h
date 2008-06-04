@@ -31,25 +31,29 @@ LIBQTWINE_BEGIN_NAMESPACE
 
 class WineDllOverridesPrivate;
 
-/*! <p> This class represents the value of the WINEDLLOVERRIDES environment
- * variable. For more information about this variable, see the wine man page. </p>
- * <p> There are two ways to use this class. parseString() can parse a string
+/*! \class WineDllOverrides winedlloverrides.h <qtwine/winedlloverrides.h>
+ * \brief Represents the value of the $WINEDLLOVERRIDES environment variable.
+ * \par
+ * For more information about what is $WINEDLLOVERRIDES, please refer to the
+ * wine manpage.
+ * \par
+ * There are two ways to use this class. parseString() can parse a string
  * from the format that wine parses it too and append the dll overrides that
  * this string contains to the list of overrides that this class holds. The
  * other way is to use operator<<() or addOverride() to add a dll override
- * in a more object-oriented way.</p>
- * <p>Examples:
+ * in a more object-oriented way.
+ * \par Examples:
  * \code
  * WineDllOverrides d;
  * d.parseString("comdlg32,shell32=n,b");
  * d.parseString("c:\foo\bar\baz=b");
- * ...
+ * \endcode
+ * \code
  * WineDllOverrides o;
  * o << qMakePair("comdlg32", WineDllOverrides::FirstNativeThenBuiltin);
  * o << qMakePair("shell32", WineDllOverrides::FirstNativeThenBuiltin);
  * o.addOverride("c:\foo\bar\baz", WineDllOverrides::Builtin);
  * \endcode
- * </p>
  * \todo This class is a stub. addOverride() and operator<<() do nothing
  * and parseString() simply accepts the string as it is without checking it.
  * operator QString() simply returns the string that was last passed
@@ -59,30 +63,80 @@ class WineDllOverridesPrivate;
 class LIBQTWINE_EXPORT WineDllOverrides
 {
 public:
-	enum DllOverrideType { Disabled, Native, Builtin, FirstNativeThenBuiltin, FirstBuiltinThenNative };
+	enum DllOverrideType {
+		Disabled, //!< Defines that the requested dll should be disabled.
+		/*! Defines that wine should only load the native
+		 * version of the requested dll. */
+		Native,
+		/*! Defines that wine should only load the built-in
+		 * version of the requested dll. */
+		Builtin,
+		/*! Defines that wine should try first to
+		 * load the native version of the requested dll
+		 * and if that fails, it should try the built-in one. */
+		FirstNativeThenBuiltin,
+		/*! Defines that wine should try first to
+		 * load the built-in version of the requested dll
+		 * and if that fails, it should try the native one. */
+		FirstBuiltinThenNative
+	};
 
+	/*! Constructs an empty WineDllOverrides object. */
 	WineDllOverrides();
+
+	/*! Creates a new WineDllOverrides object which initializes
+	 * itself by parsing the \a dllOverridesStr string.
+	 * \sa parseString()
+	 */
 	WineDllOverrides(const QString & dllOverridesStr);
+
+	/*! \overload */
 	WineDllOverrides(const char * dllOverridesStr);
+
+	/*! Constructs a WineDllOverrides object that is a copy of \a other. */
 	WineDllOverrides(const WineDllOverrides & other);
+
+	/*! Destroys this WineDllOverrides object. */
 	~WineDllOverrides();
 
-	bool parseString(const QString & dllOverridesStr);
-	void addOverride(const QString & dll, DllOverrideType t);
 
+	/*! Parses the string \a dllOverridesStr which must be in the
+	 * same format that wine would expect to see in the WINEDLLOVERRIDES
+	 * environment variable and adds the overrides listed in the string
+	 * to the list of overrides that this class holds.
+	 */
+	bool parseString(const QString & dllOverridesStr);
+
+	/*! Adds an override for the library \a dll to be loaded in the order
+	 * that \a type defines. This is equivalent to operator<<().
+	 */
+	void addOverride(const QString & dll, DllOverrideType type);
+
+
+	/*! Cast operator. Casts this class to a QString
+	 * that lists all the overrides in the format that wine
+	 * expects to see in the WINEDLLOVERRIDES environment variable.
+	 * This is used to set this environment variable before loading
+	 * wine from the WineProcess class.
+	 */
 	operator QString() const;
+
+	/*! Adds a dll override to the list of overrides that this class holds.
+	 * This is equivalent to addOverride().
+	 * \param p this is a pair of a string and a DllOverrideType;
+	 * the string is the dll name and the DllOverrideType defines its load order.
+	 */
 	inline WineDllOverrides & operator<<(QPair<QString, DllOverrideType> p);
+
+	/*! Makes this WineDllOverrides object a copy of \a other and
+	 * returns a reference to this object.
+	 */
 	WineDllOverrides & operator=(const WineDllOverrides & other);
 
 private:
 	WineDllOverridesPrivate *d;
 };
 
-
-/*! Adds a dll override to the list of overrides that this class holds.
- * The string in the pair is the dll name and the DllOverrideType defines
- * its load order. \sa addOverride()
- */
 inline WineDllOverrides & WineDllOverrides::operator<<(QPair<QString, DllOverrideType> p)
 {
 	addOverride(p.first, p.second);

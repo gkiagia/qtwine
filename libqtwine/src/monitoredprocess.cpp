@@ -30,6 +30,9 @@
 
 LIBQTWINE_BEGIN_NAMESPACE
 
+/* This class provides a thread-safe pointer to the OpenTerminalFn.
+ * ### Can we use a static QAtomicPointer to do this job?
+ */
 class TerminalFunctionHelper {
 public:
 	TerminalFunctionHelper() {
@@ -56,10 +59,17 @@ private:
 K_GLOBAL_STATIC(TerminalFunctionHelper, terminalFunctionHelper)
 
 
+/* This is a private slot that is called when the MonitoredProcess emits
+ * the finished() signal and autoDelete is enabled. It is there to prevent
+ * the terminal from closing automatically as the user may want to inspect
+ * wine's output on the terminal after wine has finished.
+ */
 void MonitoredProcessPrivate::_p_autoDeleteHandler()
 {
 	Q_Q(MonitoredProcess);
 
+	/* If the terminal is open, delete this process object when the terminal closes
+	 * else respect autoDelete and delete this process object immediately. */
 	if ( m_terminalDevice && m_terminalDevice->isOpen() )
 		QObject::connect(m_terminalDevice, SIGNAL(aboutToClose()), q, SLOT(deleteLater()) );
 	else

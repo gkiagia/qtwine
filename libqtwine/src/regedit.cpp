@@ -25,12 +25,6 @@ LIBQTWINE_BEGIN_NAMESPACE
 
 namespace RegEdit {
 
-/*! Imports the contents of the *.reg file \a fileName into the
- * registry of the WINEPREFIX specified by \a wcfg using the wine installation
- * specified by \a wcfg.
- * \note This simply calls \p regedit.exe with the correct arguments.
- * \returns True if regedit exited with exit code 0 or false otherwise.
- */
 bool importRegFile(const QString & fileName, const WineConfiguration & wcfg)
 {
 	WineApplication regedit("regedit.exe", wcfg);
@@ -41,13 +35,6 @@ bool importRegFile(const QString & fileName, const WineConfiguration & wcfg)
 	return !p.execute();
 }
 
-/*! Exports the fields and subkeys of the registry key specified by \a key from
- * the registry of the WINEPREFIX specified by \a wcfg using the wine installation
- * specified by \a wcfg. The output is saved in the file \a fileName, which will
- * be in .reg format. If \a fileName exists, it is overwritten.
- * \note This simply calls \p regedit.exe with the correct arguments.
- * \returns True if regedit exited with exit code 0 or false otherwise.
- */
 bool exportKey(const QString & key, const QString & fileName, const WineConfiguration & wcfg)
 {
 	WineApplication regedit("regedit.exe", wcfg);
@@ -58,12 +45,6 @@ bool exportKey(const QString & key, const QString & fileName, const WineConfigur
 	return !p.execute();
 }
 
-/*! Deletes the registry key \a key together with its fields and subkeys from
- * the registry of the WINEPREFIX specified by \a wcfg using the wine installation
- * specified by \a wcfg.
- * \note This simply calls \p regedit.exe with the correct arguments.
- * \returns True if regedit exited with exit code 0 or false otherwise.
- */
 bool deleteKey(const QString & key, const WineConfiguration & wcfg)
 {
 	WineApplication regedit("regedit.exe", wcfg);

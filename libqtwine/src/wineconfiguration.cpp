@@ -53,7 +53,6 @@ WineConfigurationData::~WineConfigurationData()
 	delete installation;
 }
 
-/*! Constructs a null WineConfiguration object. \sa isNull() */
 WineConfiguration::WineConfiguration() : d(new WineConfigurationData) {}
 
 WineConfiguration::WineConfiguration(const QString & winePrefix, const WineInstallation & installation)
@@ -101,11 +100,6 @@ void WineConfiguration::setWineInstallation(const WineInstallation & installatio
 	*d->installation = installation;
 }
 
-/*! \relates WineConfiguration
- * This is the QDebug stream operator for WineConfiguration.
- * This allows you to use qDebug() or kDebug() to dump a WineConfiguration
- * object on the terminal for debugging purposes.
- */
 QDebug operator<<(QDebug dbg, const WineConfiguration & c)
 {
 	dbg.nospace() << "(WineConfiguration, [winePrefix: " << c.winePrefix() << "], ";
