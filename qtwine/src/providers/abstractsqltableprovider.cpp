@@ -18,11 +18,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 #include "abstractsqltableprovider.h"
-#include <QHash>
+
 #include <KMessage>
 #include <KLocalizedString>
+#include <KRandom>
+
+#include <QHash>
 #include <QSqlError>
-#include <ctime>
 
 AbstractSqlTableProvider::~AbstractSqlTableProvider()
 {
@@ -47,16 +49,15 @@ QModelIndex AbstractSqlTableProvider::find(uint id) const
  */
 uint AbstractSqlTableProvider::generateId(const QString & name) const
 {
-	uint id = qHash(name);
+    uint id = qHash(name);
 
-	if ( id == 1 or exists(id) ) {
-		qsrand(time(NULL));
-		do {
-			id = qrand();
-		} while( id == 1 or exists(id) );
-	}
-	
-	return id;
+    if ( id == 1 or exists(id) ) {
+        do
+            id = KRandom::random();
+        while( id == 1 or exists(id) );
+    }
+
+    return id;
 }
 
 void AbstractSqlTableProvider::setModel(QSqlTableModel *model)

@@ -48,7 +48,7 @@ WineInstallationsListPart::WineInstallationsListPart(QObject *parent)
 	connect(remove_installation, SIGNAL(triggered(bool)), SLOT(removeInstallation()) );
 	actionCollection()->addAction("remove_installation", remove_installation);
 	addSelectionDependentAction("remove_installation");
-	
+
 	KAction *installation_properties = new KAction(KIcon("document-properties"),
 			 				i18n("Properties"), this);
 	connect(installation_properties, SIGNAL(triggered(bool)), SLOT(installationProperties()) );
@@ -61,7 +61,7 @@ WineInstallationsListPart::WineInstallationsListPart(QObject *parent)
 
 void WineInstallationsListPart::loadModel()
 {
-	setModel(qtwineApp->wineInstallationsProvider()->model(), 1);
+	setModel(installationsProvider->model(), 1);
 }
 
 void WineInstallationsListPart::itemActivated(const QModelIndex & index)

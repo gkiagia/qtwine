@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007-2008 by George Kiagiadakis                         *
+ *   Copyright (C) 2008 by George Kiagiadakis                              *
  *   gkiagia@users.sourceforge.net                                         *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,34 +17,23 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
-#ifndef PROGRAMSHORTCUTEDITOR_H
-#define PROGRAMSHORTCUTEDITOR_H
+#ifndef URLREQUESTERCAPABLEDELEGATE_H
+#define URLREQUESTERCAPABLEDELEGATE_H
 
-#include "editorpagedialog.h"
-class KUrl;
-class KUrlRequester;
-class QDataWidgetMapper;
+#include <QSqlRelationalDelegate>
 
-/*!
+/*! Custom delegate that adds support for setting/getting data
+ * to/from a KUrlRequester when the model provides only a QString for the url.
  * \author George Kiagiadakis <gkiagia@users.sourceforge.net>
  */
-class ProgramShortcutEditor : public EditorPageDialog
+class UrlRequesterCapableDelegate : public QSqlRelationalDelegate
 {
-    Q_OBJECT
 public:
-    explicit ProgramShortcutEditor(const QModelIndex & index, QWidget *parent = 0);
-
-private slots:
-    void slotExecutableChanged(const KUrl & newUrl);
-
-protected:
-    bool applyChanges();
-    bool revertChanges();
-
-private:
-    QDataWidgetMapper *mapper;
-    KUrlRequester *executableEdit;
-    KUrlRequester *workdirEdit;
+        UrlRequesterCapableDelegate(QObject *parent = 0) : QSqlRelationalDelegate(parent) {}
+        virtual void setEditorData(QWidget *editor, const QModelIndex & index) const;
+        virtual void setModelData(QWidget *editor,
+                                  QAbstractItemModel *model,
+                                  const QModelIndex & index) const;
 };
 
 #endif

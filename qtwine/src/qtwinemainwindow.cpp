@@ -20,7 +20,7 @@
 #include "qtwinemainwindow.h"
 #include "mainwindowparts/wineconfigurationslistpart.h"
 #include "mainwindowparts/wineinstallationslistpart.h"
-//#include "mainwindowparts/shortcutslistpart.h"
+#include "mainwindowparts/shortcutslistpart.h"
 #include "dialogs/launcher.h"
 
 #include <QMetaObject>
@@ -61,23 +61,21 @@ QtWineMainWindow::~QtWineMainWindow()
 
 void QtWineMainWindow::loadParts()
 {
-#if 0
 	ShortcutsListPart *shortcuts_part = new ShortcutsListPart(this);
-	shortcuts_part->setupMainWidget();
 	m_tabWidget->addTab(shortcuts_part->widget(), i18n("Shortcuts to installed applications"));
 	m_partManager->addPart(shortcuts_part);
-#endif
+
 	WineConfigurationsListPart *configurations_part = new WineConfigurationsListPart(this);
 	m_tabWidget->addTab(configurations_part->widget(), i18n("Wine Configurations"));
 	m_partManager->addPart(configurations_part);
-//	configurations_part->widget()->hide(); // HACK I have no idea why it is needed, but it works :D
+	configurations_part->widget()->hide(); // HACK I have no idea why it is needed, but it works :D
 
 	WineInstallationsListPart *installations_part = new WineInstallationsListPart(this);
 	m_tabWidget->addTab(installations_part->widget(), i18n("Wine Installations"));
 	m_partManager->addPart(installations_part);
 	installations_part->widget()->hide(); // HACK I have no idea why it is needed, but it works :D
 
-	m_partManager->setActivePart(configurations_part);
+	m_partManager->setActivePart(shortcuts_part);
 }
 
 void QtWineMainWindow::setupActions()

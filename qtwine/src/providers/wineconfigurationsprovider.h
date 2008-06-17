@@ -25,9 +25,8 @@ namespace QtWine { class WineConfiguration; }
 
 class WineConfigurationsProvider : public AbstractSqlTableProvider
 {
-	Q_OBJECT
 public:
-	WineConfigurationsProvider();
+	WineConfigurationsProvider(QObject *parent = 0);
 
 	QtWine::WineConfiguration configurationById(uint id) const;
 	QtWine::WineConfiguration configurationByModelRow(int row) const;

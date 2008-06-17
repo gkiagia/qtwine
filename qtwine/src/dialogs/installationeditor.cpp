@@ -18,6 +18,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 #include "installationeditor.h"
+#include "../utils/urlrequestercapabledelegate.h"
 
 #include <QModelIndex>
 #include <QDataWidgetMapper>
@@ -29,39 +30,6 @@
 #include <KLocalizedString>
 #include <KLineEdit>
 #include <KUrlRequester>
-
-/*! Custom delegate that adds support for setting/getting data
- * to/from a KUrlRequester when the model provides only a QString for the url. */
-class UrlRequesterCapableDelegate : public QItemDelegate
-{
-public:
-	UrlRequesterCapableDelegate(QObject *parent = 0) : QItemDelegate(parent) {}
-	virtual void setEditorData(QWidget *editor, const QModelIndex & index) const;
-	virtual void setModelData(QWidget *editor,
-				  QAbstractItemModel *model,
-				  const QModelIndex & index) const;
-};
-
-void UrlRequesterCapableDelegate::setEditorData(QWidget *editor, const QModelIndex & index) const
-{
-	KUrlRequester *ur = qobject_cast<KUrlRequester*>(editor);
-	if (ur)
-		ur->setUrl(index.data(Qt::DisplayRole).toString());
-	else
-		QItemDelegate::setEditorData(editor, index);
-}
-
-void UrlRequesterCapableDelegate::setModelData(QWidget *editor,
-						QAbstractItemModel *model,
-						const QModelIndex & index) const
-{
-	KUrlRequester *ur = qobject_cast<KUrlRequester*>(editor);
-	if (ur)
-		model->setData(index, QVariant(ur->url().path()));
-	else
-		QItemDelegate::setModelData(editor, model, index);
-}
-
 
 InstallationEditor::InstallationEditor(const QModelIndex & index, QWidget *parent)
 	: EditorPageDialog(parent)

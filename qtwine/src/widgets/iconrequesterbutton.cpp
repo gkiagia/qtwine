@@ -17,34 +17,55 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
-#ifndef PROGRAMSHORTCUTEDITOR_H
-#define PROGRAMSHORTCUTEDITOR_H
+#include "iconrequesterbutton.h"
+#include <QIcon>
+#include <QImageReader>
+#include <KLocalizedString>
+#include <KFileDialog>
 
-#include "editorpagedialog.h"
-class KUrl;
-class KUrlRequester;
-class QDataWidgetMapper;
-
-/*!
- * \author George Kiagiadakis <gkiagia@users.sourceforge.net>
- */
-class ProgramShortcutEditor : public EditorPageDialog
+IconRequesterButton::IconRequesterButton(QWidget *parent)
+    : QPushButton(parent)
 {
-    Q_OBJECT
-public:
-    explicit ProgramShortcutEditor(const QModelIndex & index, QWidget *parent = 0);
+    connect(this, SIGNAL(clicked()), this, SLOT(slotIconClicked()) );
+}
 
-private slots:
-    void slotExecutableChanged(const KUrl & newUrl);
+QString IconRequesterButton::iconFileName() const
+{
+    return m_iconFileName;
+}
 
-protected:
-    bool applyChanges();
-    bool revertChanges();
+void IconRequesterButton::setIconFileName(const QString & icon)
+{
+    m_iconFileName = icon;
+    setIcon(QIcon(icon));
+    emit iconChanged();
+}
 
-private:
-    QDataWidgetMapper *mapper;
-    KUrlRequester *executableEdit;
-    KUrlRequester *workdirEdit;
-};
+static inline QString filterForSupportedImageTypes()
+{
+    QList<QByteArray> list = QImageReader::supportedImageFormats();
+    QString filter;
+    QString defaultFilter;
 
-#endif
+    foreach(QByteArray a, list) {
+        defaultFilter += QString("*.%1 ").arg(QString(a.toLower()));
+        filter += QString("*.%1|%2(*.%1)\n")
+                    .arg(QString(a.toLower()))
+                    .arg( i18n("%1 images").arg(QString(a.toUpper())) );
+    }
+    defaultFilter.chop(1); //remove the last space
+    defaultFilter += '|';
+    defaultFilter += i18n("All supported image types\n");
+    filter.prepend(defaultFilter);
+    return filter;
+}
+
+void IconRequesterButton::slotIconClicked()
+{
+    QString icon = KFileDialog::getOpenFileName(KUrl(), filterForSupportedImageTypes(),
+                                                this, i18n("Select an icon"));
+    if ( !icon.isEmpty() )
+        setIconFileName(icon);
+}
+
+#include "iconrequesterbutton.moc"

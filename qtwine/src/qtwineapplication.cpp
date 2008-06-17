@@ -30,7 +30,6 @@
 #include <KStandardDirs>
 #include <KMessage>
 
-
 QtWineApplication::QtWineApplication()
 	: KUniqueApplication(), m_mainWindow(NULL)
 {
@@ -40,7 +39,6 @@ QtWineApplication::QtWineApplication()
 
 QtWineApplication::~QtWineApplication()
 {
-	delete m_mainWindow;
 	deleteProviders();
 	shutDownDatabase();
 }
@@ -61,19 +59,23 @@ int QtWineApplication::newInstance()
 		m_mainWindow->activateWindow();
 	}
 
-exit:
 	args->clear();
 	return returnValue;
 }
 
 WineInstallationsProvider *QtWineApplication::wineInstallationsProvider() const
 {
-	return m_installationsProvider;
+    return m_installationsProvider;
 }
 
 WineConfigurationsProvider *QtWineApplication::wineConfigurationsProvider() const
 {
-	return m_configurationsProvider;
+    return m_configurationsProvider;
+}
+
+ShortcutsProvider *QtWineApplication::programShortcutsProvider() const
+{
+    return m_shortcutsProvider;
 }
 
 void QtWineApplication::initializeDatabase()
@@ -97,17 +99,24 @@ void QtWineApplication::initializeDatabase()
 
 void QtWineApplication::initializeProviders()
 {
-	m_installationsProvider = new WineInstallationsProvider;
-	m_configurationsProvider = new WineConfigurationsProvider;
+    m_installationsProvider = new WineInstallationsProvider(this);
+    m_configurationsProvider = new WineConfigurationsProvider(this);
+    m_shortcutsProvider = new ShortcutsProvider(this);
 }
 
 void QtWineApplication::deleteProviders()
 {
-	delete m_installationsProvider;
+    delete m_installationsProvider;
+    delete m_configurationsProvider;
+    delete m_shortcutsProvider;
 }
 
 void QtWineApplication::shutDownDatabase()
 {
-	QSqlDatabase::removeDatabase(QSqlDatabase::database().connectionName());
+    //we must retrieve the name before calling removeDatabase because
+    //if the QSqlDatabase object that QSqlDatabase::database() constructs
+    //exists, removeDatabase will output a warning.
+    QString connectionName = QSqlDatabase::database().connectionName();
+    QSqlDatabase::removeDatabase(connectionName);
 }
 

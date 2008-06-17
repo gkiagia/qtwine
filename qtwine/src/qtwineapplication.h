@@ -23,32 +23,36 @@
 #include <KUniqueApplication>
 #include "providers/wineinstallationsprovider.h"
 #include "providers/wineconfigurationsprovider.h"
+#include "providers/shortcutsprovider.h"
 class QtWineMainWindow;
 
 #define qtwineApp static_cast<QtWineApplication*>(kapp)
 #define installationsProvider (qtwineApp->wineInstallationsProvider())
 #define configurationsProvider (qtwineApp->wineConfigurationsProvider())
+#define shortcutsProvider (qtwineApp->programShortcutsProvider())
 
 
 class QtWineApplication : public KUniqueApplication
 {
 public:
-	QtWineApplication();
-	~QtWineApplication();
-	int newInstance();
+    QtWineApplication();
+    ~QtWineApplication();
+    int newInstance();
 
-	WineInstallationsProvider *wineInstallationsProvider() const;
-	WineConfigurationsProvider *wineConfigurationsProvider() const;
+    WineInstallationsProvider *wineInstallationsProvider() const;
+    WineConfigurationsProvider *wineConfigurationsProvider() const;
+    ShortcutsProvider *programShortcutsProvider() const;
 
 private:
-	void initializeDatabase();
-	void initializeProviders();
-	void deleteProviders();
-	void shutDownDatabase();
+    void initializeDatabase();
+    void initializeProviders();
+    void deleteProviders();
+    void shutDownDatabase();
 
-	QtWineMainWindow *m_mainWindow;
-	WineInstallationsProvider *m_installationsProvider;
-	WineConfigurationsProvider *m_configurationsProvider;
+    QtWineMainWindow *m_mainWindow;
+    WineInstallationsProvider *m_installationsProvider;
+    WineConfigurationsProvider *m_configurationsProvider;
+    ShortcutsProvider *m_shortcutsProvider;
 };
 
 #endif

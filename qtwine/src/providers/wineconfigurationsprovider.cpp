@@ -35,8 +35,8 @@
 using namespace QtWine;
 
 
-WineConfigurationsProvider::WineConfigurationsProvider()
-	: AbstractSqlTableProvider()
+WineConfigurationsProvider::WineConfigurationsProvider(QObject *parent)
+	: AbstractSqlTableProvider(parent)
 {
 	QSqlDatabase db = QSqlDatabase::database();
 	if ( !db.tables().contains("wine_configurations") )
@@ -51,31 +51,28 @@ WineConfigurationsProvider::WineConfigurationsProvider()
 
 void WineConfigurationsProvider::createFirstTimeTable()
 {
-	QSqlQuery query;
-	query.exec("create table wine_configurations(id int primary key,"
-			" name varchar(256), wineprefix varchar(1024),"
-			" description varchar(1024), wineinstallation int,"
-			" last_updated_wineversion varchar(10))");
+    QSqlQuery query;
+    query.exec("create table wine_configurations(id int primary key,"
+               " name varchar(256), wineprefix varchar(1024),"
+               " description varchar(1024), wineinstallation int)");
 
-	if ( QFile::exists(QDir::homePath() + "/.wine") ) {
-		WineInstallationsProvider *p = qtwineApp->wineInstallationsProvider();
+    if ( QFile::exists(QDir::homePath() + "/.wine") ) {
+        WineInstallationsProvider *p = qtwineApp->wineInstallationsProvider();
 
-		// the default installation that was created in
-		// WineInstallationsProvider::createFirstTimeTable() has id == 1
-		if ( p->exists(1) ) {
-			query.prepare("insert into wine_configurations (id, name, wineprefix,"
-				" description, wineinstallation, last_updated_wineversion)"
-				" values (:id, :name, :wineprefix, :description,"
-				" :wineinstallation, :last_updated_wineversion)");
-			query.bindValue(":id", 1);
-			query.bindValue(":name", i18n("Default wine configuration"));
-			query.bindValue(":wineprefix", QDir::homePath() + "/.wine");
-			query.bindValue(":description", i18n("The default configuration that wine uses."));
-			query.bindValue(":wineinstallation", 1);
-			query.bindValue(":last_updated_wineversion", p->installationById(1).wineVersion());
-			query.exec();
-		}
-	}
+        // the default installation that was created in
+        // WineInstallationsProvider::createFirstTimeTable() has id == 1
+        if ( p->exists(1) ) {
+            query.prepare("insert into wine_configurations"
+                          "(id, name, wineprefix, description, wineinstallation)"
+                          " values (:id, :name, :wineprefix, :description, :wineinstallation)");
+            query.bindValue(":id", 1);
+            query.bindValue(":name", i18n("Default wine configuration"));
+            query.bindValue(":wineprefix", QDir::homePath() + "/.wine");
+            query.bindValue(":description", i18n("The default configuration that wine uses."));
+            query.bindValue(":wineinstallation", 1);
+            query.exec();
+        }
+    }
 }
 
 WineConfiguration WineConfigurationsProvider::configurationById(uint id) const
@@ -138,8 +135,6 @@ bool WineConfigurationsProvider::importConfiguration(const QString & name,
 		p->model()->index(installationIdIndex.row(), p->model()->fieldIndex("name"));
 	m->setData( index, installationNameIndex.data(Qt::DisplayRole), Qt::DisplayRole );
 
-	WineInstallation i = p->installationByModelRow(installationIdIndex.row());
-	m->setData( m->index(newRow, m->fieldIndex("last_updated_wineversion")), i.wineVersion() );
-
 	return true;
 }
+

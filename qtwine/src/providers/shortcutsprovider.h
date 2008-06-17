@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007-2008 by George Kiagiadakis                         *
+ *   Copyright (C) 2008 by George Kiagiadakis                              *
  *   gkiagia@users.sourceforge.net                                         *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,34 +17,26 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
-#ifndef PROGRAMSHORTCUTEDITOR_H
-#define PROGRAMSHORTCUTEDITOR_H
+#ifndef SHORTCUTSPROVIDER_H
+#define SHORTCUTSPROVIDER_H
 
-#include "editorpagedialog.h"
-class KUrl;
-class KUrlRequester;
-class QDataWidgetMapper;
+#include "abstractsqltableprovider.h"
+namespace QtWine { class WineApplication; }
 
-/*!
- * \author George Kiagiadakis <gkiagia@users.sourceforge.net>
- */
-class ProgramShortcutEditor : public EditorPageDialog
+class ShortcutsProvider : public AbstractSqlTableProvider
 {
     Q_OBJECT
 public:
-    explicit ProgramShortcutEditor(const QModelIndex & index, QWidget *parent = 0);
+    explicit ShortcutsProvider(QObject *parent = 0);
+
+    QtWine::WineApplication wineApplicationByModelRow(int row) const;
+    QtWine::WineApplication wineApplicationFromRecord(const QSqlRecord & record) const;
 
 private slots:
-    void slotExecutableChanged(const KUrl & newUrl);
-
-protected:
-    bool applyChanges();
-    bool revertChanges();
+    void slotPrimeInsert(int row, QSqlRecord & record);
 
 private:
-    QDataWidgetMapper *mapper;
-    KUrlRequester *executableEdit;
-    KUrlRequester *workdirEdit;
+    void createFirstTimeTable();
 };
 
 #endif

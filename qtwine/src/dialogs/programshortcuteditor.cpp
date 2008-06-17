@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007 by George Kiagiadakis                              *
+ *   Copyright (C) 2007-2008 by George Kiagiadakis                         *
  *   gkiagia@users.sourceforge.net                                         *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,100 +17,140 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
-#include <QFileDialog>
-#include <QImageReader>
-
-#include <debug.h>
 #include "programshortcuteditor.h"
-#include "../models/modelindex.h"
-#include "../macros.h"
+#include "../utils/urlrequestercapabledelegate.h"
+#include "../widgets/iconrequesterbutton.h"
+#include "../qtwineapplication.h"
 
-ProgramShortcutEditor::ProgramShortcutEditor(quint16 shortcutID, QWidget *parent)
- : QDialog(parent), id(shortcutID)
+#include <KLineEdit>
+#include <KUrlRequester>
+#include <KLocalizedString>
+
+#include <QLabel>
+#include <QHBoxLayout>
+#include <QFormLayout>
+#include <QPushButton>
+#include <QCheckBox>
+#include <QFrame>
+#include <QDataWidgetMapper>
+
+#include <qtwine/wineconfiguration.h>
+
+ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget *parent)
+    : EditorPageDialog(parent)
 {
-	ModelIndex i(id, ModelManager::ShortcutsModel);
-	if ( !i.isValid() ) {
-		printDBG("invalid ID");
-		return;
-	}
-	
-	dlg.setupUi(this);
-	dlg.iconButton->setIcon( qvariant_cast<QIcon>(i.propertyData("Icon")) );
-	dlg.nameEdit->setText( i.propertyData("Name").toString() );
-	dlg.executableEdit->setText( i.propertyData("Executable").toString() );
-	dlg.argsEdit->setText( i.propertyData("Arguments").toString() );
-	dlg.wineDllOverridesEdit->setText( i.propertyData("WineDllOverrides").toString() );
-	dlg.wineDebugEdit->setText( i.propertyData("WineDebugOptions").toString() );
-	dlg.terminalBox->setChecked( i.propertyData("RunInTerminal").toBool() );
-	dlg.dosBox->setChecked( i.propertyData("IsDosApplication").toBool() );
+    Q_ASSERT(index.isValid());
+
+    const QSqlTableModel *model = qobject_cast<const QSqlTableModel*>(index.model());
+    Q_ASSERT(model);
+    QSqlRelationalDelegate *delegate = new UrlRequesterCapableDelegate(this);
+
+    /* setup gui */
+    setCaption(makeStandardCaption(i18n("Program Shortcut Editor"), this));
+
+    QWidget *page = new QWidget(this);
+    KPageWidgetItem *pageItem = addPage(page, i18n("Properties"));
+    pageItem->setIcon(KIcon("document-properties"));
+
+    QLabel *nameLabel = new QLabel(i18n("Name:"), page);
+    KLineEdit *nameEdit = new KLineEdit(page);
+    QVBoxLayout *nameLayout = new QVBoxLayout;
+    nameLayout->addWidget(nameLabel);
+    nameLayout->addWidget(nameEdit);
+
+    IconRequesterButton *iconButton = new IconRequesterButton(page);
+    iconButton->setIconSize(QSize(48,48));
+    QHBoxLayout *iconLayout = new QHBoxLayout;
+    iconLayout->addWidget(iconButton);
+    iconLayout->addLayout(nameLayout);
+
+    QFrame *hLine = new QFrame(page);
+    hLine->setFrameShape(QFrame::HLine);
+
+    QFormLayout *formLayout = new QFormLayout;
+    executableEdit = new KUrlRequester(page);
+    executableEdit->setMode(KFile::File | KFile::LocalOnly | KFile::ExistingOnly);
+    connect(executableEdit, SIGNAL(urlSelected(KUrl)), this, SLOT(slotExecutableChanged(KUrl)) );
+    formLayout->addRow(i18n("&Executable:"), executableEdit);
+
+    KLineEdit *argumentsEdit = new KLineEdit(page);
+    formLayout->addRow(i18n("&Arguments:"), argumentsEdit);
+
+    workdirEdit = new KUrlRequester(page);
+    workdirEdit->setMode(KFile::Directory | KFile::LocalOnly | KFile::ExistingOnly);
+    formLayout->addRow(i18n("&Working directory:"), workdirEdit);
+
+    QModelIndex configurationColumnIndex =
+                model->index(index.row(), model->fieldIndex("wine_configurations_name"));
+    QWidget *configurationEdit =
+                delegate->createEditor(this, QStyleOptionViewItem(), configurationColumnIndex);
+    formLayout->addRow(i18n("Uses wine &configuration:"), configurationEdit);
+
+    QGroupBox *optionsGroup = new QGroupBox(i18n("Options"), page);
+    QCheckBox *terminalBox = new QCheckBox(i18n("Show debugging output in a terminal"), page);
+    QCheckBox *cuiAppBox = new QCheckBox(i18n("This is a Windows CUI (DOS) application"), page);
+    QVBoxLayout *optionsGroupLayout = new QVBoxLayout(optionsGroup);
+    optionsGroupLayout->addWidget(terminalBox);
+    optionsGroupLayout->addWidget(cuiAppBox);
+
+    QVBoxLayout *mainLayout = new QVBoxLayout(page);
+    mainLayout->addLayout(iconLayout);
+    mainLayout->addWidget(hLine);
+    mainLayout->addLayout(formLayout);
+    mainLayout->addWidget(optionsGroup);
+    resizeLayout(mainLayout, marginHint(), spacingHint());
+
+    /* map data */
+    mapper = new QDataWidgetMapper(this);
+    mapper->setModel(const_cast<QSqlTableModel*>(model));
+    mapper->setItemDelegate(delegate);
+    mapper->setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
+
+    mapper->addMapping(iconButton, model->fieldIndex("icon"));
+    mapper->addMapping(nameEdit, model->fieldIndex("name"));
+    mapper->addMapping(executableEdit, model->fieldIndex("executable"));
+    mapper->addMapping(argumentsEdit, model->fieldIndex("arguments"));
+    mapper->addMapping(workdirEdit, model->fieldIndex("workdir"));
+    mapper->addMapping(configurationEdit, model->fieldIndex("wine_configurations_name"));
+    mapper->addMapping(terminalBox, model->fieldIndex("run_in_terminal"));
+    mapper->addMapping(cuiAppBox, model->fieldIndex("is_cui_application"));
+    mapper->setCurrentModelIndex(index);
+
+    connect(iconButton, SIGNAL(iconChanged()), SLOT(enableChangesDependentButtons()) );
+    connect(nameEdit, SIGNAL(textChanged(QString)), SLOT(enableChangesDependentButtons()) );
+    connect(executableEdit, SIGNAL(textChanged(QString)), SLOT(enableChangesDependentButtons()) );
+    connect(argumentsEdit, SIGNAL(textChanged(QString)), SLOT(enableChangesDependentButtons()) );
+    connect(workdirEdit, SIGNAL(textChanged(QString)), SLOT(enableChangesDependentButtons()) );
+    connect(configurationEdit, SIGNAL(currentIndexChanged(int)), SLOT(enableChangesDependentButtons()) );
+    connect(terminalBox, SIGNAL(toggled(bool)), SLOT(enableChangesDependentButtons()) );
+    connect(cuiAppBox, SIGNAL(toggled(bool)), SLOT(enableChangesDependentButtons()) );
 }
 
-static inline QString filterForSupportedImageTypes()
+void ProgramShortcutEditor::slotExecutableChanged(const KUrl & newUrl)
 {
-	QList<QByteArray> list = QImageReader::supportedImageFormats();
-	QString filter;
-	QString defaultFilter = QObject::tr("All images(");
+    QtWine::WineConfiguration c = configurationsProvider->configurationByModelRow(mapper->currentIndex());
+    QString drive_c = c.winePrefix().append("/dosdevices/c:");
+    QString exe = newUrl.path();
 
-	foreach(QByteArray a, list) {
-		defaultFilter += QString("*.%1 ").arg(QString(a).toLower());
-		filter += QObject::tr("%1 images(*.%2);;").arg(QString(a).toUpper()).arg(QString(a).toLower());
-	}
-	defaultFilter.chop(1); //remove the last space
-	defaultFilter += ");;";
-	filter.prepend(defaultFilter);
-	filter.chop(2); //remove the last ;;
-	return filter;
+    //if the executable is in C:, make the path relative to C:
+    if ( exe.startsWith(drive_c) ) {
+        drive_c.chop(2); //remove the trailing c:
+        exe.remove(0, drive_c.size()); //remove /path/to/C:
+    }
+
+    executableEdit->setPath(exe); //TODO test me (not sure if kurl supports windows paths in unix)
+    workdirEdit->setPath(newUrl.directory());
 }
 
-void ProgramShortcutEditor::on_iconButton_clicked()
+bool ProgramShortcutEditor::applyChanges()
 {
-	QString icon = QFileDialog::getOpenFileName(this, tr("Select an icon"),
-			QDir::homePath(), filterForSupportedImageTypes());
-	if ( !icon.isEmpty() ) {
-		iconFileName = icon;
-		dlg.iconButton->setIcon(QIcon(icon));
-	}
+    return mapper->submit();
 }
 
-void ProgramShortcutEditor::on_executableBrowseButton_clicked()
+bool ProgramShortcutEditor::revertChanges()
 {
-	ModelIndex i(id, ModelManager::ShortcutsModel);
-	ModelIndex cfgIndex(i.propertyData("ConfigurationID").toUInt(), ModelManager::ConfigurationsModel);
-	QString drive_c = cfgIndex.propertyData("Path").toString() + "/dosdevices/c:";
-
-	QString exe = QFileDialog::getOpenFileName(this, tr("Select a windows executable"),
-						   drive_c, tr("WINE executables (*.exe *.exe.so)"));
-
-	if ( exe.isEmpty() )
-		return;
-
-	//if the executable is in C:, make the path relative to C:
-	if ( exe.startsWith(drive_c) ) {
-		drive_c.chop(2); //remove the trailing c:
-		exe.remove(0, drive_c.size()); //remove /path/to/C:
-	}
-
-	dlg.executableEdit->setText(exe);
+    mapper->revert();
+    return true;
 }
 
-void ProgramShortcutEditor::accept()
-{
-	ModelIndex i(id, ModelManager::ShortcutsModel);
-	if ( !i.isValid() ) {
-		printDBG("invalid ID");
-		return;
-	}
-
-	if ( !iconFileName.isEmpty() )
-		i.setPropertyData("IconFileName", iconFileName);
-	i.setPropertyData("Name", dlg.nameEdit->text() );
-	i.setPropertyData("Executable", dlg.executableEdit->text() );
-	i.setPropertyData("Arguments", dlg.argsEdit->text() );
-	i.setPropertyData("WineDllOverrides", dlg.wineDllOverridesEdit->text() );
-	i.setPropertyData("WineDebugOptions", dlg.wineDebugEdit->text() );
-	i.setPropertyData("RunInTerminal", dlg.terminalBox->isChecked() );
-	i.setPropertyData("IsDosApplication", dlg.dosBox->isChecked() );
-
-	QDialog::accept();
-}
-
+#include "programshortcuteditor.moc"

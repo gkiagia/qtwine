@@ -28,8 +28,8 @@
 #include <qtwine/wineinstallation.h>
 using namespace QtWine;
 
-WineInstallationsProvider::WineInstallationsProvider()
-	: AbstractSqlTableProvider()
+WineInstallationsProvider::WineInstallationsProvider(QObject *parent)
+	: AbstractSqlTableProvider(parent)
 {
 	QSqlDatabase db = QSqlDatabase::database();
 	if ( !db.tables().contains("wine_installations") )

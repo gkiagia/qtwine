@@ -20,19 +20,17 @@
 #ifndef SHORTCUTSLISTPART_H
 #define SHORTCUTSLISTPART_H
 
-#include "dataproviderlistmodelpart.h"
+#include "metalistviewpart.h"
 
-class ShortcutsListPart : public DataProviderListModelPart
+class ShortcutsListPart : public MetaListViewPart
 {
 	Q_OBJECT
 public:
 	ShortcutsListPart(QObject *parent = 0);
-	void setupMainWidget();
 
 protected slots:
-	void editItem(const QModelIndex & index);
-	void setupActions();
 	void loadModel();
+	void itemActivated(const QModelIndex & index);
 
 private slots:
 	void createShortcut();
@@ -41,6 +39,9 @@ private slots:
 	void shortcutProperties();
 	void placeOnDesktop();
 	void exportToScript();
+
+private:
+	void setupActions();
 };
 
 #endif

@@ -59,7 +59,7 @@ private slots:
 
 	void updateSelectionDependentActions();
 
-	//these are convenience slots that provide setMetaBarPosition() and setListViewMode()
+	//these are convenience slots that provide setMetaBarPosition() and setListViewMode() (of m_widget)
 	//with int parameters so that they are able to connect directly to QAction::triggered()
 	void changeViewMode(int view_mode_index);
 	void changeMetaBarPosition(int metabar_position_index);

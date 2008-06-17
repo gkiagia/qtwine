@@ -46,16 +46,17 @@ public:
 /*! Reimplemented to export the Qt::DecorationRole. */
 QVariant ProxyModel::data(const QModelIndex & index, int role) const
 {
-	if ( index.isValid() && role == Qt::DecorationRole ) {
-		QSqlQueryModel *m = qobject_cast<QSqlQueryModel*>(sourceModel());
-		if ( m ) {
-			QModelIndex sourceIndex = mapToSource(index);
-			QVariant iconVariant = m->record(sourceIndex.row()).value("icon");
-			return iconVariant.isValid() ? QIcon(iconVariant.toString()) : KIcon("wine");
-		}
-	}
+    if ( index.isValid() && role == Qt::DecorationRole ) {
+        QSqlQueryModel *m = qobject_cast<QSqlQueryModel*>(sourceModel());
+            if ( m ) {
+                QModelIndex sourceIndex = mapToSource(index);
+                QVariant iconVariant = m->record(sourceIndex.row()).value("icon");
+                return iconVariant.isValid() && !iconVariant.toString().isEmpty()
+                                    ? QIcon(iconVariant.toString()) : KIcon("wine");
+            }
+    }
 
-	return QSortFilterProxyModel::data(index, role);
+    return QSortFilterProxyModel::data(index, role);
 }
 
 /*! Reimplemented to disable editing by the delegate. */
@@ -161,7 +162,7 @@ void MetaListViewPart::setModel(QSqlTableModel *model, int displayColumn,
 			->setCurrentItem( static_cast<int>(m_widget->listViewMode()) );
 	static_cast<KSelectAction*>(actionCollection()->action("metabar_position"))
 			->setCurrentItem( static_cast<int>(m_widget->metaBarPosition()) );
-	
+
 }
 
 void MetaListViewPart::addMetabarFieldMapping(const QString & label, const QString & field)
@@ -203,7 +204,7 @@ void MetaListViewPart::slotSelectionChanged(const QItemSelection & newSelection)
 		const QSqlTableModel *model = qobject_cast<const QSqlTableModel*>(sourceIndex.model());
 		Q_ASSERT(model);
 		QSqlRecord record = model->record(sourceIndex.row());
-		
+
 		QPair<QString, QString> fieldMapping;
 		foreach(fieldMapping, m_fieldMapList) {
 			metaBar->addInformationPair( fieldMapping.first,

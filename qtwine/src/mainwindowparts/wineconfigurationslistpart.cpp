@@ -41,7 +41,6 @@ WineConfigurationsListPart::WineConfigurationsListPart(QObject *parent)
 	addMetabarFieldMapping(i18n("WINEPREFIX"), "wineprefix");
 	addMetabarFieldMapping(i18n("Uses installation"), "wine_installations_name");
 	addMetabarFieldMapping(i18n("Description/Notes"), "description");
-	addMetabarFieldMapping(i18n("Last updated with wine version"), "last_updated_wineversion");
 
 	setupActions();
 	setXMLFile("wineconfigurationslistpart.rc");
@@ -63,7 +62,7 @@ void WineConfigurationsListPart::setupActions()
 	connect(delete_configuration, SIGNAL(triggered(bool)), SLOT(deleteConfiguration()) );
 	actionCollection()->addAction("delete_configuration", delete_configuration);
 	addSelectionDependentAction("delete_configuration");
-	
+
 	KAction *configuration_properties = new KAction(KIcon("document-properties"),
 			 				i18n("Properties"), this);
 	connect(configuration_properties, SIGNAL(triggered(bool)), SLOT(configurationProperties()) );
@@ -87,7 +86,7 @@ void WineConfigurationsListPart::setupActions()
 	actionCollection()->addAction("import_regfile", import_regfile);
 	addSelectionDependentAction("import_regfile");
 
-	KAction *browse_cfg_dir = new KAction(KIcon("document-open-folder"), 
+	KAction *browse_cfg_dir = new KAction(KIcon("document-open-folder"),
 					      i18n("Browse configuration's directory"), this);
 	connect(browse_cfg_dir, SIGNAL(triggered(bool)), SLOT(browseConfigurationDir()) );
 	actionCollection()->addAction("browse_cfg_dir", browse_cfg_dir);
@@ -122,7 +121,7 @@ void WineConfigurationsListPart::setupActions()
 
 void WineConfigurationsListPart::loadModel()
 {
-	setModel(qtwineApp->wineConfigurationsProvider()->model(), 1);
+	setModel(configurationsProvider->model(), 1);
 }
 
 void WineConfigurationsListPart::createConfiguration()
@@ -201,3 +200,4 @@ WINELIB_FUNCTION(wordpad)
 
 #undef WINELIB_FUNCTION
 
+#include "wineconfigurationslistpart.moc"

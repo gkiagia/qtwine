@@ -26,7 +26,7 @@ class AbstractSqlTableProvider : public QObject
 {
 	Q_OBJECT
 public:
-	AbstractSqlTableProvider() {}
+	AbstractSqlTableProvider(QObject *parent = 0) : QObject(parent) {}
 	virtual ~AbstractSqlTableProvider();
 
 	inline QSqlTableModel *model() const;

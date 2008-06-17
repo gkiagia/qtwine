@@ -19,13 +19,15 @@
  ***************************************************************************/
 #include <KAboutData>
 #include <KCmdLineArgs>
+#include <stdlib.h>
 #include "qtwineapplication.h"
 
-#define QTWINE_VERSION_STR "0.4.63"
+#define QTWINE_VERSION_STR "0.4.64"
 
 static void qtMessageHandler(QtMsgType type, const char *msg)
 {
-	fprintf(stderr, msg);
+    // HACK to abort from Q_ASSERT(), needed for any non-debug version of Qt <= 4.4.0
+	fprintf(stderr, "%s", msg);
 	if ( type == QtFatalMsg )
 		abort();
 }
