@@ -23,13 +23,14 @@
 #include "libqtwine_export.h"
 #include "libqtwine_global.h"
 
+#include <QtCore/QSharedDataPointer>
 #include <QtCore/QMetaType>
 #include <QtCore/QString>
 #include <QtCore/QPair>
 
 LIBQTWINE_BEGIN_NAMESPACE
 
-class WineDllOverridesPrivate;
+class WineDllOverridesData;
 
 /*! \class WineDllOverrides winedlloverrides.h <qtwine/winedlloverrides.h>
  * \brief Represents the value of the $WINEDLLOVERRIDES environment variable.
@@ -54,11 +55,6 @@ class WineDllOverridesPrivate;
  * o << qMakePair("shell32", WineDllOverrides::FirstNativeThenBuiltin);
  * o.addOverride("c:\foo\bar\baz", WineDllOverrides::Builtin);
  * \endcode
- * \todo This class is a stub. addOverride() and operator<<() do nothing
- * and parseString() simply accepts the string as it is without checking it.
- * operator QString() simply returns the string that was last passed
- * to parseString(). This behaviour will be changed in a future version
- * of this library.
  */
 class LIBQTWINE_EXPORT WineDllOverrides
 {
@@ -134,7 +130,7 @@ public:
 	WineDllOverrides & operator=(const WineDllOverrides & other);
 
 private:
-	WineDllOverridesPrivate *d;
+	QSharedDataPointer<WineDllOverridesData> d;
 };
 
 inline WineDllOverrides & WineDllOverrides::operator<<(QPair<QString, DllOverrideType> p)

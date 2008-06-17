@@ -19,60 +19,92 @@
  ***************************************************************************/
 #include "winedlloverrides.h"
 #include <KDebug>
+#include <QMap>
+#include <QStringList>
 
 LIBQTWINE_BEGIN_NAMESPACE
 
-class WineDllOverridesPrivate
+class WineDllOverridesData : public QSharedData
 {
 public:
-	inline bool parseString(const QString & dllOverridesStr) { s = dllOverridesStr; return true; }
-	inline QString toString() const { return s; }
+    WineDllOverridesData() : QSharedData() {}
+    WineDllOverridesData(const WineDllOverridesData & other) : QSharedData(other), m_map(other.m_map) {}
 
-private:
-	QString s;
+    QMap<QString, WineDllOverrides::DllOverrideType> m_map;
 };
 
 
-WineDllOverrides::WineDllOverrides() : d(new WineDllOverridesPrivate) {}
-WineDllOverrides::WineDllOverrides(const WineDllOverrides & other)
-	: d(new WineDllOverridesPrivate(*other.d)) {}
-WineDllOverrides::~WineDllOverrides() { delete d; }
+WineDllOverrides::WineDllOverrides() : d(new WineDllOverridesData) {}
+WineDllOverrides::WineDllOverrides(const WineDllOverrides & other) : d(other.d) {}
+WineDllOverrides::~WineDllOverrides() {}
 
 WineDllOverrides & WineDllOverrides::operator=(const WineDllOverrides & other)
 {
-	delete d;
-	d = new WineDllOverridesPrivate(*other.d);
-	return *this;
+    d = other.d;
+    return *this;
 }
 
 WineDllOverrides::WineDllOverrides(const QString & dllOverridesStr)
-	: d(new WineDllOverridesPrivate)
+    : d(new WineDllOverridesData)
 {
-	parseString(dllOverridesStr);
+    parseString(dllOverridesStr);
 }
 
 WineDllOverrides::WineDllOverrides(const char * dllOverridesStr)
-	: d(new WineDllOverridesPrivate)
+    : d(new WineDllOverridesData)
 {
-	parseString(dllOverridesStr);
+    parseString(dllOverridesStr);
 }
 
 bool WineDllOverrides::parseString(const QString & dllOverridesStr)
 {
-	return d->parseString(dllOverridesStr);
+    bool returnValue = false;
+    QStringList list = dllOverridesStr.split(';', QString::SkipEmptyParts);
+    foreach (QString str, list) {
+        QStringList parts = str.split('=');
+        if ( parts.size() != 2 ) {
+            kDebug() << "Skipping string" << str << "as it does not seem to be a WineDllOverride";
+            continue;
+        }
+
+        QStringList dllNames = parts[0].split(',', QString::SkipEmptyParts);
+        DllOverrideType type;
+        if ( parts[1].isEmpty() ) type = Disabled;
+        else if ( parts[1] == "n" ) type = Native;
+        else if ( parts[1] == "b" ) type = Builtin;
+        else if ( parts[1] == "n,b" ) type = FirstNativeThenBuiltin;
+        else if ( parts[1] == "b,n" ) type = FirstBuiltinThenNative;
+        else {
+            kDebug() << "Could not determine override type for override:" << str;
+            kDebug() << "Skipping this override...";
+            continue;
+        }
+
+        foreach ( QString dll, dllNames )
+            d->m_map.insert(dll, type);
+
+        // return true if at least one override was added
+        returnValue = dllNames.size() != 0 ? true : false;
+    }
+
+    return returnValue;
 }
 
 void WineDllOverrides::addOverride(const QString & dll, DllOverrideType typ)
 {
-	Q_UNUSED(dll);
-	Q_UNUSED(type);
-	kDebug() << "Not implemented yet";
-	return;
+    d->m_map.insert(dll, typ);
 }
 
 WineDllOverrides::operator QString() const
 {
-	return d->toString();
+    const char *typeMap[] = { "", "n", "b", "n,b", "b,n" };
+    QStringList list;
+    QMap<QString, DllOverrideType>::const_iterator i = d->m_map.constBegin();
+    while ( i != d->m_map.constEnd() ) {
+        list.append( QString("%1=%2").arg(i.key()).arg(typeMap[(int)i.value()]) );
+        ++i;
+    }
+    return list.join(";");
 }
 
 LIBQTWINE_END_NAMESPACE
