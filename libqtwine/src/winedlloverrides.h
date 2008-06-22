@@ -27,6 +27,7 @@
 #include <QtCore/QMetaType>
 #include <QtCore/QString>
 #include <QtCore/QPair>
+template <class T> class QLinkedList;
 
 LIBQTWINE_BEGIN_NAMESPACE
 
@@ -103,10 +104,20 @@ public:
 	 */
 	bool parseString(const QString & dllOverridesStr);
 
-	/*! Adds an override for the library \a dll to be loaded in the order
-	 * that \a type defines. This is equivalent to operator<<().
-	 */
-	void addOverride(const QString & dll, DllOverrideType type);
+    /*! Adds an override for the library \a dll to be loaded in the order
+     * that \a type defines. This is equivalent to operator<<().
+     * \note if \a dll is an empty string, this function does nothing.
+     */
+    void addOverride(const QString & dll, DllOverrideType type);
+
+    /*! Returns a list of all the \<dll name - override type\> pairs that are
+     * stored internally in this class. The return type is a QLinkedList
+     * as this class internally uses a QLinkedList to store the dll overrides,
+     * so this is just a shallow copy of WineDllOverride's internal list.
+     * In most cases, it is only needed to iterate through all the pairs, so
+     * QLinkedList is the right class to use.
+     */
+    QLinkedList< QPair<QString, DllOverrideType> > overridesList() const;
 
 
 	/*! Cast operator. Casts this class to a QString
@@ -122,7 +133,7 @@ public:
 	 * \param p this is a pair of a string and a DllOverrideType;
 	 * the string is the dll name and the DllOverrideType defines its load order.
 	 */
-	inline WineDllOverrides & operator<<(QPair<QString, DllOverrideType> p);
+	inline WineDllOverrides & operator<<(const QPair<QString, DllOverrideType> & p);
 
 	/*! Makes this WineDllOverrides object a copy of \a other and
 	 * returns a reference to this object.
@@ -133,7 +144,7 @@ private:
 	QSharedDataPointer<WineDllOverridesData> d;
 };
 
-inline WineDllOverrides & WineDllOverrides::operator<<(QPair<QString, DllOverrideType> p)
+inline WineDllOverrides & WineDllOverrides::operator<<(const QPair<QString, DllOverrideType> & p)
 {
 	addOverride(p.first, p.second);
 	return *this;

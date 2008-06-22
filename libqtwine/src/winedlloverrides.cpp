@@ -19,7 +19,7 @@
  ***************************************************************************/
 #include "winedlloverrides.h"
 #include <KDebug>
-#include <QMap>
+#include <QLinkedList>
 #include <QStringList>
 
 LIBQTWINE_BEGIN_NAMESPACE
@@ -28,9 +28,10 @@ class WineDllOverridesData : public QSharedData
 {
 public:
     WineDllOverridesData() : QSharedData() {}
-    WineDllOverridesData(const WineDllOverridesData & other) : QSharedData(other), m_map(other.m_map) {}
+    WineDllOverridesData(const WineDllOverridesData & other)
+        : QSharedData(other), m_overridesList(other.m_overridesList) {}
 
-    QMap<QString, WineDllOverrides::DllOverrideType> m_map;
+    QLinkedList< QPair<QString, WineDllOverrides::DllOverrideType> > m_overridesList;
 };
 
 
@@ -81,7 +82,7 @@ bool WineDllOverrides::parseString(const QString & dllOverridesStr)
         }
 
         foreach ( QString dll, dllNames )
-            d->m_map.insert(dll, type);
+            d->m_overridesList.append(qMakePair(dll, type));
 
         // return true if at least one override was added
         returnValue = dllNames.size() != 0 ? true : false;
@@ -92,16 +93,22 @@ bool WineDllOverrides::parseString(const QString & dllOverridesStr)
 
 void WineDllOverrides::addOverride(const QString & dll, DllOverrideType typ)
 {
-    d->m_map.insert(dll, typ);
+    if ( !dll.isEmpty() )
+        d->m_overridesList.append(qMakePair(dll, typ));
+}
+
+QLinkedList< QPair<QString, WineDllOverrides::DllOverrideType> > WineDllOverrides::overridesList() const
+{
+    return d->m_overridesList;
 }
 
 WineDllOverrides::operator QString() const
 {
     const char *typeMap[] = { "", "n", "b", "n,b", "b,n" };
     QStringList list;
-    QMap<QString, DllOverrideType>::const_iterator i = d->m_map.constBegin();
-    while ( i != d->m_map.constEnd() ) {
-        list.append( QString("%1=%2").arg(i.key()).arg(typeMap[(int)i.value()]) );
+    QLinkedList< QPair<QString, DllOverrideType> >::const_iterator i = d->m_overridesList.constBegin();
+    while ( i != d->m_overridesList.constEnd() ) {
+        list.append( QString("%1=%2").arg((*i).first).arg(typeMap[(int)(*i).second]) );
         ++i;
     }
     return list.join(";");
