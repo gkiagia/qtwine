@@ -20,6 +20,7 @@
 #include "programshortcuteditor.h"
 #include "../utils/urlrequestercapabledelegate.h"
 #include "../widgets/iconrequesterbutton.h"
+#include "../widgets/winedlloverridesedit.h"
 #include "../qtwineapplication.h"
 
 #include <KLineEdit>
@@ -47,10 +48,10 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
 
     /* setup gui */
     setCaption(makeStandardCaption(i18n("Program Shortcut Editor"), this));
+    setFaceType(KPageDialog::Tabbed);
 
     QWidget *page = new QWidget(this);
-    KPageWidgetItem *pageItem = addPage(page, i18n("Properties"));
-    pageItem->setIcon(KIcon("document-properties"));
+    addPage(page, i18n("Shortcut properties"));
 
     QLabel *nameLabel = new QLabel(i18n("Name:"), page);
     KLineEdit *nameEdit = new KLineEdit(page);
@@ -98,7 +99,10 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     mainLayout->addWidget(hLine);
     mainLayout->addLayout(formLayout);
     mainLayout->addWidget(optionsGroup);
-    resizeLayout(mainLayout, marginHint(), spacingHint());
+    //resizeLayout(mainLayout, marginHint(), spacingHint()); //TODO ask the kde devs - is this really needed?
+
+    WineDllOverridesEdit *dllOverridesEdit = new WineDllOverridesEdit(this);
+    addPage(dllOverridesEdit, i18n("Wine dll overrides") );
 
     /* map data */
     mapper = new QDataWidgetMapper(this);
@@ -114,6 +118,7 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     mapper->addMapping(configurationEdit, model->fieldIndex("wine_configurations_name"));
     mapper->addMapping(terminalBox, model->fieldIndex("run_in_terminal"));
     mapper->addMapping(cuiAppBox, model->fieldIndex("is_cui_application"));
+    mapper->addMapping(dllOverridesEdit, model->fieldIndex("winedlloverrides"));
     mapper->setCurrentModelIndex(index);
 
     connect(iconButton, SIGNAL(iconChanged()), SLOT(enableChangesDependentButtons()) );
@@ -124,6 +129,7 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     connect(configurationEdit, SIGNAL(currentIndexChanged(int)), SLOT(enableChangesDependentButtons()) );
     connect(terminalBox, SIGNAL(toggled(bool)), SLOT(enableChangesDependentButtons()) );
     connect(cuiAppBox, SIGNAL(toggled(bool)), SLOT(enableChangesDependentButtons()) );
+    connect(dllOverridesEdit, SIGNAL(overridesChanged()), SLOT(enableChangesDependentButtons()) );
 }
 
 void ProgramShortcutEditor::slotExecutableChanged(const KUrl & newUrl)
