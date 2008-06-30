@@ -17,12 +17,16 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 #include "winedlloverridesedit.h"
+
 #include <QPair>
 #include <QList>
 #include <QLinkedList>
 #include <QSignalMapper>
 #include <QVBoxLayout>
 #include <QResizeEvent>
+#include <QApplication>
+#include <QDesktopWidget>
+
 #include <KLineEdit>
 #include <KComboBox>
 #include <KPushButton>
@@ -157,6 +161,7 @@ void WineDllOverridesEdit::addLine(const QPair<QString, WineDllOverrides::DllOve
     connect(newLine->rmButton, SIGNAL(clicked()), &d->rmButtonsMapper, SLOT(map()));
     connect(newLine->lineEdit, SIGNAL(textChanged(QString)), this, SIGNAL(overridesChanged()) );
     QMetaObject::invokeMethod(this, "resizeCentralWidget", Qt::QueuedConnection);
+    updateGeometry(); // autoresize container if this is the first line added.
 }
 
 void WineDllOverridesEdit::removeLine(QWidget *line)
@@ -176,6 +181,8 @@ void WineDllOverridesEdit::resizeEvent(QResizeEvent *event)
 
 void WineDllOverridesEdit::resizeCentralWidget()
 {
+    // set the widget's size to be have the width of the scroll area
+    // and the height that the layout prefers.
     QSize s = viewport()->size();
     QSize wSize = d->centralWidget->size().expandedTo(s).boundedTo(s);
     wSize.setHeight(d->layout->minimumSize().height());
@@ -183,10 +190,17 @@ void WineDllOverridesEdit::resizeCentralWidget()
     ensureWidgetVisible(d->addButton);
 }
 
+QSize WineDllOverridesEdit::sizeHint() const
+{
+    int min_height = 200;
+    int max_height = qApp->desktop()->availableGeometry(this).height();
+    int height = d->layout->minimumSize().height();
+    return QSize(d->layout->sizeHint().width(), qBound(min_height, height, max_height));
+}
+
 QSize WineDllOverridesEdit::minimumSizeHint() const
 {
-    QSize s(460, d->addButton->minimumSize().height());
-    return s;
+    return QSize(d->layout->sizeHint().width(), d->addButton->sizeHint().height());
 }
 
 #include "winedlloverridesedit.moc"

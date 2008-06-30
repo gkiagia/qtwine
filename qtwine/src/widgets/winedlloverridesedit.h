@@ -32,7 +32,7 @@ class WineDllOverridesEdit : public QScrollArea
      * to assign a string to this widget, so the USER property must be a QString.
      */
     Q_PROPERTY(QString dllOverridesString READ dllOverridesString WRITE setDllOverridesString USER true)
-  //Q_PROPERTY(QtWine::WineDllOverrides dllOverrides READ dllOverrides WRITE setDllOverrides) //FIXME moc bug?
+    Q_PROPERTY(WineDllOverrides dllOverrides READ dllOverrides WRITE setDllOverrides)
 public:
     WineDllOverridesEdit(QWidget *parent = 0);
     ~WineDllOverridesEdit();
@@ -43,6 +43,7 @@ public:
     QtWine::WineDllOverrides dllOverrides() const;
     void setDllOverrides(const QtWine::WineDllOverrides & overrides);
 
+    virtual QSize sizeHint() const;
     virtual QSize minimumSizeHint() const;
 
 protected:
