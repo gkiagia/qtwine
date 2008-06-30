@@ -32,6 +32,7 @@ SET( QTWINE_SOURCES
     src/widgets/infoseparator.cpp
     src/widgets/iconrequesterbutton.cpp
     src/widgets/winedlloverridesedit.cpp
+    src/widgets/winedlloverridesrequester.cpp
 
     src/utils/urlrequestercapabledelegate.cpp
 
