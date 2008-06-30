@@ -3,9 +3,6 @@
 <gui name="wineinstallationspart" version="1">
 	<ToolBar name="mainToolBar" >
 		<Action name="add_installation"/>
-		<Separator/>
-		<Action name="installation_properties"/>
-		<Action name="remove_installation"/>
 	</ToolBar>
 	<MenuBar>
 		<Menu name="viewMenu">

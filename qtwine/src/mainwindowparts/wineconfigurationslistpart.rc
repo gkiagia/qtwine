@@ -3,9 +3,6 @@
 <gui name="wineconfigurationsspart" version="1">
 	<ToolBar name="mainToolBar" >
 		<Action name="create_configuration"/>
-		<Separator/>
-		<Action name="configuration_properties"/>
-		<Action name="delete_configuration"/>
 	</ToolBar>
 	<MenuBar>
 		<Menu name="viewMenu">

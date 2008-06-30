@@ -3,13 +3,6 @@
 <gui name="shortcutspart" version="1">
 	<ToolBar name="mainToolBar" >
 		<Action name="create_shortcut"/>
-		<Separator/>
-		<Action name="run_shortcut"/>
-		<Action name="shortcut_properties"/>
-		<Action name="delete_shortcut"/>
-		<Separator/>
-		<Action name="place_shortcut_on_desktop"/>
-		<Action name="export_shortcut_to_script"/>
 	</ToolBar>
 	<MenuBar>
 		<Menu name="viewMenu">
