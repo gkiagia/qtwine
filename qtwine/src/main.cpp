@@ -27,7 +27,7 @@
 static void qtMessageHandler(QtMsgType type, const char *msg)
 {
     // HACK to abort from Q_ASSERT(), needed for any non-debug version of Qt <= 4.4.0
-	fprintf(stderr, "%s", msg);
+	fprintf(stderr, "%s\n", msg);
 	if ( type == QtFatalMsg )
 		abort();
 }
