@@ -17,7 +17,6 @@
 #include "winedlloverridesrequester.h"
 #include <KLineEdit>
 #include <QToolButton>
-#include <QHBoxLayout>
 #include <KDialog>
 #include <KLocalizedString>
 #include "winedlloverridesedit.h"
