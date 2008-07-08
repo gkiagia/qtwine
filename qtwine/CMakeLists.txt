@@ -42,8 +42,19 @@ SET( QTWINE_SOURCES
     src/mainwindowparts/shortcutslistpart.cpp
 )
 
+SET( QTWINE_RC_FILES
+    src/qtwineui.rc
+    src/mainwindowparts/shortcutslistpart.rc
+    src/mainwindowparts/wineconfigurationslistpart.rc
+    src/mainwindowparts/wineinstallationslistpart.rc
+)
+
 INCLUDE_DIRECTORIES(${KDE4_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR})
 ADD_DEFINITIONS(-DQT_GUI_LIB)
 
 KDE4_ADD_EXECUTABLE(qtwine RUN_UNINSTALLED ${QTWINE_SOURCES})
 TARGET_LINK_LIBRARIES(qtwine ${KDE4_KPARTS_LIBS} ${LIBQTWINE} ${QT_QTSQL_LIBRARY})
+
+ADD_SUBDIRECTORY(icons)
+INSTALL(TARGETS qtwine DESTINATION ${BIN_INSTALL_DIR} COMPONENT runtime)
+INSTALL(FILES ${QTWINE_RC_FILES} DESTINATION ${DATA_INSTALL_DIR}/qtwine COMPONENT runtime)
