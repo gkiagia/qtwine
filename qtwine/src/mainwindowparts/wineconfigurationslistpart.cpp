@@ -69,12 +69,6 @@ void WineConfigurationsListPart::setupActions()
 	actionCollection()->addAction("configuration_properties", configuration_properties);
 	addSelectionDependentAction("configuration_properties");
 
-	KAction *update_registry = new KAction(KIcon("system-software-update"),
-					       i18n("Update configuration's registry"), this);
-	connect(update_registry, SIGNAL(triggered(bool)), SLOT(updateRegistry()) );
-	actionCollection()->addAction("update_registry", update_registry);
-	addSelectionDependentAction("update_registry");
-
 	KAction *virtual_reboot = new KAction(KIcon("system-restart"), i18n("Do a virtual reboot"), this);
 	connect(virtual_reboot, SIGNAL(triggered(bool)), SLOT(virtualReboot()) );
 	actionCollection()->addAction("virtual_reboot", virtual_reboot);
@@ -86,11 +80,11 @@ void WineConfigurationsListPart::setupActions()
 	actionCollection()->addAction("import_regfile", import_regfile);
 	addSelectionDependentAction("import_regfile");
 
-	KAction *browse_cfg_dir = new KAction(KIcon("document-open-folder"),
-					      i18n("Browse configuration's directory"), this);
-	connect(browse_cfg_dir, SIGNAL(triggered(bool)), SLOT(browseConfigurationDir()) );
-	actionCollection()->addAction("browse_cfg_dir", browse_cfg_dir);
-	addSelectionDependentAction("browse_cfg_dir");
+	KAction *browse_c_drive = new KAction(KIcon("document-open-folder"),
+					      i18n("Browse the virtual C: drive"), this);
+	connect(browse_c_drive, SIGNAL(triggered(bool)), SLOT(browseCDrive()) );
+	actionCollection()->addAction("browse_c_drive", browse_c_drive);
+	addSelectionDependentAction("browse_c_drive");
 
 #define WINELIB_ACTION(tool, icon, description) \
 	KAction *run_winelib_##tool = new KAction(icon, description, this); \
@@ -98,23 +92,13 @@ void WineConfigurationsListPart::setupActions()
 	actionCollection()->addAction("run_winelib_"#tool, run_winelib_##tool); \
 	addSelectionDependentAction("run_winelib_"#tool);
 
-	//tools FIXME icons
-	WINELIB_ACTION(winecfg, KIcon("wine"), i18n("Run wine's configuration utility"))
-	WINELIB_ACTION(regedit, KIcon("wine"), i18n("Run wine's registry editor"))
-	WINELIB_ACTION(taskmgr, KIcon("utilities-system-monitor"), i18n("Run wine's task manager"))
-	WINELIB_ACTION(cmd, KIcon("utilities-terminal"), i18n("Run wine's DOS prompt"))
-	WINELIB_ACTION(control, KIcon("preferences-system"), i18n("Run wine's control panel"))
-	WINELIB_ACTION(uninstaller, KIcon("applications-other"),
-		       i18n("Run wine's application uninstaller"))
-	WINELIB_ACTION(oleview, KIcon("graphics-viewer-document"),
-		       i18n("Run wine's OLE/COM object viewer"))
-	WINELIB_ACTION(progman, KIcon("applications-other"), i18n("Run wine's program manager"))
-	WINELIB_ACTION(winefile, KIcon("system-file-manager"), i18n("Run wine's file manager"))
-	WINELIB_ACTION(iexplore, KIcon("internet-web-browser"), i18n("Run wine's internet explorer"))
-	WINELIB_ACTION(winemine, KIcon("kmines"), i18n("Run wine's minesweeper"))
-	WINELIB_ACTION(clock, KIcon("xclock"), i18n("Run wine's clock"))
-	WINELIB_ACTION(notepad, KIcon("accessories-text-editor"), i18n("Run wine's notepad"))
-	WINELIB_ACTION(wordpad, KIcon("accessories-text-editor"), i18n("Run wine's wordpad"))
+    //tools
+    WINELIB_ACTION(winecfg, KIcon("wine"), i18n("Wine's settings"))
+    WINELIB_ACTION(regedit, KIcon("regedit"), i18n("Edit the registry"))
+    WINELIB_ACTION(taskmgr, KIcon("utilities-system-monitor"), i18n("Open wine's task manager"))
+    WINELIB_ACTION(cmd, KIcon("wcmd"), i18n("Open wine's DOS prompt"))
+    WINELIB_ACTION(control, KIcon("preferences-system"), i18n("Open wine's control panel"))
+    WINELIB_ACTION(uninstaller, KIcon("applications-other"), i18n("Uninstall an application"))
 
 #undef WINELIB_ACTION
 }
@@ -135,7 +119,6 @@ void WineConfigurationsListPart::configurationProperties()
 	itemActivated(selectedIndex());
 }
 
-void WineConfigurationsListPart::updateRegistry() {}
 void WineConfigurationsListPart::virtualReboot() {}
 
 void WineConfigurationsListPart::importRegfile()
@@ -154,11 +137,11 @@ void WineConfigurationsListPart::importRegfile()
 	}
 }
 
-void WineConfigurationsListPart::browseConfigurationDir()
+void WineConfigurationsListPart::browseCDrive()
 {
-	QModelIndex index = model()->index(selectedIndex().row(), model()->fieldIndex("wineprefix"));
-	QString cfgPath = model()->data(index, Qt::DisplayRole).toString();
-	new KRun(KUrl(cfgPath), widget(), 0, true);
+    QModelIndex index = model()->index(selectedIndex().row(), model()->fieldIndex("wineprefix"));
+    QString cfgPath = model()->data(index, Qt::DisplayRole).toString() + "/dosdevices/c:";
+    new KRun(KUrl(cfgPath), widget(), 0, true);
 }
 
 /*! Runs a winelib tool for the selected configuration.
@@ -189,14 +172,6 @@ WINELIB_FUNCTION(taskmgr)
 WINELIB_FUNCTION(cmd)
 WINELIB_FUNCTION(control)
 WINELIB_FUNCTION(uninstaller)
-WINELIB_FUNCTION(oleview)
-WINELIB_FUNCTION(progman)
-WINELIB_FUNCTION(winefile)
-WINELIB_FUNCTION(iexplore)
-WINELIB_FUNCTION(winemine)
-WINELIB_FUNCTION(clock)
-WINELIB_FUNCTION(notepad)
-WINELIB_FUNCTION(wordpad)
 
 #undef WINELIB_FUNCTION
 

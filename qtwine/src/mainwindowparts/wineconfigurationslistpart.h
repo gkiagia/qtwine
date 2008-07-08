@@ -36,10 +36,9 @@ private slots:
 	void createConfiguration();
 	void deleteConfiguration();
 	void configurationProperties();
-	void updateRegistry();
 	void virtualReboot();
 	void importRegfile();
-	void browseConfigurationDir();
+	void browseCDrive();
 
 	void winelib_winecfg();
 	void winelib_regedit();
@@ -47,14 +46,6 @@ private slots:
 	void winelib_cmd();
 	void winelib_control();
 	void winelib_uninstaller();
-	void winelib_oleview();
-	void winelib_progman();
-	void winelib_winefile();
-	void winelib_iexplore();
-	void winelib_winemine();
-	void winelib_clock();
-	void winelib_notepad();
-	void winelib_wordpad();
 
 private:
 	void runWinelibTool(const QString & name);
