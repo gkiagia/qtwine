@@ -18,23 +18,17 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 #include "configurationeditor.h"
-#include "../qtwineapplication.h"
 
 #include <QSqlRelationalDelegate>
 #include <QComboBox>
 #include <QDataWidgetMapper>
 #include <QSqlTableModel>
 #include <QFormLayout>
-#include <QVBoxLayout>
 
-#include <KPushButton>
 #include <KIcon>
 #include <KLocalizedString>
 #include <KLineEdit>
 #include <KTextEdit>
-
-#include <qtwine/wineprocess.h>
-
 
 ConfigurationEditor::ConfigurationEditor(const QModelIndex & index, QWidget *parent)
 	: EditorPageDialog(parent)
@@ -68,21 +62,7 @@ ConfigurationEditor::ConfigurationEditor(const QModelIndex & index, QWidget *par
 	descriptionTextEdit->setAcceptRichText(false);
 	formLayout->addRow(i18n("&Description / Notes:"), descriptionTextEdit);
 
-
-	QWidget *toolsPage = new QWidget(this);
-	KPageWidgetItem *toolsPageItem = addPage(toolsPage, i18n("Edit wine's settings"));
-	toolsPageItem->setIcon(KIcon("wine"));
-
-	QVBoxLayout *toolsLayout = new QVBoxLayout(toolsPage);
-	KPushButton *winecfg = new KPushButton(KIcon("wine"), i18n("Edit wine's settings"), toolsPage);
-	connect(winecfg, SIGNAL(clicked()), SLOT(runWinecfg()) );
-	toolsLayout->addWidget(winecfg);
-
-	KPushButton *regedit = new KPushButton(KIcon("wine"), i18n("Edit wine's registry"), toolsPage);
-	connect(regedit, SIGNAL(clicked()), SLOT(runRegedit()) );
-	toolsLayout->addWidget(regedit);
-	resizeLayout(formLayout, marginHint(), spacingHint());
-
+    resizeLayout(formLayout, marginHint(), spacingHint());
 
 	/* map data */
 	mapper = new QDataWidgetMapper(this);
@@ -98,19 +78,6 @@ ConfigurationEditor::ConfigurationEditor(const QModelIndex & index, QWidget *par
 	connect(nameEdit, SIGNAL(textChanged(QString)), SLOT(enableChangesDependentButtons()) );
 	connect(installationEdit, SIGNAL(currentIndexChanged(int)), SLOT(enableChangesDependentButtons()) );
 	connect(descriptionTextEdit, SIGNAL(textChanged()), SLOT(enableChangesDependentButtons()) );
-}
-
-void ConfigurationEditor::runWinecfg() { runWinelibTool("winecfg"); }
-void ConfigurationEditor::runRegedit() { runWinelibTool("regedit"); }
-
-void ConfigurationEditor::runWinelibTool(const QString & tool)
-{
-	using namespace QtWine;
-	WineConfiguration c = configurationsProvider->configurationByModelRow(mapper->currentIndex());
-	WineApplication a(tool, c);
-	WineProcess *p = new WineProcess(a);
-	p->setAutoDeleteEnabled(true);
-	p->start();
 }
 
 bool ConfigurationEditor::applyChanges()

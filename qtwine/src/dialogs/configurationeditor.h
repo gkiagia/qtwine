@@ -29,21 +29,16 @@ class QDataWidgetMapper;
  */
 class ConfigurationEditor : public EditorPageDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit ConfigurationEditor(const QModelIndex & index, QWidget *parent = 0);
-
-protected slots:
-	void runWinecfg();
-	void runRegedit();
-	void runWinelibTool(const QString & tool);
+    explicit ConfigurationEditor(const QModelIndex & index, QWidget *parent = 0);
 
 protected:
-	bool applyChanges();
-	bool revertChanges();
+    bool applyChanges();
+    bool revertChanges();
 
 private:
-	QDataWidgetMapper *mapper;
+    QDataWidgetMapper *mapper;
 };
 
 #endif
