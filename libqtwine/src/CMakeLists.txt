@@ -9,38 +9,37 @@ SET( LIBQTWINE_VERSION ${LIBQTWINE_VERSION_MAJOR}.${LIBQTWINE_VERSION_MINOR}.${L
 
 # The source files that will be compiled
 SET( LIBQTWINE_SOURCES
-	winedlloverrides.cpp
-	winedebugoptions.cpp
-	wineapplication.cpp
-	wineinstallation.cpp
-	wineconfiguration.cpp
-	wineprocess.cpp
-	monitoredprocess.cpp
-	winepath.cpp
-	regedit.cpp
-	wineprefixcreate.cpp
-#wineutils/registrykey.cpp
+    winedlloverrides.cpp
+    winedebugoptions.cpp
+    wineapplication.cpp
+    wineinstallation.cpp
+    wineconfiguration.cpp
+    wineprocess.cpp
+    monitoredprocess.cpp
+    winepath.cpp
+    regedit.cpp
+    wineprefixcreate.cpp
 
-	private/wineerrordetector.cpp
-	private/processioconnector.cpp
-	private/terminal.cpp
-	private/helpers.cpp
+    private/wineerrordetector.cpp
+    private/processioconnector.cpp
+    private/terminal.cpp
+    private/helpers.cpp
 )
 
 # The public headers
 SET( LIBQTWINE_PUBLIC_HEADERS
-	libqtwine_export.h
-	libqtwine_global.h
-	winedlloverrides.h
-	winedebugoptions.h
-	wineapplication.h
-	wineinstallation.h
-	wineconfiguration.h
-	wineprocess.h
-	monitoredprocess.h
-	winepath.h
-	regedit.h
-	wineprefixcreate.h
+    libqtwine_export.h
+    libqtwine_global.h
+    winedlloverrides.h
+    winedebugoptions.h
+    wineapplication.h
+    wineinstallation.h
+    wineconfiguration.h
+    wineprocess.h
+    monitoredprocess.h
+    winepath.h
+    regedit.h
+    wineprefixcreate.h
 )
 
 # setup misc includes
@@ -54,7 +53,7 @@ TARGET_LINK_LIBRARIES(qtwine ${KDE4_KDECORE_LIBS})
 SET_TARGET_PROPERTIES(qtwine PROPERTIES VERSION ${LIBQTWINE_VERSION} SOVERSION ${LIBQTWINE_API_VERSION})
 
 # setup the "make install" target
-INSTALL(TARGETS qtwine DESTINATION lib COMPONENT runtime)
+INSTALL(TARGETS qtwine DESTINATION ${LIB_INSTALL_DIR} COMPONENT runtime)
 FOREACH(header ${LIBQTWINE_PUBLIC_HEADERS})
 	GET_FILENAME_COMPONENT(header_path ${header} PATH)
 	INSTALL(FILES ${header} DESTINATION include/qtwine/${header_path} COMPONENT development)
