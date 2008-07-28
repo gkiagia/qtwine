@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 
 	memset(&serverAddress, 0, sizeof(struct sockaddr_un));
 	serverAddress.sun_family = AF_UNIX;
-	strcpy(serverAddress.sun_path, argv[1]); //the socket address must be in argv[1]
+	strcpy(serverAddress.sun_path, argv[1]); /* the socket address must be in argv[1] */
 
 	int len = strlen(serverAddress.sun_path) + sizeof(serverAddress.sun_family);
 	if (connect(sockfd, (struct sockaddr *)&serverAddress, len) == -1)
@@ -97,8 +97,8 @@ int main(int argc, char *argv[])
 	The process can now only be terminated by a signal, probably SIGTERM */
 	while(1) {
 		FD_ZERO(&rfds);
-		FD_SET(sockfd, &rfds); //watch the socket for input
-		FD_SET(0, &rfds); //watch stdin for input
+		FD_SET(sockfd, &rfds); /* watch the socket for input */
+		FD_SET(0, &rfds); /* watch stdin for input */
 
 		retval = select(sockfd+1, &rfds, NULL, NULL, NULL);
 
