@@ -19,7 +19,8 @@
  ***************************************************************************/
 #include <KAboutData>
 #include <KCmdLineArgs>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include "qtwineapplication.h"
 
 #define QTWINE_VERSION_STR "0.4.64"
