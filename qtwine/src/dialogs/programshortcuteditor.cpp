@@ -35,8 +35,6 @@
 #include <QFrame>
 #include <QDataWidgetMapper>
 
-#include <qtwine/wineconfiguration.h>
-
 ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget *parent)
     : EditorPageDialog(parent)
 {
@@ -87,6 +85,10 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
                 delegate->createEditor(this, QStyleOptionViewItem(), configurationColumnIndex);
     formLayout->addRow(i18n("Uses wine &configuration:"), configurationEdit);
 
+    QComboBox *configurationCombo = qobject_cast<QComboBox*>(configurationEdit);
+    Q_ASSERT(configurationCombo);
+    configurationCombo->setCurrentIndex(1);
+
     QGroupBox *optionsGroup = new QGroupBox(i18n("Options"), page);
     QCheckBox *terminalBox = new QCheckBox(i18n("Show debugging output in a terminal"), page);
     QCheckBox *cuiAppBox = new QCheckBox(i18n("This is a Windows CUI (DOS) application"), page);
@@ -134,17 +136,6 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
 
 void ProgramShortcutEditor::slotExecutableChanged(const KUrl & newUrl)
 {
-    QtWine::WineConfiguration c = configurationsProvider->configurationByModelRow(mapper->currentIndex());
-    QString drive_c = c.winePrefix().append("/dosdevices/c:");
-    QString exe = newUrl.path();
-
-    //if the executable is in C:, make the path relative to C:
-    if ( exe.startsWith(drive_c) ) {
-        drive_c.chop(2); //remove the trailing c:
-        exe.remove(0, drive_c.size()); //remove /path/to/C:
-    }
-
-    executableEdit->setPath(exe); //TODO test me (not sure if kurl supports windows paths in unix)
     workdirEdit->setPath(newUrl.directory());
 }
 
