@@ -54,6 +54,12 @@ MetaListViewWidget::MetaListViewWidget(QWidget *parent)
 	connect( &m_hoverSelectTimer, SIGNAL(timeout()), SLOT(slotHoverSelectTimerTimeout()) );
 }
 
+MetaListViewWidget::~MetaListViewWidget()
+{
+    if ( m_configGroup.isValid() )
+        saveSettings(m_configGroup);
+}
+
 void MetaListViewWidget::initialize(QAbstractItemModel *model, const KConfigGroup & group)
 {
 	m_listView->setModel(model);
@@ -62,6 +68,7 @@ void MetaListViewWidget::initialize(QAbstractItemModel *model, const KConfigGrou
 		setMetaBarPosition( readEntry(group, "metaBarPosition", Right) );
 		setListViewMode( readEntry(group, "listViewMode", QListView::ListMode) );
 		setActivationClickMode( readEntry(group, "activationClickMode", UseKdeDefault) );
+                m_configGroup = group;
 	} else {
 		setMetaBarPosition(Right);
 		setListViewMode(QListView::ListMode);

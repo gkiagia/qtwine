@@ -44,6 +44,7 @@ public:
 	enum ActivationClickMode { UseKdeDefault, SingleClick, DoubleClick };
 
 	MetaListViewWidget(QWidget *parent = 0);
+        ~MetaListViewWidget();
 
 	QListView *listView() const { return m_listView; }
 	MetaBar *metaBar() const { return m_metaBar; }
@@ -83,6 +84,7 @@ private:
 
 	QModelIndex m_hoveredIndex;
 	QTimer m_hoverSelectTimer;
+        KConfigGroup m_configGroup;
 };
 
 #endif
