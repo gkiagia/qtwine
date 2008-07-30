@@ -19,19 +19,21 @@
  ***************************************************************************/
 #include <KAboutData>
 #include <KCmdLineArgs>
-#include <cstdio>
+#include <iostream>
 #include <cstdlib>
 #include "qtwineapplication.h"
 
 #define QTWINE_VERSION_STR "0.4.64"
 
+// HACK to abort from Q_ASSERT(), needed for any non-debug version of Qt <= 4.4.0
+#if (QT_VERSION <= 0x040400)
 static void qtMessageHandler(QtMsgType type, const char *msg)
 {
-    // HACK to abort from Q_ASSERT(), needed for any non-debug version of Qt <= 4.4.0
-	fprintf(stderr, "%s\n", msg);
-	if ( type == QtFatalMsg )
-		abort();
+    std::cerr << msg << std::endl;
+    if ( type == QtFatalMsg )
+        abort();
 }
+#endif
 
 
 static inline void setupCmdLineOptions()
@@ -74,7 +76,9 @@ static inline void setupCmdLineOptions()
 
 int main (int argc, char *argv[])
 {
-	qInstallMsgHandler(qtMessageHandler);
+#if (QT_VERSION <= 0x040400)
+    qInstallMsgHandler(qtMessageHandler);
+#endif
 
 	KAboutData aboutData( "qtwine", 0, ki18n("QtWine"), QTWINE_VERSION_STR,
 			ki18n("A full-featured GUI for wine."),
