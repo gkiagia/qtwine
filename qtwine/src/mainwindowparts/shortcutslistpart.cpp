@@ -100,7 +100,9 @@ void ShortcutsListPart::setupActions()
 
 void ShortcutsListPart::loadModel()
 {
-    setModel(shortcutsProvider->model(), 1);
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup group = config->group("ShortcutsListPart").group("MetaListViewWidget");
+    setModel(shortcutsProvider->model(), 1, group);
 }
 
 void ShortcutsListPart::createShortcut()

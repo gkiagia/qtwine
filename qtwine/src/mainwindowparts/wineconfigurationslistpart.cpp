@@ -105,7 +105,9 @@ void WineConfigurationsListPart::setupActions()
 
 void WineConfigurationsListPart::loadModel()
 {
-	setModel(configurationsProvider->model(), 1);
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup group = config->group("WineConfigurationsListPart").group("MetaListViewWidget");
+    setModel(configurationsProvider->model(), 1, group);
 }
 
 void WineConfigurationsListPart::createConfiguration()

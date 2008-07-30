@@ -61,7 +61,9 @@ WineInstallationsListPart::WineInstallationsListPart(QObject *parent)
 
 void WineInstallationsListPart::loadModel()
 {
-	setModel(installationsProvider->model(), 1);
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup group = config->group("WineInstallationsListPart").group("MetaListViewWidget");
+    setModel(installationsProvider->model(), 1, group);
 }
 
 void WineInstallationsListPart::itemActivated(const QModelIndex & index)
