@@ -34,6 +34,7 @@ class QtWineMainWindow;
 
 class QtWineApplication : public KUniqueApplication
 {
+    Q_OBJECT
 public:
     QtWineApplication();
     ~QtWineApplication();
@@ -42,6 +43,12 @@ public:
     WineInstallationsProvider *wineInstallationsProvider() const;
     WineConfigurationsProvider *wineConfigurationsProvider() const;
     ShortcutsProvider *programShortcutsProvider() const;
+
+public slots:
+    void showPreferencesDialog();
+
+signals:
+    void preferencesChanged();
 
 private:
     void initializeDatabase();

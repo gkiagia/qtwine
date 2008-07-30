@@ -19,6 +19,8 @@
  ***************************************************************************/
 #include "qtwineapplication.h"
 #include "qtwinemainwindow.h"
+#include "qtwinepreferences.h"
+#include "ui_behaviourPreferences.h"
 
 #include <QFile>
 #include <QStringList>
@@ -29,18 +31,20 @@
 #include <KLocalizedString>
 #include <KStandardDirs>
 #include <KMessage>
+#include <KConfigDialog>
 
 QtWineApplication::QtWineApplication()
-	: KUniqueApplication(), m_mainWindow(NULL)
+    : KUniqueApplication(), m_mainWindow(NULL)
 {
-	initializeDatabase();
-	initializeProviders();
+    initializeDatabase();
+    initializeProviders();
 }
 
 QtWineApplication::~QtWineApplication()
 {
-	deleteProviders();
-	shutDownDatabase();
+    delete m_mainWindow;
+    deleteProviders();
+    shutDownDatabase();
 }
 
 
@@ -120,3 +124,27 @@ void QtWineApplication::shutDownDatabase()
     QSqlDatabase::removeDatabase(connectionName);
 }
 
+
+class BehaviourPreferencesWidget : public QWidget, Ui::BehaviourPreferencesWidget {
+public:
+    BehaviourPreferencesWidget(QWidget *parent = 0) : QWidget(parent) {
+        setupUi(this);
+    }
+};
+
+void QtWineApplication::showPreferencesDialog()
+{
+    if ( KConfigDialog::showDialog( "qtwinepreferences" ) )
+        return; 
+
+    KConfigDialog* dialog = new KConfigDialog(0, "qtwinepreferences", QtWinePreferences::self()); 
+
+    BehaviourPreferencesWidget* bPrefs = new BehaviourPreferencesWidget(); 
+    dialog->addPage(bPrefs, i18n("Behaviour"), "configure"); 
+ 
+    connect( dialog, SIGNAL(settingsChanged(QString)), this, SIGNAL(preferencesChanged()) ); 
+
+    dialog->show();
+}
+
+#include "qtwineapplication.moc"

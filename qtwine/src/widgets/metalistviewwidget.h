@@ -61,9 +61,11 @@ public:
 	ActivationClickMode activationClickMode() const;
 	void setActivationClickMode(ActivationClickMode mode);
 
+    void initialize(QAbstractItemModel *model, const KConfigGroup & group = KConfigGroup());
+    void saveSettings(KConfigGroup & group);
+
 public slots:
-	void initialize(QAbstractItemModel *model, const KConfigGroup & group = KConfigGroup());
-	void saveSettings(KConfigGroup & group);
+    void loadGlobalPreferences();
 
 signals:
 	void itemActivated(const QModelIndex & index);

@@ -63,6 +63,9 @@ SET( QTWINE_RC_FILES
     src/mainwindowparts/wineinstallationslistpart.rc
 )
 
+KDE4_ADD_UI_FILES(QTWINE_SOURCES forms/behaviourPreferences.ui)
+KDE4_ADD_KCFG_FILES(QTWINE_SOURCES src/qtwinepreferences.kcfgc)
+
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 ADD_DEFINITIONS(-DQT_GUI_LIB)
 

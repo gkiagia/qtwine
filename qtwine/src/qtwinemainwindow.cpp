@@ -18,6 +18,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 #include "qtwinemainwindow.h"
+#include "qtwineapplication.h"
 #include "mainwindowparts/wineconfigurationslistpart.h"
 #include "mainwindowparts/wineinstallationslistpart.h"
 #include "mainwindowparts/shortcutslistpart.h"
@@ -32,7 +33,6 @@
 #include <KIcon>
 #include <KLocalizedString>
 #include <KSystemTrayIcon>
-#include <KApplication>
 
 QtWineMainWindow::QtWineMainWindow()
 	: KParts::MainWindow()
@@ -89,6 +89,7 @@ void QtWineMainWindow::setupActions()
 	actionCollection()->addAction("runCommand", runCommand);
 
 	KStandardAction::quit(kapp, SLOT(quit()), actionCollection());
+    KStandardAction::preferences(qtwineApp, SLOT(showPreferencesDialog()), actionCollection());
 }
 
 void QtWineMainWindow::slotRunCommand()

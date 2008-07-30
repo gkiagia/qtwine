@@ -1,0 +1,4 @@
+File=qtwinepreferences.kcfg
+ClassName=QtWinePreferences
+Singleton=true
+Mutators=true

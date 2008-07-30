@@ -19,6 +19,8 @@
  ***************************************************************************/
 #include "metalistviewwidget.h"
 #include "metabar.h"
+#include "../qtwineapplication.h"
+#include "qtwinepreferences.h"
 #include <QSplitter>
 #include <QListView>
 #include <QList>
@@ -31,7 +33,6 @@
 #define HOVER_SELECT_DELAY 200
 
 KCONFIGGROUP_DECLARE_ENUM_QOBJECT(MetaListViewWidget, MetaBarPosition)
-KCONFIGGROUP_DECLARE_ENUM_QOBJECT(MetaListViewWidget, ActivationClickMode)
 KCONFIGGROUP_DECLARE_ENUM_QOBJECT(QListView, ViewMode)
 
 
@@ -67,12 +68,10 @@ void MetaListViewWidget::initialize(QAbstractItemModel *model, const KConfigGrou
 	if ( group.isValid() ) {
 		setMetaBarPosition( readEntry(group, "metaBarPosition", Right) );
 		setListViewMode( readEntry(group, "listViewMode", QListView::ListMode) );
-		setActivationClickMode( readEntry(group, "activationClickMode", UseKdeDefault) );
                 m_configGroup = group;
 	} else {
 		setMetaBarPosition(Right);
 		setListViewMode(QListView::ListMode);
-		setActivationClickMode(UseKdeDefault);
 	}
 
 	setMultipleSelectionEnabled(false); // this should not be user-configurable. depends on the model.
@@ -83,13 +82,20 @@ void MetaListViewWidget::initialize(QAbstractItemModel *model, const KConfigGrou
 
 	connect(m_listView, SIGNAL(customContextMenuRequested(QPoint)),
 		SLOT(slotContextMenuRequested(QPoint)) );
+
+    loadGlobalPreferences();
+    connect(qtwineApp, SIGNAL(preferencesChanged()), this, SLOT(loadGlobalPreferences()) );
+}
+
+void MetaListViewWidget::loadGlobalPreferences()
+{
+    setActivationClickMode( static_cast<ActivationClickMode>(QtWinePreferences::clickMode()) );
 }
 
 void MetaListViewWidget::saveSettings(KConfigGroup & group)
 {
 	writeEntry(group, "metaBarPosition", metaBarPosition());
 	writeEntry(group, "listViewMode", listViewMode());
-	writeEntry(group, "activationClickMode", activationClickMode());
 }
 
 

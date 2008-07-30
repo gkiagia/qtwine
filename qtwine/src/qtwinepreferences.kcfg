@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE kcfg SYSTEM "http://www.kde.org/standards/kcfg/1.0/kcfg.dtd">
+<kcfg>
+    <kcfgfile/>
+    <group name="behaviour">
+        <entry name="ClickMode" type="Enum">
+            <label>How the icons are selected in the main window, with single or double mouse click.</label>
+            <choices>
+                <choice name="UseKdeDefault"/>
+                <choice name="SingleClick"/>
+                <choice name="DoubleClick"/>
+            </choices>
+            <default>UseKdeDefault</default>
+        </entry>
+    </group>
+</kcfg>
