@@ -21,6 +21,7 @@
 
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QFile>
 
 #include <KMessage>
 #include <KLocalizedString>
@@ -39,9 +40,10 @@ WineInstallationsProvider::WineInstallationsProvider(QObject *parent)
 	model->setTable("wine_installations");
 	setModel(model);
 
-	updateVersionFields();
-	connect(model, SIGNAL(beforeInsert(QSqlRecord&)), SLOT(model_beforeInsert(QSqlRecord&)) );
-	connect(model, SIGNAL(beforeUpdate(int, QSqlRecord&)), SLOT(model_beforeUpdate(int, QSqlRecord&)) );
+    updateVersionFields();
+    updateDistroInstallation();
+    connect(model, SIGNAL(beforeInsert(QSqlRecord&)), SLOT(model_beforeInsert(QSqlRecord&)) );
+    connect(model, SIGNAL(beforeUpdate(int, QSqlRecord&)), SLOT(model_beforeUpdate(int, QSqlRecord&)) );
 }
 
 void WineInstallationsProvider::createFirstTimeTable()
@@ -58,7 +60,6 @@ void WineInstallationsProvider::createFirstTimeTable()
 				" installation of wine. Please install wine either using your"
 				" distribution's package manager (recommended) or using QtWine's"
 				" assistant for installing wine.") );
-		return;
 	}
 
 	query.prepare("insert into wine_installations (id, name, prefix,"
@@ -66,7 +67,7 @@ void WineInstallationsProvider::createFirstTimeTable()
 			"values (:id, :name, :prefix, :winedllpath,"
 			" :wineloader, :wineserver, :wineversion)");
 	query.bindValue(":id", 1);
-	query.bindValue(":name", i18n("Default wine installation"));
+	query.bindValue(":name", i18n("Distribution's wine installation"));
 	query.bindValue(":prefix", inst.prefix());
 	query.bindValue(":winedllpath", inst.wineDllPath());
 	query.bindValue(":wineloader", inst.wineLoader());
@@ -88,6 +89,29 @@ void WineInstallationsProvider::updateVersionFields()
 	}
 
 	model()->submit();
+}
+
+void WineInstallationsProvider::updateDistroInstallation()
+{
+    QSqlRecord record = model()->record(0);
+    if ( QFile::exists(record.value("wineloader").toString()) )
+        return; //do not update if the installation still exists
+
+    WineInstallation inst = WineInstallation::findWineInPath();
+    if ( inst.isInvalid() ) {
+        KMessage::message(KMessage::Warning, i18n("QtWine was unable to find an existing"
+                          " installation of wine. Please install wine either using your"
+                          " distribution's package manager (recommended) or using QtWine's"
+                          " assistant for installing wine.") );
+        return; // no reason to update, the installation is invalid either way
+    }
+
+    record.setValue("prefix", inst.prefix());
+    record.setValue("winedllpath", inst.wineDllPath());
+    record.setValue("wineloader", inst.wineLoader());
+    record.setValue("wineserver", inst.wineServer());
+    record.setValue("version", inst.wineVersion());
+    model()->setRecord(0, record); //put the new information back to the model
 }
 
 WineInstallation WineInstallationsProvider::installationById(uint id) const

@@ -43,6 +43,7 @@ private slots:
 private:
 	void createFirstTimeTable();
 	void updateVersionFields();
+    void updateDistroInstallation();
 };
 
 #endif
