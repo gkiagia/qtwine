@@ -94,8 +94,9 @@ void WineInstallationsProvider::updateVersionFields()
 void WineInstallationsProvider::updateDistroInstallation()
 {
     QSqlRecord record = model()->record(0);
-    if ( QFile::exists(record.value("wineloader").toString()) )
-        return; //do not update if the installation still exists
+    if ( record.isEmpty() or record.value("id").toInt() != 1
+        or QFile::exists(record.value("wineloader").toString()) )
+        return; //do not update if wineloader still exists or the installation is not the one we want
 
     WineInstallation inst = WineInstallation::findWineInPath();
     if ( inst.isInvalid() ) {
