@@ -54,26 +54,10 @@ void WineInstallationsProvider::createFirstTimeTable()
 			" winedllpath varchar(1024), wineloader varchar(1024),"
 			" wineserver varchar(1024), wineversion varchar(10))");
 
-	WineInstallation inst = WineInstallation::findWineInPath();
-	if ( inst.isInvalid() ) {
-		KMessage::message(KMessage::Warning, i18n("QtWine was unable to find an existing"
-				" installation of wine. Please install wine either using your"
-				" distribution's package manager (recommended) or using QtWine's"
-				" assistant for installing wine.") );
-	}
-
-	query.prepare("insert into wine_installations (id, name, prefix,"
-			" winedllpath, wineloader, wineserver, wineversion) "
-			"values (:id, :name, :prefix, :winedllpath,"
-			" :wineloader, :wineserver, :wineversion)");
-	query.bindValue(":id", 1);
-	query.bindValue(":name", i18n("Distribution's wine installation"));
-	query.bindValue(":prefix", inst.prefix());
-	query.bindValue(":winedllpath", inst.wineDllPath());
-	query.bindValue(":wineloader", inst.wineLoader());
-	query.bindValue(":wineserver", inst.wineServer());
-	query.bindValue(":version", inst.wineVersion());
-	query.exec();
+    query.prepare("insert into wine_installations (id, name) values (:id, :name)");
+    query.bindValue(":id", 1);
+    query.bindValue(":name", i18n("Distribution's wine installation"));
+    query.exec();
 }
 
 void WineInstallationsProvider::updateVersionFields()
@@ -111,7 +95,7 @@ void WineInstallationsProvider::updateDistroInstallation()
     record.setValue("winedllpath", inst.wineDllPath());
     record.setValue("wineloader", inst.wineLoader());
     record.setValue("wineserver", inst.wineServer());
-    record.setValue("version", inst.wineVersion());
+    record.setValue("wineversion", inst.wineVersion());
     model()->setRecord(0, record); //put the new information back to the model
 }
 
