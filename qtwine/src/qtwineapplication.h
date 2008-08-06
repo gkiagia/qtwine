@@ -21,6 +21,7 @@
 #define QTWINEAPPLICATION_H
 
 #include <KUniqueApplication>
+#include <QPointer>
 #include "providers/wineinstallationsprovider.h"
 #include "providers/wineconfigurationsprovider.h"
 #include "providers/shortcutsprovider.h"
@@ -56,7 +57,7 @@ private:
     void deleteProviders();
     void shutDownDatabase();
 
-    QtWineMainWindow *m_mainWindow;
+    QPointer<QtWineMainWindow> m_mainWindow;
     WineInstallationsProvider *m_installationsProvider;
     WineConfigurationsProvider *m_configurationsProvider;
     ShortcutsProvider *m_shortcutsProvider;
