@@ -29,45 +29,85 @@ class QPoint;
 class QItemSelection;
 class QAction;
 class QAbstractItemModel;
-class ProxyModel;
 class QSqlTableModel;
 class QModelIndex;
 
 class MetaListViewPart : public KParts::Part
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	MetaListViewPart(QObject *parent = 0);
+    MetaListViewPart(QObject *parent = 0);
 
 protected:
-	QModelIndex selectedIndex() const;
-	QSqlTableModel *model() const;
-	void setModel(QSqlTableModel *model, int displayColumn,
-		      const KConfigGroup & metaListViewSettings = KConfigGroup());
-	void addSelectionDependentAction(const QString & actionName);
-	void addMetabarFieldMapping(const QString & label, const QString & field);
+    /*! Returns the currently selected index */
+    QModelIndex selectedIndex() const;
+    
+    /*! Returns a pointer to the model that has been set */
+    QSqlTableModel *model() const;
+    
+    /*! Sets the specified \a model to appear in the listview.
+     * The column that appears will be \a displayColumn.
+     * \a metaListViewSettings is passed to MetaListViewWidget::initialize()
+     * to load settings for this view. It can be ommited to load the defaults.
+     */
+    void setModel(QSqlTableModel *model, int displayColumn,
+                  const KConfigGroup & metaListViewSettings = KConfigGroup());
+    
+    /*! Maps the specified sql \a field to appear in metabar with the
+     * specified \a label and the value of the selected item */
+    void addMetabarFieldMapping(const QString & label, const QString & field);
+    
+    /*! Marks the specified action to be enabled only if an item is selected */
+    void addSelectionDependentAction(const QString & actionName);
+    
+    /*! Marks the specified action to depend on whether the default item is selected or not.
+     * The action will be enabled for the default item if \a enabledOnDefaultItem is true,
+     * or enabled on all other items except the default if \a enabledOnDefaultItem is false.
+     */
+    void addDefaultItemDependentAction(const QString & actionName, bool enabledOnDefaultItem);
+    
+    /*! Enables the concept of having one "default" item in the list. The current default item's 
+     * row is indicated by \a currentDefaultRow and the action that should change the
+     * default item is indicated by \a setDefaultAction.
+     */
+    void enableDefaultItem(const QString & setDefaultAction, int currentDefaultRow);
+    
+signals:
+    void defaultItemRowUpdated(int newDefaultRow, int oldDefaultRow);
 
 protected slots:
-	virtual void loadModel() = 0;
-	virtual void itemActivated(const QModelIndex & index);
-	//virtual void itemSelected(const QModelIndex & index);
+    /*! This slot must be implemented to load the model.
+     * The implementation must use setModel() to set the model.
+     */
+    virtual void loadModel() = 0;
+    
+    /*! This is called when an item is activated
+     * (with single or double click, depending on settings).
+     */
+    virtual void itemActivated(const QModelIndex & index);
+    
+    /*! makes the default item to be the item at the \a newDefaultRow row */
+    void updateDefaultItemRow(int newDefaultRow);
 
 private slots:
-	void slotItemActivated(const QModelIndex & proxyIndex);
-	void slotSelectionChanged(const QItemSelection & newSelection);
-	void slotContextMenuRequested(const QModelIndex & index);
+    void slotItemActivated(const QModelIndex & proxyIndex);
+    void slotSelectionChanged(const QItemSelection & newSelection);
+    void slotContextMenuRequested(const QModelIndex & index);
+    void setCurrentItemAsDefault();
+    void updateSelectionDependentActions();
 
-	void updateSelectionDependentActions();
-
-	//these are convenience slots that provide setMetaBarPosition() and setListViewMode() (of m_widget)
-	//with int parameters so that they are able to connect directly to QAction::triggered()
-	void changeViewMode(int view_mode_index);
-	void changeMetaBarPosition(int metabar_position_index);
+    //these are convenience slots that provide setMetaBarPosition() and setListViewMode() (of m_widget)
+    //with int parameters so that they are able to connect directly to QAction::triggered()
+    void changeViewMode(int view_mode_index);
+    void changeMetaBarPosition(int metabar_position_index);
 
 private:
-	MetaListViewWidget *m_widget;
-	ProxyModel *m_proxyModel;
-	QList< QPair<QString, QString> > m_fieldMapList;
+    class ProxyModel;
+
+    MetaListViewWidget *m_widget;
+    ProxyModel *m_proxyModel;
+    QList< QPair<QString, QString> > m_fieldMapList;
+    int m_defaultRow;
 };
 
 #endif
