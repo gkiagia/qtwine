@@ -24,18 +24,19 @@
 
 class WineInstallationsListPart : public MetaListViewPart
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	WineInstallationsListPart(QObject *parent = 0);
+    WineInstallationsListPart(QObject *parent = 0);
 
 protected slots:
-	void loadModel();
-	void itemActivated(const QModelIndex & index);
+    void loadModel();
+    void itemActivated(const QModelIndex & index);
+    void saveNewDefaultItem(int defaultItemRow);
 
 private slots:
-	void addInstallation();
-	void removeInstallation();
-	void installationProperties();
+    void addInstallation();
+    void removeInstallation();
+    void installationProperties();
 };
 
 #endif

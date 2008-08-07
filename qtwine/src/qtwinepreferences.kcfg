@@ -13,4 +13,10 @@
             <default>UseKdeDefault</default>
         </entry>
     </group>
+    <group name="defaults">
+        <entry name="DefaultWineInstallation" type="Int">
+            <label>The id of the default wine installation</label>
+            <default>1</default>
+        </entry>
+    </group>
 </kcfg>

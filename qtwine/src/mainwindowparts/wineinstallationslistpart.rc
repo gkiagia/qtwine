@@ -21,6 +21,8 @@
 	<Menu name="listView_context_menu_selected" >
 		<Action name="installation_properties"/>
 		<Action name="remove_installation"/>
+                <Separator/>
+                <Action name="set_default_installation"/>
 		<Separator/>
 		<Action name="add_installation"/>
 	</Menu>
