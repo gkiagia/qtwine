@@ -20,6 +20,10 @@
 #include "shortcutsprovider.h"
 #include "../qtwineapplication.h"
 
+#include "wineapplication.h"
+#include "winedebugoptions.h"
+#include "winedlloverrides.h"
+
 #include <QSqlQuery>
 #include <QSqlRelationalTableModel>
 #include <QSqlRelation>
@@ -28,9 +32,6 @@
 
 #include <KRandom>
 
-#include <qtwine/wineapplication.h>
-#include <qtwine/winedebugoptions.h>
-#include <qtwine/winedlloverrides.h>
 using namespace QtWine;
 
 ShortcutsProvider::ShortcutsProvider(QObject *parent)

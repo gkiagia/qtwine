@@ -20,6 +20,8 @@
 #include "regfilemergedialog.h"
 #include "../qtwineapplication.h"
 
+#include "regedit.h"
+
 #include <QTextStream>
 #include <QScrollBar>
 #include <QComboBox>
@@ -33,7 +35,6 @@
 #include <KLocalizedString>
 #include <KTextBrowser>
 
-#include <qtwine/regedit.h>
 using namespace QtWine;
 
 
@@ -138,3 +139,5 @@ void RegfileMergeDialog::setConfigurationByModelRow(int row)
 {
 	comboBox->setCurrentIndex(row);
 }
+
+#include "regfilemergedialog.moc"

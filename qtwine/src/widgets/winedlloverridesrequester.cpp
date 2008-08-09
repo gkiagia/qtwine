@@ -15,11 +15,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "winedlloverridesrequester.h"
-#include <KLineEdit>
+#include "winedlloverridesedit.h"
+
 #include <QToolButton>
+
+#include <KLineEdit>
 #include <KDialog>
 #include <KLocalizedString>
-#include "winedlloverridesedit.h"
 
 using namespace QtWine;
 

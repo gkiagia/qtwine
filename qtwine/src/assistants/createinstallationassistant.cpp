@@ -22,6 +22,8 @@
 #include "commonpages.h"
 #include "../qtwineapplication.h"
 
+#include "wineinstallation.h"
+
 #include <QLabel>
 #include <QButtonGroup>
 #include <QRadioButton>
@@ -33,8 +35,6 @@
 #include <KLocalizedString>
 #include <KLineEdit>
 #include <KDialog>
-
-#include <qtwine/wineinstallation.h>
 
 
 CreateInstallationAssistant::CreateInstallationAssistant(QWidget *parent)

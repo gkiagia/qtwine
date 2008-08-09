@@ -29,7 +29,6 @@ class QLabel;
  */
 class LabelPage : public QWizardPage
 {
-	Q_OBJECT
 public:
 	LabelPage(QWidget *parent = 0, const QString & labelFieldName = QString());
 	void setText(const QString & text);
@@ -44,7 +43,6 @@ private:
  */
 class ProgressDialogPage : public QWizardPage
 {
-	Q_OBJECT
 public:
 	ProgressDialogPage(QWidget *parent = 0);
 	QProgressDialog *progressDialog;

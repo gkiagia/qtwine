@@ -19,6 +19,8 @@
  ***************************************************************************/
 #include "wineinstallationsprovider.h"
 
+#include "wineinstallation.h"
+
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QFile>
@@ -26,7 +28,6 @@
 #include <KMessage>
 #include <KLocalizedString>
 
-#include <qtwine/wineinstallation.h>
 using namespace QtWine;
 
 WineInstallationsProvider::WineInstallationsProvider(QObject *parent)

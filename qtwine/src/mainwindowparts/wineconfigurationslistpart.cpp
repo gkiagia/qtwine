@@ -22,6 +22,8 @@
 #include "../dialogs/configurationeditor.h"
 #include "../dialogs/regfilemergedialog.h"
 
+#include "wineprocess.h"
+
 #include <KDebug>
 #include <KAction>
 #include <KActionCollection>
@@ -29,8 +31,6 @@
 #include <KLocalizedString>
 #include <KFileDialog>
 #include <KRun>
-
-#include <qtwine/wineprocess.h>
 
 
 WineConfigurationsListPart::WineConfigurationsListPart(QObject *parent)

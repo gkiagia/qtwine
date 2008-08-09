@@ -21,14 +21,15 @@
 #include "../qtwineapplication.h"
 #include "../dialogs/programshortcuteditor.h"
 
+#include "wineprocess.h"
+
+#include <QSqlRecord>
+
 #include <KAction>
 #include <KActionCollection>
 #include <KIcon>
 #include <KLocalizedString>
 
-#include <QSqlRecord>
-
-#include <qtwine/wineprocess.h>
 
 ShortcutsListPart::ShortcutsListPart(QObject *parent)
     : MetaListViewPart(parent)
@@ -130,3 +131,5 @@ void ShortcutsListPart::shortcutProperties()
 
 void ShortcutsListPart::placeOnDesktop() {}
 void ShortcutsListPart::exportToScript() {}
+
+#include "shortcutslistpart.moc"

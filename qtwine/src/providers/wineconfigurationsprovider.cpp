@@ -20,6 +20,8 @@
 #include "wineconfigurationsprovider.h"
 #include "../qtwineapplication.h"
 
+#include "wineconfiguration.h"
+
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QSqlRelationalTableModel>
@@ -31,7 +33,6 @@
 #include <KLocalizedString>
 #include <KDebug>
 
-#include <qtwine/wineconfiguration.h>
 using namespace QtWine;
 
 

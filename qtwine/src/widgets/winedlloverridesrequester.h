@@ -17,9 +17,10 @@
 #ifndef WINEDLLOVERRIDESREQUESTER_H
 #define WINEDLLOVERRIDESREQUESTER_H
 
+#include "winedlloverrides.h"
 #include <KHBox>
-#include <qtwine/winedlloverrides.h>
 class WineDllOverridesRequesterPrivate;
+
 
 class WineDllOverridesRequester : public KHBox
 {

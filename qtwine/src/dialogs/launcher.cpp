@@ -20,6 +20,8 @@
 #include "launcher.h"
 #include "../qtwineapplication.h"
 
+#include "wineprocess.h"
+
 #include <QFormLayout>
 #include <QComboBox>
 #include <QGroupBox>
@@ -32,7 +34,6 @@
 #include <KLocalizedString>
 #include <KLineEdit>
 
-#include <qtwine/wineprocess.h>
 
 Launcher::Launcher(QWidget *parent)
 	: KPageDialog(parent)
@@ -275,3 +276,5 @@ void Launcher::storeSession()
 	s.endGroup();
 }
 #endif
+
+#include "launcher.moc"

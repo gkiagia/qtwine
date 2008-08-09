@@ -19,10 +19,11 @@
 #ifndef WINEDLLOVERRIDESEDIT_H
 #define WINEDLLOVERRIDESEDIT_H
 
+#include "winedlloverrides.h"
 #include <QScrollArea>
-#include <qtwine/winedlloverrides.h>
 template <class T1, class T2> class QPair;
 class WineDllOverridesEditPrivate;
+
 
 class WineDllOverridesEdit : public QScrollArea
 {
