@@ -57,23 +57,15 @@ void WineConfigurationsProvider::createFirstTimeTable()
                " name varchar(256), wineprefix varchar(1024),"
                " description varchar(1024), wineinstallation int)");
 
-    if ( QFile::exists(QDir::homePath() + "/.wine") ) {
-        WineInstallationsProvider *p = qtwineApp->wineInstallationsProvider();
-
-        // the default installation that was created in
-        // WineInstallationsProvider::createFirstTimeTable() has id == 1
-        if ( p->exists(1) ) {
-            query.prepare("insert into wine_configurations"
-                          "(id, name, wineprefix, description, wineinstallation)"
-                          " values (:id, :name, :wineprefix, :description, :wineinstallation)");
-            query.bindValue(":id", 1);
-            query.bindValue(":name", i18n("Default wine configuration"));
-            query.bindValue(":wineprefix", QDir::homePath() + "/.wine");
-            query.bindValue(":description", i18n("The default configuration that wine uses."));
-            query.bindValue(":wineinstallation", 1);
-            query.exec();
-        }
-    }
+    query.prepare("insert into wine_configurations"
+                  "(id, name, wineprefix, description, wineinstallation)"
+                  " values (:id, :name, :wineprefix, :description, :wineinstallation)");
+    query.bindValue(":id", 1);
+    query.bindValue(":name", i18n("Wine's default configuration"));
+    query.bindValue(":wineprefix", QDir::homePath() + "/.wine");
+    query.bindValue(":description", i18n("The default configuration that wine uses."));
+    query.bindValue(":wineinstallation", 1);
+    query.exec();
 }
 
 WineConfiguration WineConfigurationsProvider::configurationById(uint id) const
