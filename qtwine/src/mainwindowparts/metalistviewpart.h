@@ -69,6 +69,7 @@ protected:
     /*! Enables the concept of having one "default" item in the list. The current default item's 
      * row is indicated by \a currentDefaultRow and the action that should change the
      * default item is indicated by \a setDefaultAction.
+     * \warning do not call if a model is not set yet.
      */
     void enableDefaultItem(const QString & setDefaultAction, int currentDefaultRow);
     

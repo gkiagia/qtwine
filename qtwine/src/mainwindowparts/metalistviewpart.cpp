@@ -197,9 +197,7 @@ void MetaListViewPart::updateDefaultItemRow(int newDefaultRow)
     m_defaultRow = newDefaultRow;
     emit defaultItemRowUpdated(newDefaultRow, oldDefaultRow);
     
-    if (!model()) return; // do not proceed if the model is not set yet.
-    //This happens on the first call, when it is called from child::setupActions -> enableDefaultItem
-    //which is before the model is set
+    Q_ASSERT(m_proxyModel);
 
     QModelIndex oldDefaultIndex = m_proxyModel->mapFromSource(
                                     model()->index(oldDefaultRow, m_widget->listView()->modelColumn()) );
