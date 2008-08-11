@@ -37,17 +37,17 @@ using namespace QtWine;
 
 
 WineConfigurationsProvider::WineConfigurationsProvider(QObject *parent)
-	: AbstractSqlTableProvider(parent)
+    : AbstractSqlTableProvider(parent)
 {
-	QSqlDatabase db = QSqlDatabase::database();
-	if ( !db.tables().contains("wine_configurations") )
-		createFirstTimeTable();
+    QSqlDatabase db = QSqlDatabase::database();
+    if ( !db.tables().contains("wine_configurations") )
+        createFirstTimeTable();
 
-	QSqlRelationalTableModel *model = new QSqlRelationalTableModel();
-	model->setTable("wine_configurations");
-	model->setRelation(model->fieldIndex("wineinstallation"),
-			   QSqlRelation("wine_installations", "id", "name"));
-	setModel(model);
+    QSqlRelationalTableModel *model = new QSqlRelationalTableModel();
+    model->setTable("wine_configurations");
+    model->setRelation(model->fieldIndex("wineinstallation"),
+                    QSqlRelation("wine_installations", "id", "name"));
+    setModel(model);
         
     lockInstallations();
     connect(model, SIGNAL(beforeInsert(QSqlRecord&)), SLOT(model_beforeInsert(QSqlRecord&)) );
@@ -75,65 +75,65 @@ void WineConfigurationsProvider::createFirstTimeTable()
 
 WineConfiguration WineConfigurationsProvider::configurationById(uint id) const
 {
-	QModelIndex index = find(id);
-	if ( !index.isValid() )
-		return WineConfiguration();
+    QModelIndex index = find(id);
+    if ( !index.isValid() )
+        return WineConfiguration();
 
-	return configurationByModelRow(index.row());
+    return configurationByModelRow(index.row());
 }
 
 WineConfiguration WineConfigurationsProvider::configurationByModelRow(int row) const
 {
-	// we use another model here because the QSqlRelation hides the
-	// field "wineinstallation" from the original model
-	QSqlQueryModel qmodel;
-	qmodel.setQuery("SELECT wineprefix, wineinstallation FROM wine_configurations");
-	QSqlRecord record = qmodel.record(row);
-	return configurationFromRecord(record);
+    // we use another model here because the QSqlRelation hides the
+    // field "wineinstallation" from the original model
+    QSqlQueryModel qmodel;
+    qmodel.setQuery("SELECT wineprefix, wineinstallation FROM wine_configurations");
+    QSqlRecord record = qmodel.record(row);
+    return configurationFromRecord(record);
 }
 
 WineConfiguration WineConfigurationsProvider::configurationFromRecord(const QSqlRecord & record) const
 {
-	WineConfiguration c;
-	if ( record.isEmpty() ) return c;
+    WineConfiguration c;
+    if ( record.isEmpty() ) return c;
 
-	c.setWinePrefix(record.value("wineprefix").toString());
+    c.setWinePrefix(record.value("wineprefix").toString());
 
-	WineInstallationsProvider *p = qtwineApp->wineInstallationsProvider();
-	c.setWineInstallation( p->installationById(record.value("wineinstallation").toUInt()) );
-	return c;
+    WineInstallationsProvider *p = qtwineApp->wineInstallationsProvider();
+    c.setWineInstallation( p->installationById(record.value("wineinstallation").toUInt()) );
+    return c;
 }
 
 bool WineConfigurationsProvider::importConfiguration(const QString & name,
-					const QString & wineprefix, uint installationId)
+                                                     const QString & wineprefix, uint installationId)
 {
-	WineInstallationsProvider *p = qtwineApp->wineInstallationsProvider();
-	QModelIndex installationIdIndex = p->find(installationId);
+    WineInstallationsProvider *p = qtwineApp->wineInstallationsProvider();
+    QModelIndex installationIdIndex = p->find(installationId);
 
-	if ( !installationIdIndex.isValid() ) {
-		kDebug() << "invalid installation id";
-		return false;
-	}
+    if ( !installationIdIndex.isValid() ) {
+        kDebug() << "invalid installation id";
+        return false;
+    }
 
-	QSqlRelationalTableModel *m = static_cast<QSqlRelationalTableModel*>(model());
-	if ( KDE_ISUNLIKELY(!m->insertRow(m->rowCount())) )
-		return false;
+    QSqlRelationalTableModel *m = static_cast<QSqlRelationalTableModel*>(model());
+    if ( KDE_ISUNLIKELY(!m->insertRow(m->rowCount())) )
+        return false;
 
-	int newRow = m->rowCount()-1;
-	m->setData( m->index(newRow, m->fieldIndex("id")), generateId(name) );
-	m->setData( m->index(newRow, m->fieldIndex("name")), name );
-	m->setData( m->index(newRow, m->fieldIndex("wineprefix")), wineprefix );
+    int newRow = m->rowCount()-1;
+    m->setData( m->index(newRow, m->fieldIndex("id")), generateId(name) );
+    m->setData( m->index(newRow, m->fieldIndex("name")), name );
+    m->setData( m->index(newRow, m->fieldIndex("wineprefix")), wineprefix );
 
-	// set the "wineinstallation" field (using Qt::EditRole, so we insert the id)
-	QModelIndex index =  m->index(newRow, m->fieldIndex("wine_installations_name"));
-	m->setData( index, installationId, Qt::EditRole );
+    // set the "wineinstallation" field (using Qt::EditRole, so we insert the id)
+    QModelIndex index =  m->index(newRow, m->fieldIndex("wine_installations_name"));
+    m->setData( index, installationId, Qt::EditRole );
 
-	// set the "wineinstallation" field (using Qt::DisplayRole, so we insert the name)
-	QModelIndex installationNameIndex = // points to the "name" field of the installation.
-		p->model()->index(installationIdIndex.row(), p->model()->fieldIndex("name"));
-	m->setData( index, installationNameIndex.data(Qt::DisplayRole), Qt::DisplayRole );
+    // set the "wineinstallation" field (using Qt::DisplayRole, so we insert the name)
+    QModelIndex installationNameIndex = // points to the "name" field of the installation.
+        p->model()->index(installationIdIndex.row(), p->model()->fieldIndex("name"));
+    m->setData( index, installationNameIndex.data(Qt::DisplayRole), Qt::DisplayRole );
 
-	return true;
+    return true;
 }
 
 

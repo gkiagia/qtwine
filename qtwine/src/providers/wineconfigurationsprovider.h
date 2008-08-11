@@ -27,12 +27,12 @@ class WineConfigurationsProvider : public AbstractSqlTableProvider
 {
     Q_OBJECT
 public:
-	WineConfigurationsProvider(QObject *parent = 0);
+    WineConfigurationsProvider(QObject *parent = 0);
 
-	QtWine::WineConfiguration configurationById(uint id) const;
-	QtWine::WineConfiguration configurationByModelRow(int row) const;
+    QtWine::WineConfiguration configurationById(uint id) const;
+    QtWine::WineConfiguration configurationByModelRow(int row) const;
 
-	bool importConfiguration(const QString & name, const QString & wineprefix, uint installationId);
+    bool importConfiguration(const QString & name, const QString & wineprefix, uint installationId);
 
 private slots:
     void model_beforeInsert(QSqlRecord & record);
@@ -40,8 +40,8 @@ private slots:
     void model_beforeDelete(int row);
 
 private:
-	QtWine::WineConfiguration configurationFromRecord(const QSqlRecord & record) const;
-	void createFirstTimeTable();
+    QtWine::WineConfiguration configurationFromRecord(const QSqlRecord & record) const;
+    void createFirstTimeTable();
     void lockInstallations();
 };
 

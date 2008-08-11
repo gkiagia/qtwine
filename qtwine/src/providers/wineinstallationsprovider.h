@@ -27,26 +27,26 @@ class WineConfigurationsProvider;
 
 class WineInstallationsProvider : public AbstractSqlTableProvider
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	WineInstallationsProvider(QObject *parent = 0);
+    WineInstallationsProvider(QObject *parent = 0);
 
-	QtWine::WineInstallation installationById(uint id) const;
-	QtWine::WineInstallation installationByModelRow(int row) const;
-	QtWine::WineInstallation installationFromRecord(const QSqlRecord & record) const;
+    QtWine::WineInstallation installationById(uint id) const;
+    QtWine::WineInstallation installationByModelRow(int row) const;
+    QtWine::WineInstallation installationFromRecord(const QSqlRecord & record) const;
 
-	bool importInstallation(const QString & name, const QtWine::WineInstallation & installation);
-	//bool removeInstallation(uint id); // TODO maybe remove, not used
+    bool importInstallation(const QString & name, const QtWine::WineInstallation & installation);
+    //bool removeInstallation(uint id); // TODO maybe remove, not used
 
     bool installationIsLocked(int id) const;
 
 private slots:
-	void model_beforeInsert(QSqlRecord & record);
-	void model_beforeUpdate(int row, QSqlRecord & record);
+    void model_beforeInsert(QSqlRecord & record);
+    void model_beforeUpdate(int row, QSqlRecord & record);
 
 private:
-	void createFirstTimeTable();
-	void updateVersionFields();
+    void createFirstTimeTable();
+    void updateVersionFields();
     void updateDistroInstallation();
     
     // this is to lock installations so that they cannot be
