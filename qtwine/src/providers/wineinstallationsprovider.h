@@ -21,7 +21,9 @@
 #define WINEINSTALLATIONSPROVIDER_H
 
 #include "abstractsqltableprovider.h"
+#include <QHash>
 namespace QtWine { class WineInstallation; }
+class WineConfigurationsProvider;
 
 class WineInstallationsProvider : public AbstractSqlTableProvider
 {
@@ -36,6 +38,8 @@ public:
 	bool importInstallation(const QString & name, const QtWine::WineInstallation & installation);
 	//bool removeInstallation(uint id); // TODO maybe remove, not used
 
+    bool installationIsLocked(int id) const;
+
 private slots:
 	void model_beforeInsert(QSqlRecord & record);
 	void model_beforeUpdate(int row, QSqlRecord & record);
@@ -44,6 +48,13 @@ private:
 	void createFirstTimeTable();
 	void updateVersionFields();
     void updateDistroInstallation();
+    
+    // this is to lock installations so that they cannot be
+    // deleted because they are used by some configuration
+    friend class WineConfigurationsProvider;
+    void lockInstallation(int id);
+    void unlockInstallation(int id);
+    QHash<int, int> m_lockedInstallations;
 };
 
 #endif

@@ -30,6 +30,7 @@
 #include <KActionCollection>
 #include <KIcon>
 #include <KLocalizedString>
+#include <KMessageBox>
 
 
 WineInstallationsListPart::WineInstallationsListPart(QObject *parent)
@@ -106,8 +107,15 @@ void WineInstallationsListPart::addInstallation()
 
 void WineInstallationsListPart::removeInstallation()
 {
-    QModelIndex index = selectedIndex();
-    model()->removeRow(index.row());
+    int row = selectedIndex().row();
+
+    if ( installationsProvider->installationIsLocked(model()->record(row).value("id").toInt()) ) {
+        KMessageBox::sorry(widget(), i18n("Sorry but you cannot delete this wine installation "
+                                    "because it is currently used by some wine configuration.") );
+        return;
+    }
+
+    model()->removeRow(row);
 }
 
 void WineInstallationsListPart::installationProperties()

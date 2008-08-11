@@ -48,6 +48,11 @@ WineConfigurationsProvider::WineConfigurationsProvider(QObject *parent)
 	model->setRelation(model->fieldIndex("wineinstallation"),
 			   QSqlRelation("wine_installations", "id", "name"));
 	setModel(model);
+        
+    lockInstallations();
+    connect(model, SIGNAL(beforeInsert(QSqlRecord&)), SLOT(model_beforeInsert(QSqlRecord&)) );
+    connect(model, SIGNAL(beforeUpdate(int, QSqlRecord&)), SLOT(model_beforeUpdate(int, QSqlRecord&)) );
+    connect(model, SIGNAL(beforeDelete(int)), SLOT(model_beforeDelete(int)) );
 }
 
 void WineConfigurationsProvider::createFirstTimeTable()
@@ -131,3 +136,32 @@ bool WineConfigurationsProvider::importConfiguration(const QString & name,
 	return true;
 }
 
+
+/* The following functions are responsible for locking installations so that they cannot be deleted.
+This is because if an installation is deleted while a configuration is using it, the configuration
+will disappear from the view of the user but remain forever in the database.
+*/
+
+void WineConfigurationsProvider::lockInstallations()
+{
+    for (int i=0; i < model()->rowCount(); ++i)
+        installationsProvider->lockInstallation(model()->record(i).value("id").toInt());
+}
+
+void WineConfigurationsProvider::model_beforeInsert(QSqlRecord & record)
+{
+    installationsProvider->lockInstallation(record.value("id").toInt());
+}
+
+void WineConfigurationsProvider::model_beforeUpdate(int row, QSqlRecord & record)
+{
+    installationsProvider->unlockInstallation(model()->record(row).value("id").toInt());
+    installationsProvider->lockInstallation(record.value("id").toInt());
+}
+
+void WineConfigurationsProvider::model_beforeDelete(int row)
+{
+    installationsProvider->unlockInstallation(model()->record(row).value("id").toInt());
+}
+    
+#include "wineconfigurationsprovider.moc"

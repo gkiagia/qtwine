@@ -154,6 +154,22 @@ bool WineInstallationsProvider::removeInstallation(uint id)
 }
 #endif
 
+bool WineInstallationsProvider::installationIsLocked(int id) const
+{
+    return m_lockedInstallations.value(id) != 0;
+}
+
+void WineInstallationsProvider::lockInstallation(int id)
+{
+    m_lockedInstallations[id]++;
+}
+
+void WineInstallationsProvider::unlockInstallation(int id)
+{
+    if ( m_lockedInstallations.value(id) > 0 )
+        m_lockedInstallations[id]--;
+}
+
 void WineInstallationsProvider::model_beforeInsert(QSqlRecord & record)
 {
     WineInstallation i = installationFromRecord(record);
