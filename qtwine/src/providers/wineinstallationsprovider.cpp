@@ -100,7 +100,7 @@ void WineInstallationsProvider::updateDistroInstallation()
     model()->setRecord(0, record); //put the new information back to the model
 }
 
-WineInstallation WineInstallationsProvider::installationById(uint id) const
+WineInstallation WineInstallationsProvider::installationById(int id) const
 {
     int row = idToRow(id);
     if ( row == -1 )

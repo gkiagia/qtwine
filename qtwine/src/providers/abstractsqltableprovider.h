@@ -31,14 +31,14 @@ public:
 	virtual ~AbstractSqlTableProvider();
 
 	inline QSqlTableModel *model() const;
-	inline bool exists(uint id) const;
+    inline bool exists(int id) const;
 
     int idToRow(int id) const;
     int rowToId(int row) const;
     QSqlRecord recordById(int id) const;
 
 protected:
-	uint generateId(const QString & name) const;
+    int generateId(const QString & name) const;
 	//bool submitChanges(); TODO maybe remove, not used
 	void setModel(QSqlTableModel *model);
 
@@ -51,7 +51,7 @@ inline QSqlTableModel *AbstractSqlTableProvider::model() const
 	return m_sqlModel;
 }
 
-inline bool AbstractSqlTableProvider::exists(uint id) const
+inline bool AbstractSqlTableProvider::exists(int id) const
 {
     return idToRow(id) != -1;
 }

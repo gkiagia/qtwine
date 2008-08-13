@@ -32,7 +32,7 @@ public:
 
 public slots:
 	void accept();
-	void setConfiguration(uint id); // ### not used. remove?
+	void setConfiguration(int id); // ### not used. remove?
 	void setConfigurationByModelRow(int row);
 
 private:

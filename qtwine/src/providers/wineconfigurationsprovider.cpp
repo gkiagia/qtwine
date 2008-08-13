@@ -73,7 +73,7 @@ void WineConfigurationsProvider::createFirstTimeTable()
     query.exec();
 }
 
-WineConfiguration WineConfigurationsProvider::configurationById(uint id) const
+WineConfiguration WineConfigurationsProvider::configurationById(int id) const
 {
     int row = idToRow(id);
     if ( row == -1 )
@@ -100,12 +100,12 @@ WineConfiguration WineConfigurationsProvider::configurationFromRecord(const QSql
     c.setWinePrefix(record.value("wineprefix").toString());
 
     WineInstallationsProvider *p = qtwineApp->wineInstallationsProvider();
-    c.setWineInstallation( p->installationById(record.value("wineinstallation").toUInt()) );
+    c.setWineInstallation( p->installationById(record.value("wineinstallation").toInt()) );
     return c;
 }
 
 bool WineConfigurationsProvider::importConfiguration(const QString & name,
-                                                     const QString & wineprefix, uint installationId)
+                                                     const QString & wineprefix, int installationId)
 {
     WineInstallationsProvider *p = installationsProvider; //just a shorter name :)
     int installationRow = p->idToRow(installationId);

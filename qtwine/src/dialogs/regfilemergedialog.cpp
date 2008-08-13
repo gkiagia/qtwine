@@ -130,7 +130,7 @@ void RegfileMergeDialog::accept()
 	QDialog::accept();
 }
 
-void RegfileMergeDialog::setConfiguration(uint id)
+void RegfileMergeDialog::setConfiguration(int id)
 {
     setConfigurationByModelRow(configurationsProvider->idToRow(id));
 }

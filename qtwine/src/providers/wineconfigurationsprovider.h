@@ -29,10 +29,10 @@ class WineConfigurationsProvider : public AbstractSqlTableProvider
 public:
     WineConfigurationsProvider(QObject *parent = 0);
 
-    QtWine::WineConfiguration configurationById(uint id) const;
+    QtWine::WineConfiguration configurationById(int id) const;
     QtWine::WineConfiguration configurationByModelRow(int row) const;
 
-    bool importConfiguration(const QString & name, const QString & wineprefix, uint installationId);
+    bool importConfiguration(const QString & name, const QString & wineprefix, int installationId);
 
 private slots:
     void model_beforeInsert(QSqlRecord & record);

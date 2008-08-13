@@ -31,7 +31,7 @@ class WineInstallationsProvider : public AbstractSqlTableProvider
 public:
     WineInstallationsProvider(QObject *parent = 0);
 
-    QtWine::WineInstallation installationById(uint id) const;
+    QtWine::WineInstallation installationById(int id) const;
     QtWine::WineInstallation installationByModelRow(int row) const;
     QtWine::WineInstallation installationFromRecord(const QSqlRecord & record) const;
 

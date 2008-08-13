@@ -27,6 +27,8 @@
 #include <QSqlError>
 #include <QSqlRecord>
 
+#include <climits>
+
 AbstractSqlTableProvider::~AbstractSqlTableProvider()
 {
 	delete m_sqlModel;
@@ -60,13 +62,16 @@ QSqlRecord AbstractSqlTableProvider::recordById(int id) const
  * the same name or two names have the same hash, then this function
  * uses qrand() until it finds a unique ID.
  */
-uint AbstractSqlTableProvider::generateId(const QString & name) const
+int AbstractSqlTableProvider::generateId(const QString & name) const
 {
-    uint id = qHash(name);
+    uint unsigned_id = qHash(name);
+
+    //We take out the MS bit so that the id is always in the range 0 <= id <= INT_MAX
+    int id = unsigned_id & INT_MAX; // that should take out the MS bit
 
     if ( id == 1 or exists(id) ) {
         do
-            id = KRandom::random();
+            id = KRandom::random() & INT_MAX;
         while( id == 1 or exists(id) );
     }
 
