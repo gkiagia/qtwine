@@ -78,18 +78,18 @@ void WineInstallationsListPart::loadModel()
     
     /* set default item */
     int defaultId = QtWinePreferences::defaultWineInstallation();
-    QModelIndex index = installationsProvider->find(defaultId);
+    int defaultRow = installationsProvider->idToRow(defaultId);
 
-    if ( KDE_ISUNLIKELY(!index.isValid()) )
+    if ( KDE_ISUNLIKELY(defaultRow == -1) )
         kWarning() << "Default item has invalid index";
 
-    enableDefaultItem("set_default_installation", index.isValid() ? index.row() : 0);
+    enableDefaultItem("set_default_installation", defaultRow == -1 ? defaultRow : 0);
     connect(this, SIGNAL(defaultItemRowUpdated(int, int)), SLOT(saveNewDefaultItem(int)) );
 }
 
 void WineInstallationsListPart::saveNewDefaultItem(int defaultItemRow)
 {
-    int id = model()->record(defaultItemRow).value("id").toInt();
+    int id = installationsProvider->rowToId(defaultItemRow);
     Q_ASSERT(id > 0);
     QtWinePreferences::setDefaultWineInstallation(id);
     QtWinePreferences::self()->writeConfig();
@@ -109,7 +109,7 @@ void WineInstallationsListPart::removeInstallation()
 {
     int row = selectedIndex().row();
 
-    if ( installationsProvider->installationIsLocked(model()->record(row).value("id").toInt()) ) {
+    if ( installationsProvider->installationIsLocked(installationsProvider->rowToId(row)) ) {
         KMessageBox::sorry(widget(), i18n("Sorry but you cannot delete this wine installation "
                                     "because it is currently used by some wine configuration.") );
         return;

@@ -21,6 +21,7 @@
 #define ABSTRACTSQLTABLEPROVIDER_H
 
 #include <QSqlTableModel>
+class QSqlRecord;
 
 class AbstractSqlTableProvider : public QObject
 {
@@ -31,7 +32,10 @@ public:
 
 	inline QSqlTableModel *model() const;
 	inline bool exists(uint id) const;
-	QModelIndex find(uint id) const;
+
+    int idToRow(int id) const;
+    int rowToId(int row) const;
+    QSqlRecord recordById(int id) const;
 
 protected:
 	uint generateId(const QString & name) const;
@@ -49,7 +53,7 @@ inline QSqlTableModel *AbstractSqlTableProvider::model() const
 
 inline bool AbstractSqlTableProvider::exists(uint id) const
 {
-	return find(id).isValid();
+    return idToRow(id) != -1;
 }
 
 #endif

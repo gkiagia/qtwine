@@ -132,7 +132,7 @@ void RegfileMergeDialog::accept()
 
 void RegfileMergeDialog::setConfiguration(uint id)
 {
-	setConfigurationByModelRow(configurationsProvider->find(id).row());
+    setConfigurationByModelRow(configurationsProvider->idToRow(id));
 }
 
 void RegfileMergeDialog::setConfigurationByModelRow(int row)

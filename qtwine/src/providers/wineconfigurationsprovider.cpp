@@ -75,11 +75,11 @@ void WineConfigurationsProvider::createFirstTimeTable()
 
 WineConfiguration WineConfigurationsProvider::configurationById(uint id) const
 {
-    QModelIndex index = find(id);
-    if ( !index.isValid() )
+    int row = idToRow(id);
+    if ( row == -1 )
         return WineConfiguration();
 
-    return configurationByModelRow(index.row());
+    return configurationByModelRow(row);
 }
 
 WineConfiguration WineConfigurationsProvider::configurationByModelRow(int row) const
@@ -107,10 +107,10 @@ WineConfiguration WineConfigurationsProvider::configurationFromRecord(const QSql
 bool WineConfigurationsProvider::importConfiguration(const QString & name,
                                                      const QString & wineprefix, uint installationId)
 {
-    WineInstallationsProvider *p = qtwineApp->wineInstallationsProvider();
-    QModelIndex installationIdIndex = p->find(installationId);
+    WineInstallationsProvider *p = installationsProvider; //just a shorter name :)
+    int installationRow = p->idToRow(installationId);
 
-    if ( !installationIdIndex.isValid() ) {
+    if ( installationRow == -1 ) {
         kDebug() << "invalid installation id";
         return false;
     }
@@ -130,7 +130,7 @@ bool WineConfigurationsProvider::importConfiguration(const QString & name,
 
     // set the "wineinstallation" field (using Qt::DisplayRole, so we insert the name)
     QModelIndex installationNameIndex = // points to the "name" field of the installation.
-        p->model()->index(installationIdIndex.row(), p->model()->fieldIndex("name"));
+        p->model()->index(installationRow, p->model()->fieldIndex("name"));
     m->setData( index, installationNameIndex.data(Qt::DisplayRole), Qt::DisplayRole );
 
     return true;

@@ -102,11 +102,11 @@ void WineInstallationsProvider::updateDistroInstallation()
 
 WineInstallation WineInstallationsProvider::installationById(uint id) const
 {
-    QModelIndex index = find(id);
-    if ( !index.isValid() )
+    int row = idToRow(id);
+    if ( row == -1 )
         return WineInstallation();
 
-    return installationByModelRow(index.row());
+    return installationByModelRow(row);
 }
 
 WineInstallation WineInstallationsProvider::installationByModelRow(int row) const

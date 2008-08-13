@@ -25,19 +25,32 @@
 
 #include <QHash>
 #include <QSqlError>
+#include <QSqlRecord>
 
 AbstractSqlTableProvider::~AbstractSqlTableProvider()
 {
 	delete m_sqlModel;
 }
 
-QModelIndex AbstractSqlTableProvider::find(uint id) const
+int AbstractSqlTableProvider::idToRow(int id) const
 {
-	Q_ASSERT(m_sqlModel);
-	int column = 0;
-	QModelIndex start = m_sqlModel->index(0, column);
-	QModelIndexList results = m_sqlModel->match(start, Qt::DisplayRole, QVariant(QString::number(id)) );
-	return (results.size() > 0) ? results.at(0) : QModelIndex();
+    Q_ASSERT(m_sqlModel);
+    int column = 0;
+    QModelIndex start = m_sqlModel->index(0, column);
+    QModelIndexList results = m_sqlModel->match(start, Qt::DisplayRole, QVariant(QString::number(id)) );
+    return (results.size() > 0) ? results.at(0).row() : -1;
+}
+
+int AbstractSqlTableProvider::rowToId(int row) const
+{
+    Q_ASSERT(m_sqlModel);
+    return m_sqlModel->record(row).value("id").toInt();
+}
+
+QSqlRecord AbstractSqlTableProvider::recordById(int id) const
+{
+    Q_ASSERT(m_sqlModel);
+    return m_sqlModel->record(idToRow(id));
 }
 
 /*! Generates a unique identifier for an item.
