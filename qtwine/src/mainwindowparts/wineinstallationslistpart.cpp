@@ -54,7 +54,7 @@ WineInstallationsListPart::WineInstallationsListPart(QObject *parent)
     connect(remove_installation, SIGNAL(triggered(bool)), SLOT(removeInstallation()) );
     actionCollection()->addAction("remove_installation", remove_installation);
     addSelectionDependentAction("remove_installation");
-    addDefaultItemDependentAction("remove_installation", false /*disabled when the default item is selected*/);
+    addDefaultItemDependentAction("remove_installation", false); //disabled when the default item is selected
 
     KAction *installation_properties = new KAction(KIcon("document-properties"),
                                                    i18n("Properties"), this);
@@ -90,7 +90,7 @@ void WineInstallationsListPart::loadModel()
 void WineInstallationsListPart::saveNewDefaultItem(int defaultItemRow)
 {
     int id = installationsProvider->rowToId(defaultItemRow);
-    Q_ASSERT(id > 0);
+    Q_ASSERT(id >= 0);
     QtWinePreferences::setDefaultWineInstallation(id);
     QtWinePreferences::self()->writeConfig();
 }

@@ -1,21 +1,21 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE kpartgui SYSTEM 'kpartgui.dtd'>
 <gui version="1" name="qtwine" >
- <ToolBar noMerge="1" name="mainToolBar" >
-  <Action name="installWindowsApp" />
-  <Action name="runCommand" />
-  <Separator name="separator_0" />
-  <Merge/>
-  <Separator name="separator_1" />
-  <Action name="file_quit" />
-  <text>Main Toolbar</text>
- </ToolBar>
- <MenuBar>
-  <Menu name="file" >
-   <Action name="installWindowsApp" />
-  </Menu>
-  <Merge/>
-  <Menu name="settings" />
-  <Menu name="help" />
- </MenuBar>
+    <ToolBar noMerge="1" name="mainToolBar" >
+        <Action name="installWindowsApp" />
+        <Action name="runCommand" />
+        <Separator name="separator_0" />
+        <Merge/>
+        <Separator name="separator_1" />
+        <Action name="file_quit" />
+        <text>Main Toolbar</text>
+    </ToolBar>
+    <MenuBar>
+        <Menu name="file" >
+            <Action name="installWindowsApp" />
+        </Menu>
+        <Merge/>
+        <Menu name="settings" />
+        <Menu name="help" />
+    </MenuBar>
 </gui>

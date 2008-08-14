@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
 <gui name="wineinstallationspart" version="1">
-	<ToolBar name="mainToolBar" >
-		<Action name="add_installation"/>
-	</ToolBar>
-	<MenuBar>
-		<Menu name="viewMenu">
-			<text>View</text>
-			<Action name="view_mode"/>
-			<Action name="metabar_position"/>
-		</Menu>
-		<Menu name="installationMenu" >
-			<text>Installation</text>
-			<Action name="add_installation"/>
-			<Separator/>
-			<Action name="remove_installation"/>
-			<Action name="installation_properties"/>
-		</Menu>
-	</MenuBar>
-	<Menu name="listView_context_menu_selected" >
-		<Action name="installation_properties"/>
-		<Action name="remove_installation"/>
-                <Separator/>
-                <Action name="set_default_installation"/>
-		<Separator/>
-		<Action name="add_installation"/>
-	</Menu>
-	<Menu name="listView_context_menu_deselected" >
-		<Action name="add_installation"/>
-	</Menu>
+    <ToolBar name="mainToolBar" >
+        <Action name="add_installation"/>
+    </ToolBar>
+    <MenuBar>
+        <Menu name="viewMenu">
+            <text>View</text>
+            <Action name="view_mode"/>
+            <Action name="metabar_position"/>
+        </Menu>
+        <Menu name="installationMenu" >
+            <text>Installation</text>
+            <Action name="add_installation"/>
+            <Separator/>
+            <Action name="remove_installation"/>
+            <Action name="installation_properties"/>
+        </Menu>
+    </MenuBar>
+    <Menu name="listView_context_menu_selected" >
+        <Action name="installation_properties"/>
+        <Action name="remove_installation"/>
+        <Separator/>
+        <Action name="set_default_installation"/>
+        <Separator/>
+        <Action name="add_installation"/>
+    </Menu>
+    <Menu name="listView_context_menu_deselected" >
+        <Action name="add_installation"/>
+    </Menu>
 </gui>

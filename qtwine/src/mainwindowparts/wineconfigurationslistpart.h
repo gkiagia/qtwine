@@ -24,34 +24,34 @@
 
 class WineConfigurationsListPart : public MetaListViewPart
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	WineConfigurationsListPart(QObject *parent = 0);
+    WineConfigurationsListPart(QObject *parent = 0);
 
 protected slots:
-	void loadModel();
-	void itemActivated(const QModelIndex & index);
+    void loadModel();
+    void itemActivated(const QModelIndex & index);
 
 private slots:
-	void createConfiguration();
-	void deleteConfiguration();
-	void configurationProperties();
-	void virtualReboot();
-	void importRegfile();
-	void browseCDrive();
+    void createConfiguration();
+    void deleteConfiguration();
+    void configurationProperties();
+    void virtualReboot();
+    void importRegfile();
+    void browseCDrive();
 
-	void winelib_winecfg();
-	void winelib_regedit();
-	void winelib_taskmgr();
-	void winelib_cmd();
-	void winelib_control();
-	void winelib_uninstaller();
+    void winelib_winecfg();
+    void winelib_regedit();
+    void winelib_taskmgr();
+    void winelib_cmd();
+    void winelib_control();
+    void winelib_uninstaller();
 
     void saveNewDefaultItem(int defaultItemRow);
 
 private:
-	void runWinelibTool(const QString & name);
-	void setupActions();
+    void runWinelibTool(const QString & name);
+    void setupActions();
 };
 
 #endif

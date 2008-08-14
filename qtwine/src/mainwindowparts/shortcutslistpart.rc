@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
 <gui name="shortcutspart" version="1">
-	<ToolBar name="mainToolBar" >
-		<Action name="create_shortcut"/>
-	</ToolBar>
-	<MenuBar>
-		<Menu name="viewMenu">
-			<text>View</text>
-			<Action name="view_mode"/>
-			<Action name="metabar_position"/>
-		</Menu>
-		<Menu name="shortcutMenu" >
-			<text>Shortcut</text>
-			<Action name="create_shortcut"/>
-			<Separator/>
-			<Action name="run_shortcut"/>
-			<Action name="shortcut_properties"/>
-			<Action name="delete_shortcut"/>
-			<Separator/>
-			<Action name="place_shortcut_on_desktop"/>
-			<Action name="export_shortcut_to_script"/>
-		</Menu>
-	</MenuBar>
-	<Menu name="listView_context_menu_selected" >
-		<Action name="run_shortcut"/>
-		<Action name="shortcut_properties"/>
-		<Action name="delete_shortcut"/>
-		<Separator/>
-		<Action name="place_shortcut_on_desktop"/>
-		<Action name="export_shortcut_to_script"/>
-		<Separator/>
-		<Action name="create_shortcut"/>
-	</Menu>
-	<Menu name="listView_context_menu_deselected" >
-		<Action name="create_shortcut"/>
-	</Menu>
+    <ToolBar name="mainToolBar" >
+        <Action name="create_shortcut"/>
+    </ToolBar>
+    <MenuBar>
+        <Menu name="viewMenu">
+            <text>View</text>
+            <Action name="view_mode"/>
+            <Action name="metabar_position"/>
+        </Menu>
+        <Menu name="shortcutMenu" >
+            <text>Shortcut</text>
+            <Action name="create_shortcut"/>
+            <Separator/>
+            <Action name="run_shortcut"/>
+            <Action name="shortcut_properties"/>
+            <Action name="delete_shortcut"/>
+            <Separator/>
+            <Action name="place_shortcut_on_desktop"/>
+            <Action name="export_shortcut_to_script"/>
+        </Menu>
+    </MenuBar>
+    <Menu name="listView_context_menu_selected" >
+        <Action name="run_shortcut"/>
+        <Action name="shortcut_properties"/>
+        <Action name="delete_shortcut"/>
+        <Separator/>
+        <Action name="place_shortcut_on_desktop"/>
+        <Action name="export_shortcut_to_script"/>
+        <Separator/>
+        <Action name="create_shortcut"/>
+    </Menu>
+    <Menu name="listView_context_menu_deselected" >
+        <Action name="create_shortcut"/>
+    </Menu>
 </gui>

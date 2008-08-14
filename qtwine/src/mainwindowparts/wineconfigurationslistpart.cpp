@@ -35,68 +35,68 @@
 
 
 WineConfigurationsListPart::WineConfigurationsListPart(QObject *parent)
-	: MetaListViewPart(parent)
+    : MetaListViewPart(parent)
 {
-	/* define sql table fields to appear on the metabar */
-	addMetabarFieldMapping(i18n("Name"), "name");
-	addMetabarFieldMapping(i18n("WINEPREFIX"), "wineprefix");
-	addMetabarFieldMapping(i18n("Uses installation"), "wine_installations_name");
-	addMetabarFieldMapping(i18n("Description/Notes"), "description");
+    /* define sql table fields to appear on the metabar */
+    addMetabarFieldMapping(i18n("Name"), "name");
+    addMetabarFieldMapping(i18n("WINEPREFIX"), "wineprefix");
+    addMetabarFieldMapping(i18n("Uses installation"), "wine_installations_name");
+    addMetabarFieldMapping(i18n("Description/Notes"), "description");
 
-	setupActions();
-	setXMLFile("wineconfigurationslistpart.rc");
+    setupActions();
+    setXMLFile("wineconfigurationslistpart.rc");
 }
 
 void WineConfigurationsListPart::itemActivated(const QModelIndex & index)
 {
-	ConfigurationEditor(index, widget()).exec();
+    ConfigurationEditor(index, widget()).exec();
 }
 
 void WineConfigurationsListPart::setupActions()
 {
-	KAction *create_configuration = new KAction(KIcon("list-add"),
-						    i18n("Create new wine configuration"), this);
-	connect(create_configuration, SIGNAL(triggered(bool)), SLOT(createConfiguration()) );
-	actionCollection()->addAction("create_configuration", create_configuration);
+    KAction *create_configuration = new KAction(KIcon("list-add"),
+                                                i18n("Create new wine configuration"), this);
+    connect(create_configuration, SIGNAL(triggered(bool)), SLOT(createConfiguration()) );
+    actionCollection()->addAction("create_configuration", create_configuration);
 
-	KAction *delete_configuration = new KAction(KIcon("edit-delete"), i18n("Delete"), this);
-	connect(delete_configuration, SIGNAL(triggered(bool)), SLOT(deleteConfiguration()) );
-	actionCollection()->addAction("delete_configuration", delete_configuration);
-	addSelectionDependentAction("delete_configuration");
+    KAction *delete_configuration = new KAction(KIcon("edit-delete"), i18n("Delete"), this);
+    connect(delete_configuration, SIGNAL(triggered(bool)), SLOT(deleteConfiguration()) );
+    actionCollection()->addAction("delete_configuration", delete_configuration);
+    addSelectionDependentAction("delete_configuration");
     addDefaultItemDependentAction("delete_configuration", false); //disabled when the default item is selected
 
-	KAction *configuration_properties = new KAction(KIcon("document-properties"),
-			 				i18n("Properties"), this);
-	connect(configuration_properties, SIGNAL(triggered(bool)), SLOT(configurationProperties()) );
-	actionCollection()->addAction("configuration_properties", configuration_properties);
-	addSelectionDependentAction("configuration_properties");
+    KAction *configuration_properties = new KAction(KIcon("document-properties"),
+                                                    i18n("Properties"), this);
+    connect(configuration_properties, SIGNAL(triggered(bool)), SLOT(configurationProperties()) );
+    actionCollection()->addAction("configuration_properties", configuration_properties);
+    addSelectionDependentAction("configuration_properties");
 
-	KAction *virtual_reboot = new KAction(KIcon("system-restart"), i18n("Do a virtual reboot"), this);
-	connect(virtual_reboot, SIGNAL(triggered(bool)), SLOT(virtualReboot()) );
-	actionCollection()->addAction("virtual_reboot", virtual_reboot);
-	addSelectionDependentAction("virtual_reboot");
+    KAction *virtual_reboot = new KAction(KIcon("system-restart"), i18n("Do a virtual reboot"), this);
+    connect(virtual_reboot, SIGNAL(triggered(bool)), SLOT(virtualReboot()) );
+    actionCollection()->addAction("virtual_reboot", virtual_reboot);
+    addSelectionDependentAction("virtual_reboot");
 
-	KAction *import_regfile = new KAction(KIcon("document-import"),
-					       i18n("Import a registry file..."), this);
-	connect(import_regfile, SIGNAL(triggered(bool)), SLOT(importRegfile()) );
-	actionCollection()->addAction("import_regfile", import_regfile);
-	addSelectionDependentAction("import_regfile");
+    KAction *import_regfile = new KAction(KIcon("document-import"),
+                                          i18n("Import a registry file..."), this);
+    connect(import_regfile, SIGNAL(triggered(bool)), SLOT(importRegfile()) );
+    actionCollection()->addAction("import_regfile", import_regfile);
+    addSelectionDependentAction("import_regfile");
 
-	KAction *browse_c_drive = new KAction(KIcon("document-open-folder"),
-					      i18n("Browse the virtual C: drive"), this);
-	connect(browse_c_drive, SIGNAL(triggered(bool)), SLOT(browseCDrive()) );
-	actionCollection()->addAction("browse_c_drive", browse_c_drive);
-	addSelectionDependentAction("browse_c_drive");
+    KAction *browse_c_drive = new KAction(KIcon("document-open-folder"),
+                                          i18n("Browse the virtual C: drive"), this);
+    connect(browse_c_drive, SIGNAL(triggered(bool)), SLOT(browseCDrive()) );
+    actionCollection()->addAction("browse_c_drive", browse_c_drive);
+    addSelectionDependentAction("browse_c_drive");
         
     KAction *set_default_configuration = new KAction(KIcon("bookmark-new"),
                                                     i18n("Set this configuration as default"), this);
     actionCollection()->addAction("set_default_configuration", set_default_configuration);
 
 #define WINELIB_ACTION(tool, icon, description) \
-	KAction *run_winelib_##tool = new KAction(icon, description, this); \
-	connect(run_winelib_##tool, SIGNAL(triggered(bool)), SLOT(winelib_##tool()) ); \
-	actionCollection()->addAction("run_winelib_"#tool, run_winelib_##tool); \
-	addSelectionDependentAction("run_winelib_"#tool);
+    KAction *run_winelib_##tool = new KAction(icon, description, this); \
+    connect(run_winelib_##tool, SIGNAL(triggered(bool)), SLOT(winelib_##tool()) ); \
+    actionCollection()->addAction("run_winelib_"#tool, run_winelib_##tool); \
+    addSelectionDependentAction("run_winelib_"#tool);
 
     //tools
     WINELIB_ACTION(winecfg, KIcon("wine"), i18n("Wine's settings"))
@@ -149,18 +149,18 @@ void WineConfigurationsListPart::virtualReboot() {}
 
 void WineConfigurationsListPart::importRegfile()
 {
-	KUrl regfile = KFileDialog::getOpenUrl(
-				KUrl("kfiledialog:///<regfileopen>"),
-				i18n("*.reg|Windows registry files (*.reg)"),
-				widget(),
-				i18n("Choose a registry file to merge")
-			);
+    KUrl regfile = KFileDialog::getOpenUrl(
+                        KUrl("kfiledialog:///<regfileopen>"),
+                        i18n("*.reg|Windows registry files (*.reg)"),
+                        widget(),
+                        i18n("Choose a registry file to merge")
+                    );
 
-	if ( !regfile.url().isEmpty() ) {
-		RegfileMergeDialog d(regfile, widget());
-		d.setConfigurationByModelRow( selectedIndex().row() );
-		d.exec();
-	}
+    if ( !regfile.url().isEmpty() ) {
+        RegfileMergeDialog d(regfile, widget());
+        d.setConfigurationByModelRow( selectedIndex().row() );
+        d.exec();
+    }
 }
 
 void WineConfigurationsListPart::browseCDrive()
@@ -176,17 +176,17 @@ void WineConfigurationsListPart::browseCDrive()
  */
 void WineConfigurationsListPart::runWinelibTool(const QString & name)
 {
-	Q_ASSERT(selectedIndex().isValid());
+    Q_ASSERT(selectedIndex().isValid());
 
-	using namespace QtWine;
-	WineConfiguration c = qtwineApp->wineConfigurationsProvider()
-					->configurationByModelRow(selectedIndex().row());
-	WineApplication a(name, c);
-	if (name == "cmd")
-		a.setIsConsoleApplication(true);
-	WineProcess *p = new WineProcess(a);
-	p->setAutoDeleteEnabled(true);
-	p->start();
+    using namespace QtWine;
+    WineConfiguration c = qtwineApp->wineConfigurationsProvider()
+                                    ->configurationByModelRow(selectedIndex().row());
+    WineApplication a(name, c);
+    if (name == "cmd")
+        a.setIsConsoleApplication(true);
+    WineProcess *p = new WineProcess(a);
+    p->setAutoDeleteEnabled(true);
+    p->start();
 }
 
 #define WINELIB_FUNCTION(tool) \
