@@ -145,7 +145,7 @@ will disappear from the view of the user but remain forever in the database.
 void WineConfigurationsProvider::lockInstallations()
 {
     for (int i=0; i < model()->rowCount(); ++i)
-        installationsProvider->lockInstallation(model()->record(i).value("id").toInt());
+        installationsProvider->lockInstallation(rowToId(i));
 }
 
 void WineConfigurationsProvider::model_beforeInsert(QSqlRecord & record)
@@ -155,13 +155,13 @@ void WineConfigurationsProvider::model_beforeInsert(QSqlRecord & record)
 
 void WineConfigurationsProvider::model_beforeUpdate(int row, QSqlRecord & record)
 {
-    installationsProvider->unlockInstallation(model()->record(row).value("id").toInt());
+    installationsProvider->unlockInstallation(rowToId(row));
     installationsProvider->lockInstallation(record.value("id").toInt());
 }
 
 void WineConfigurationsProvider::model_beforeDelete(int row)
 {
-    installationsProvider->unlockInstallation(model()->record(row).value("id").toInt());
+    installationsProvider->unlockInstallation(rowToId(row));
 }
     
 #include "wineconfigurationsprovider.moc"
