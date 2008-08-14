@@ -46,6 +46,7 @@ int AbstractSqlTableProvider::idToRow(int id) const
 int AbstractSqlTableProvider::rowToId(int row) const
 {
     Q_ASSERT(m_sqlModel);
+    if ( row < 0 or row >= m_sqlModel->rowCount() ) return -1;
     return m_sqlModel->record(row).value("id").toInt();
 }
 
