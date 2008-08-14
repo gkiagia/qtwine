@@ -25,30 +25,39 @@ class QSqlRecord;
 
 class AbstractSqlTableProvider : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	AbstractSqlTableProvider(QObject *parent = 0) : QObject(parent) {}
-	virtual ~AbstractSqlTableProvider();
+    AbstractSqlTableProvider(QObject *parent = 0) : QObject(parent) {}
+    virtual ~AbstractSqlTableProvider();
 
-	inline QSqlTableModel *model() const;
+    inline QSqlTableModel *model() const;
     inline bool exists(int id) const;
 
+    /* The following functions convert between rows and IDs of the items.
+     * They both return positive numbers including 0 on success and -1 on failure.
+     */
     int idToRow(int id) const;
     int rowToId(int row) const;
     QSqlRecord recordById(int id) const;
 
 protected:
+    /*! Generates a unique identifier for an item.
+     * It is used to generate IDs for new items. \a name
+     * is the name of the item that we want to generate the id for.
+     * The id is normally the hash of the name, but if two items have
+     * the same name or two names have the same hash, then this function
+     * uses qrand() until it finds a unique ID.
+     */
     int generateId(const QString & name) const;
-	//bool submitChanges(); TODO maybe remove, not used
-	void setModel(QSqlTableModel *model);
+    void setModel(QSqlTableModel *model);
 
 private:
-	QSqlTableModel *m_sqlModel;
+    QSqlTableModel *m_sqlModel;
 };
 
 inline QSqlTableModel *AbstractSqlTableProvider::model() const
 {
-	return m_sqlModel;
+    return m_sqlModel;
 }
 
 inline bool AbstractSqlTableProvider::exists(int id) const

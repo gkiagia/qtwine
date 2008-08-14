@@ -31,7 +31,7 @@
 
 AbstractSqlTableProvider::~AbstractSqlTableProvider()
 {
-	delete m_sqlModel;
+    delete m_sqlModel;
 }
 
 int AbstractSqlTableProvider::idToRow(int id) const
@@ -55,13 +55,6 @@ QSqlRecord AbstractSqlTableProvider::recordById(int id) const
     return m_sqlModel->record(idToRow(id));
 }
 
-/*! Generates a unique identifier for an item.
- * It is used to generate IDs for new items. \a name
- * is the name of the item that we want to generate the id for.
- * The id is normally the hash of the name, but if two items have
- * the same name or two names have the same hash, then this function
- * uses qrand() until it finds a unique ID.
- */
 int AbstractSqlTableProvider::generateId(const QString & name) const
 {
     uint unsigned_id = qHash(name);
@@ -80,25 +73,10 @@ int AbstractSqlTableProvider::generateId(const QString & name) const
 
 void AbstractSqlTableProvider::setModel(QSqlTableModel *model)
 {
-	Q_ASSERT(model);
-	m_sqlModel = model;
-	m_sqlModel->setEditStrategy(QSqlTableModel::OnRowChange);
-	m_sqlModel->select();
+    Q_ASSERT(model);
+    m_sqlModel = model;
+    m_sqlModel->setEditStrategy(QSqlTableModel::OnRowChange);
+    m_sqlModel->select();
 }
-
-#if 0
-bool AbstractActionProvider::submitChanges()
-{
-	Q_ASSERT(m_sqlModel);
-	if ( KDE_ISUNLIKELY( !m_sqlModel->submitAll() ) ) {
-		KMessage::message(KMessage::Error,
-				  i18n("Could not submit changes to the database."
-				  " SQL error message was: %1")
-				  .arg(m_sqlModel->lastError().text()) );
-		return false;
-	}
-	return true;
-}
-#endif
 
 #include "abstractsqltableprovider.moc"
