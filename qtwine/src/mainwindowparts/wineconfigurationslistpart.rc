@@ -44,6 +44,8 @@
         <Action name="run_winelib_regedit"/>
         <Action name="import_regfile"/>
         <Separator/>
+        <Action name="set_default_configuration"/>
+        <Separator/>
         <Action name="create_configuration"/>
     </Menu>
     <Menu name="listView_context_menu_deselected" >

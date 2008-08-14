@@ -18,6 +18,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 #include "wineconfigurationslistpart.h"
+#include "qtwinepreferences.h"
 #include "../qtwineapplication.h"
 #include "../dialogs/configurationeditor.h"
 #include "../dialogs/regfilemergedialog.h"
@@ -62,6 +63,7 @@ void WineConfigurationsListPart::setupActions()
 	connect(delete_configuration, SIGNAL(triggered(bool)), SLOT(deleteConfiguration()) );
 	actionCollection()->addAction("delete_configuration", delete_configuration);
 	addSelectionDependentAction("delete_configuration");
+    addDefaultItemDependentAction("delete_configuration", false); //disabled when the default item is selected
 
 	KAction *configuration_properties = new KAction(KIcon("document-properties"),
 			 				i18n("Properties"), this);
@@ -85,6 +87,10 @@ void WineConfigurationsListPart::setupActions()
 	connect(browse_c_drive, SIGNAL(triggered(bool)), SLOT(browseCDrive()) );
 	actionCollection()->addAction("browse_c_drive", browse_c_drive);
 	addSelectionDependentAction("browse_c_drive");
+        
+    KAction *set_default_configuration = new KAction(KIcon("bookmark-new"),
+                                                    i18n("Set this configuration as default"), this);
+    actionCollection()->addAction("set_default_configuration", set_default_configuration);
 
 #define WINELIB_ACTION(tool, icon, description) \
 	KAction *run_winelib_##tool = new KAction(icon, description, this); \
@@ -108,6 +114,24 @@ void WineConfigurationsListPart::loadModel()
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup group = config->group("WineConfigurationsListPart").group("MetaListViewWidget");
     setModel(configurationsProvider->model(), 1, group);
+    
+    /* set default item */
+    int defaultId = QtWinePreferences::defaultWineConfiguration();
+    int defaultRow = configurationsProvider->idToRow(defaultId);
+
+    if ( KDE_ISUNLIKELY(defaultRow == -1) )
+        kWarning() << "Default item has invalid index";
+
+    enableDefaultItem("set_default_configuration", defaultRow == -1 ? defaultRow : 0);
+    connect(this, SIGNAL(defaultItemRowUpdated(int, int)), SLOT(saveNewDefaultItem(int)) );
+}
+
+void WineConfigurationsListPart::saveNewDefaultItem(int defaultItemRow)
+{
+    int id = configurationsProvider->rowToId(defaultItemRow);
+    Q_ASSERT(id >= 0);
+    QtWinePreferences::setDefaultWineConfiguration(id);
+    QtWinePreferences::self()->writeConfig();
 }
 
 void WineConfigurationsListPart::createConfiguration()

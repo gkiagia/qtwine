@@ -18,5 +18,9 @@
             <label>The id of the default wine installation</label>
             <default>1</default>
         </entry>
+        <entry name="DefaultWineConfiguration" type="Int">
+            <label>The id of the default wine configuration</label>
+            <default>1</default>
+        </entry>
     </group>
 </kcfg>

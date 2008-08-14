@@ -47,6 +47,8 @@ private slots:
 	void winelib_control();
 	void winelib_uninstaller();
 
+    void saveNewDefaultItem(int defaultItemRow);
+
 private:
 	void runWinelibTool(const QString & name);
 	void setupActions();
