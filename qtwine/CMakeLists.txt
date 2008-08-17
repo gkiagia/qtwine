@@ -36,6 +36,7 @@ SET( QTWINE_SOURCES
     src/dialogs/programshortcuteditor.cpp
     src/dialogs/regfilemergedialog.cpp
     src/dialogs/launcher.cpp
+    src/dialogs/createconfigurationdialog.cpp
 
     src/assistants/commonpages.cpp
     src/assistants/createinstallationassistant.cpp
@@ -63,7 +64,12 @@ SET( QTWINE_RC_FILES
     src/mainwindowparts/wineinstallationslistpart.rc
 )
 
-KDE4_ADD_UI_FILES(QTWINE_SOURCES forms/behaviourPreferences.ui)
+SET( QTWINE_UI_FILES
+    forms/behaviourPreferences.ui
+    forms/createConfigurationDialog.ui
+)
+
+KDE4_ADD_UI_FILES(QTWINE_SOURCES ${QTWINE_UI_FILES})
 KDE4_ADD_KCFG_FILES(QTWINE_SOURCES src/qtwinepreferences.kcfgc)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

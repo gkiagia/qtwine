@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include "wineconfigurationsprovider.h"
 #include "../qtwineapplication.h"
+#include "qtwinepreferences.h"
 
 #include "wineconfiguration.h"
 
@@ -104,6 +105,18 @@ WineConfiguration WineConfigurationsProvider::configurationFromRecord(const QSql
     return c;
 }
 
+bool WineConfigurationsProvider::createConfiguration(const QString & name, int installationId)
+{
+    QDir cfgPrefixDir(QtWinePreferences::configurationsPrefix());
+    if ( !cfgPrefixDir.mkpath(name) ) {
+        KMessage::message(KMessage::Sorry, i18n("Could not create the configuration's directory. "
+                            "Please verify that you have enough permissions "
+                            "in this directory: %1").arg(QtWinePreferences::configurationsPrefix()) );
+        return false;
+    }
+    return importConfiguration(name, cfgPrefixDir.filePath(name), installationId);
+}
+
 bool WineConfigurationsProvider::importConfiguration(const QString & name,
                                                      const QString & wineprefix, int installationId)
 {
@@ -116,8 +129,10 @@ bool WineConfigurationsProvider::importConfiguration(const QString & name,
     }
 
     QSqlRelationalTableModel *m = static_cast<QSqlRelationalTableModel*>(model());
-    if ( KDE_ISUNLIKELY(!m->insertRow(m->rowCount())) )
+    if ( KDE_ISUNLIKELY(!m->insertRow(m->rowCount())) ) {
+        kDebug() << "could not insert row... that's quite impossible";
         return false;
+    }
 
     int newRow = m->rowCount()-1;
     m->setData( m->index(newRow, m->fieldIndex("id")), generateId(name) );
@@ -133,7 +148,7 @@ bool WineConfigurationsProvider::importConfiguration(const QString & name,
         p->model()->index(installationRow, p->model()->fieldIndex("name"));
     m->setData( index, installationNameIndex.data(Qt::DisplayRole), Qt::DisplayRole );
 
-    return true;
+    return model()->submit();
 }
 
 

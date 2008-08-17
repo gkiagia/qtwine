@@ -2,6 +2,7 @@
 <!DOCTYPE kcfg SYSTEM "http://www.kde.org/standards/kcfg/1.0/kcfg.dtd">
 <kcfg>
     <kcfgfile/>
+    <include>QDir</include>
     <group name="behaviour">
         <entry name="ClickMode" type="Enum">
             <label>How the icons are selected in the main window, with single or double mouse click.</label>
@@ -21,6 +22,10 @@
         <entry name="DefaultWineConfiguration" type="Int">
             <label>The id of the default wine configuration</label>
             <default>1</default>
+        </entry>
+        <entry name="ConfigurationsPrefix" type="String">
+            <label>The prefix path where all new configurations are created</label>
+            <default code="true">QDir::homePath() + QDir::toNativeSeparators("/.qtwine/configurations")</default>
         </entry>
     </group>
 </kcfg>

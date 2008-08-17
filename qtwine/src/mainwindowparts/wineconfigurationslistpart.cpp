@@ -22,6 +22,7 @@
 #include "../qtwineapplication.h"
 #include "../dialogs/configurationeditor.h"
 #include "../dialogs/regfilemergedialog.h"
+#include "../dialogs/createconfigurationdialog.h"
 
 #include "wineprocess.h"
 
@@ -136,6 +137,7 @@ void WineConfigurationsListPart::saveNewDefaultItem(int defaultItemRow)
 
 void WineConfigurationsListPart::createConfiguration()
 {
+    CreateConfigurationDialog(widget()).exec();
 }
 
 void WineConfigurationsListPart::deleteConfiguration() {}

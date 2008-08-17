@@ -1,0 +1,86 @@
+<ui version="4.0" >
+ <class>CreateConfigurationDialog</class>
+ <widget class="QWidget" name="CreateConfigurationDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>318</width>
+    <height>182</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2" >
+   <item>
+    <layout class="QFormLayout" name="formLayout" >
+     <item row="0" column="0" >
+      <widget class="QLabel" name="nameLabel" >
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Expanding" hsizetype="Preferred" >
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text" >
+        <string>Name:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" >
+      <widget class="KLineEdit" name="nameEdit" />
+     </item>
+     <item row="1" column="0" >
+      <widget class="QLabel" name="comboLabel" >
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Expanding" hsizetype="Preferred" >
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text" >
+        <string>Wine installation to use:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" >
+      <widget class="QComboBox" name="comboBox" />
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox" >
+     <property name="title" >
+      <string>Creation mode</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout" >
+      <item>
+       <widget class="QRadioButton" name="createRadio" >
+        <property name="text" >
+         <string>Create new wine configuration</string>
+        </property>
+        <property name="checked" >
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="copyRadio" >
+        <property name="text" >
+         <string>Copy an existing wine configuration</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>klineedit.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

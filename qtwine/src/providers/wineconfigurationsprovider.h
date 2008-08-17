@@ -32,6 +32,7 @@ public:
     QtWine::WineConfiguration configurationById(int id) const;
     QtWine::WineConfiguration configurationByModelRow(int row) const;
 
+    bool createConfiguration(const QString & name, int installationId);
     bool importConfiguration(const QString & name, const QString & wineprefix, int installationId);
 
 private slots:
