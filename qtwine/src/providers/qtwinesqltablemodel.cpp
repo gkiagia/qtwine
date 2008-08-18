@@ -17,52 +17,57 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
-#ifndef ABSTRACTSQLTABLEPROVIDER_H
-#define ABSTRACTSQLTABLEPROVIDER_H
+#include "qtwinesqltablemodel.h"
 
-#include <QSqlTableModel>
-class QSqlRecord;
+#include <KMessage>
+#include <KLocalizedString>
+#include <KRandom>
 
-class AbstractSqlTableProvider : public QObject
+#include <QHash>
+#include <QSqlError>
+#include <QSqlRecord>
+
+#include <climits>
+
+QtWineSqlTableModel(QObject *parent = 0)
+    : QSqlRelationalTableModel(parent)
 {
-    Q_OBJECT
-public:
-    AbstractSqlTableProvider(QObject *parent = 0) : QObject(parent) {}
-    virtual ~AbstractSqlTableProvider();
-
-    inline QSqlTableModel *model() const;
-    inline bool exists(int id) const;
-
-    /* The following functions convert between rows and IDs of the items.
-     * They both return positive numbers including 0 on success and -1 on failure.
-     */
-    int idToRow(int id) const;
-    int rowToId(int row) const;
-    QSqlRecord recordById(int id) const;
-
-protected:
-    /*! Generates a unique identifier for an item.
-     * It is used to generate IDs for new items. \a name
-     * is the name of the item that we want to generate the id for.
-     * The id is normally the hash of the name, but if two items have
-     * the same name or two names have the same hash, then this function
-     * uses qrand() until it finds a unique ID.
-     */
-    int generateId(const QString & name) const;
-    void setModel(QSqlTableModel *model);
-
-private:
-    QSqlTableModel *m_sqlModel;
-};
-
-inline QSqlTableModel *AbstractSqlTableProvider::model() const
-{
-    return m_sqlModel;
+    setEditStrategy(QSqlTableModel::OnRowChange);
 }
 
-inline bool AbstractSqlTableProvider::exists(int id) const
+int QtWineSqlTableModel::idToRow(int id) const
 {
-    return idToRow(id) != -1;
+    int column = 0;
+    QModelIndex start = index(0, column);
+    QModelIndexList results = match(start, Qt::DisplayRole, QVariant(QString::number(id)) );
+    return (results.size() > 0) ? results.at(0).row() : -1;
 }
 
-#endif
+int QtWineSqlTableModel::rowToId(int row) const
+{
+    if ( row < 0 or row >= rowCount() ) return -1;
+    return record(row).value("id").toInt();
+}
+
+QSqlRecord QtWineSqlTableModel::recordById(int id) const
+{
+    return record(idToRow(id));
+}
+
+int QtWineSqlTableModel::generateId(const QString & name) const
+{
+    uint unsigned_id = qHash(name);
+
+    //We take out the MS bit so that the id is always in the range 0 <= id <= INT_MAX
+    int id = unsigned_id & INT_MAX; // that should take out the MS bit
+
+    if ( id == 1 or exists(id) ) {
+        do
+            id = KRandom::random() & INT_MAX;
+        while( id == 1 or exists(id) );
+    }
+
+    return id;
+}
+
+#include "qtwinesqltablemodel.moc"
