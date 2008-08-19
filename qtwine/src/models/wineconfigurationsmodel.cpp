@@ -134,13 +134,13 @@ bool WineConfigurationsModel::importConfiguration(const QString & name,
     setData( index(newRow, fieldIndex("wineprefix")), wineprefix );
 
     // set the "wineinstallation" field (using Qt::EditRole, so we insert the id)
-    QModelIndex index =  index(newRow, fieldIndex("wine_installations_name"));
-    setData( index, installationId, Qt::EditRole );
+    QModelIndex mindex =  index(newRow, fieldIndex("wine_installations_name"));
+    setData( mindex, installationId, Qt::EditRole );
 
     // set the "wineinstallation" field (using Qt::DisplayRole, so we insert the name)
     // installationNameIndex points to the "name" field of the installation.
     QModelIndex installationNameIndex = p->index(installationRow, p->fieldIndex("name"));
-    setData( index, installationNameIndex.data(Qt::DisplayRole), Qt::DisplayRole );
+    setData( mindex, installationNameIndex.data(Qt::DisplayRole), Qt::DisplayRole );
 
     return submit();
 }

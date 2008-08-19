@@ -29,7 +29,7 @@
 
 #include <climits>
 
-QtWineSqlTableModel(QObject *parent = 0)
+QtWineSqlTableModel::QtWineSqlTableModel(QObject *parent)
     : QSqlRelationalTableModel(parent)
 {
     setEditStrategy(QSqlTableModel::OnRowChange);

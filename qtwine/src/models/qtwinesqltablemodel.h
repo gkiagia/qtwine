@@ -26,7 +26,7 @@ class QtWineSqlTableModel : public QSqlRelationalTableModel
 {
     Q_OBJECT
 public:
-    QtWineSqlTableModel(QObject *parent = 0) : QSqlRelationalTableModel(parent) {}
+    QtWineSqlTableModel(QObject *parent = 0);
 
     inline bool exists(int id) const;
 

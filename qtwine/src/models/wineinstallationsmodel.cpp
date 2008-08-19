@@ -62,13 +62,13 @@ void WineInstallationsModel::createFirstTimeTable()
 void WineInstallationsModel::updateVersionFields()
 {
     int i, j=fieldIndex("wineversion");
-    QModelIndex index;
+    QModelIndex mindex;
     WineInstallation inst;
 
     for (i=0; i < rowCount(); ++i) {
-        index = index(i,j);
+        mindex = index(i,j);
         inst = installationByModelRow(i);
-        setData(index, inst.wineVersion());
+        setData(mindex, inst.wineVersion());
     }
 
     submit();
@@ -76,9 +76,9 @@ void WineInstallationsModel::updateVersionFields()
 
 void WineInstallationsModel::updateDistroInstallation()
 {
-    QSqlRecord record = record(0);
-    if ( record.isEmpty() or record.value("id").toInt() != 1
-        or QFile::exists(record.value("wineloader").toString()) )
+    QSqlRecord rec = record(0);
+    if ( rec.isEmpty() or rec.value("id").toInt() != 1
+        or QFile::exists(rec.value("wineloader").toString()) )
         return; //do not update if wineloader still exists or the installation is not the one we want
 
     WineInstallation inst = WineInstallation::findWineInPath();
@@ -90,12 +90,12 @@ void WineInstallationsModel::updateDistroInstallation()
         return; // no reason to update, the installation is invalid either way
     }
 
-    record.setValue("prefix", inst.prefix());
-    record.setValue("winedllpath", inst.wineDllPath());
-    record.setValue("wineloader", inst.wineLoader());
-    record.setValue("wineserver", inst.wineServer());
-    record.setValue("wineversion", inst.wineVersion());
-    setRecord(0, record); //put the new information back to the model
+    rec.setValue("prefix", inst.prefix());
+    rec.setValue("winedllpath", inst.wineDllPath());
+    rec.setValue("wineloader", inst.wineLoader());
+    rec.setValue("wineserver", inst.wineServer());
+    rec.setValue("wineversion", inst.wineVersion());
+    setRecord(0, rec); //put the new information back to the model
 }
 
 WineInstallation WineInstallationsModel::installationById(int id) const
@@ -109,8 +109,8 @@ WineInstallation WineInstallationsModel::installationById(int id) const
 
 WineInstallation WineInstallationsModel::installationByModelRow(int row) const
 {
-    QSqlRecord record = record(row);
-    return installationFromRecord(record);
+    QSqlRecord rec = record(row);
+    return installationFromRecord(rec);
 }
 
 WineInstallation WineInstallationsModel::installationFromRecord(const QSqlRecord & record) const
@@ -126,14 +126,14 @@ WineInstallation WineInstallationsModel::installationFromRecord(const QSqlRecord
 bool WineInstallationsModel::importInstallation(const QString & name,
                                                 const WineInstallation & installation)
 {
-    QSqlRecord record = record(); // an empty record with info about the table's fields
-    record.setValue("id", generateId(name));
-    record.setValue("name", name);
-    record.setValue("prefix", installation.prefix());
-    record.setValue("wineloader", installation.wineLoader());
-    record.setValue("wineserver", installation.wineServer());
-    record.setValue("winedllpath", installation.wineDllPath());
-    return insertRecord(-1, record);
+    QSqlRecord rec = record(); // an empty record with info about the table's fields
+    rec.setValue("id", generateId(name));
+    rec.setValue("name", name);
+    rec.setValue("prefix", installation.prefix());
+    rec.setValue("wineloader", installation.wineLoader());
+    rec.setValue("wineserver", installation.wineServer());
+    rec.setValue("winedllpath", installation.wineDllPath());
+    return insertRecord(-1, rec);
 }
 
 #if 0
