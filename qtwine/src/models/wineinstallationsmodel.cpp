@@ -102,6 +102,7 @@ void WineInstallationsModel::updateDistroInstallation()
     rec.setValue("wineserver", inst.wineServer());
     rec.setValue("wineversion", inst.wineVersion());
     setRecord(0, rec); //put the new information back to the model
+    submit();
 }
 
 WineInstallation WineInstallationsModel::installationById(int id) const
