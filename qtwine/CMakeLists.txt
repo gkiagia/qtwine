@@ -25,10 +25,10 @@ SET( QTWINE_SOURCES
     src/qtwinemainwindow.cpp
     src/qtwineapplication.cpp
 
-    src/providers/abstractsqltableprovider.cpp
-    src/providers/wineinstallationsprovider.cpp
-    src/providers/wineconfigurationsprovider.cpp
-    src/providers/shortcutsprovider.cpp
+    src/models/qtwinesqltablemodel.cpp
+    src/models/wineinstallationsmodel.cpp
+    src/models/wineconfigurationsmodel.cpp
+    src/models/shortcutsmodel.cpp
 
     src/dialogs/editorpagedialog.cpp
     src/dialogs/installationeditor.cpp
