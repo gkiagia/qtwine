@@ -114,11 +114,11 @@ void WineConfigurationsListPart::loadModel()
 {
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup group = config->group("WineConfigurationsListPart").group("MetaListViewWidget");
-    setModel(configurationsProvider->model(), 1, group);
+    setModel(qtwineApp->wineConfigurationsModel(), 1, group);
     
     /* set default item */
     int defaultId = QtWinePreferences::defaultWineConfiguration();
-    int defaultRow = configurationsProvider->idToRow(defaultId);
+    int defaultRow = qtwineApp->wineConfigurationsModel()->idToRow(defaultId);
 
     if ( KDE_ISUNLIKELY(defaultRow == -1) )
         kWarning() << "Default item has invalid index";
@@ -129,7 +129,7 @@ void WineConfigurationsListPart::loadModel()
 
 void WineConfigurationsListPart::saveNewDefaultItem(int defaultItemRow)
 {
-    int id = configurationsProvider->rowToId(defaultItemRow);
+    int id = static_cast<QtWineSqlTableModel*>(model())->rowToId(defaultItemRow);
     Q_ASSERT(id >= 0);
     QtWinePreferences::setDefaultWineConfiguration(id);
     QtWinePreferences::self()->writeConfig();
@@ -181,7 +181,7 @@ void WineConfigurationsListPart::runWinelibTool(const QString & name)
     Q_ASSERT(selectedIndex().isValid());
 
     using namespace QtWine;
-    WineConfiguration c = qtwineApp->wineConfigurationsProvider()
+    WineConfiguration c = static_cast<WineConfigurationsModel*>(model())
                                     ->configurationByModelRow(selectedIndex().row());
     WineApplication a(name, c);
     if (name == "cmd")

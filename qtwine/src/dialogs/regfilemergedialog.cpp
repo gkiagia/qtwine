@@ -59,8 +59,8 @@ RegfileMergeDialog::RegfileMergeDialog(const KUrl & file, QWidget *parent)
 	hlay->addWidget(label);
 
 	comboBox = new QComboBox(w);
-	comboBox->setModel(configurationsProvider->model());
-	comboBox->setModelColumn(configurationsProvider->model()->fieldIndex("name"));
+	comboBox->setModel(qtwineApp->wineConfigurationsModel());
+	comboBox->setModelColumn(qtwineApp->wineConfigurationsModel()->fieldIndex("name"));
 	hlay->addWidget(comboBox);
 
 	resizeLayout(vlay, marginHint(), spacingHint());
@@ -116,7 +116,7 @@ void RegfileMergeDialog::accept()
 	utf8File.close();
 
 	// START WINE
-	WineConfiguration wcfg = configurationsProvider->configurationByModelRow(comboBox->currentIndex());
+	WineConfiguration wcfg = qtwineApp->wineConfigurationsModel()->configurationByModelRow(comboBox->currentIndex());
 
 	bool ok = RegEdit::importRegFile(utf8FileName, wcfg);
 	if ( ok )
@@ -132,7 +132,7 @@ void RegfileMergeDialog::accept()
 
 void RegfileMergeDialog::setConfiguration(int id)
 {
-    setConfigurationByModelRow(configurationsProvider->idToRow(id));
+    setConfigurationByModelRow(qtwineApp->wineConfigurationsModel()->idToRow(id));
 }
 
 void RegfileMergeDialog::setConfigurationByModelRow(int row)

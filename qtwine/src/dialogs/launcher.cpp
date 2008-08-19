@@ -58,8 +58,8 @@ Launcher::Launcher(QWidget *parent)
 	formLayout->addRow(i18n("&Command:"), m_commandRequester);
 
 	m_configComboBox = new QComboBox(page1);
-	m_configComboBox->setModel(configurationsProvider->model());
-	m_configComboBox->setModelColumn(configurationsProvider->model()->fieldIndex("name"));
+	m_configComboBox->setModel(qtwineApp->wineConfigurationsModel());
+	m_configComboBox->setModelColumn(qtwineApp->wineConfigurationsModel()->fieldIndex("name"));
 	m_configComboBox->setCurrentIndex(0);
 	formLayout->addRow(i18n("Use wine confi&guration:"), m_configComboBox);
 
@@ -165,7 +165,7 @@ void Launcher::accept()
 	//start wine
 	using namespace QtWine;
 	WineConfiguration wcfg =
-		configurationsProvider->configurationByModelRow(m_configComboBox->currentIndex());
+            qtwineApp->wineConfigurationsModel()->configurationByModelRow(m_configComboBox->currentIndex());
 
 	WineApplication app(arguments.takeFirst(), wcfg);
 	app << arguments;

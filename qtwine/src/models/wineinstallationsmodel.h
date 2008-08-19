@@ -51,7 +51,7 @@ private:
     
     // this is to lock installations so that they cannot be
     // deleted because they are used by some configuration
-    friend class WineConfigurationsProvider;
+    friend class WineConfigurationsModel;
     void lockInstallation(int id);
     void unlockInstallation(int id);
     QHash<int, int> m_lockedInstallations;

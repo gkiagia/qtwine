@@ -21,7 +21,6 @@
 #include "qtwinepreferences.h"
 #include "../qtwineapplication.h"
 #include "../dialogs/installationeditor.h"
-#include "../providers/wineinstallationsprovider.h"
 #include "../assistants/createinstallationassistant.h"
 
 #include <QSqlRecord>
@@ -74,11 +73,11 @@ void WineInstallationsListPart::loadModel()
 {
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup group = config->group("WineInstallationsListPart").group("MetaListViewWidget");
-    setModel(installationsProvider->model(), 1, group);
+    setModel(qtwineApp->wineInstallationsModel(), 1, group);
     
     /* set default item */
     int defaultId = QtWinePreferences::defaultWineInstallation();
-    int defaultRow = installationsProvider->idToRow(defaultId);
+    int defaultRow = qtwineApp->wineInstallationsModel()->idToRow(defaultId);
 
     if ( KDE_ISUNLIKELY(defaultRow == -1) )
         kWarning() << "Default item has invalid index";
@@ -89,7 +88,7 @@ void WineInstallationsListPart::loadModel()
 
 void WineInstallationsListPart::saveNewDefaultItem(int defaultItemRow)
 {
-    int id = installationsProvider->rowToId(defaultItemRow);
+    int id = static_cast<QtWineSqlTableModel*>(model())->rowToId(defaultItemRow);
     Q_ASSERT(id >= 0);
     QtWinePreferences::setDefaultWineInstallation(id);
     QtWinePreferences::self()->writeConfig();
@@ -108,13 +107,13 @@ void WineInstallationsListPart::addInstallation()
 void WineInstallationsListPart::removeInstallation()
 {
     int row = selectedIndex().row();
-
+/* TODO move in the model
     if ( installationsProvider->installationIsLocked(installationsProvider->rowToId(row)) ) {
         KMessageBox::sorry(widget(), i18n("Sorry but you cannot delete this wine installation "
                                     "because it is currently used by some wine configuration.") );
         return;
     }
-
+*/
     model()->removeRow(row);
 }
 

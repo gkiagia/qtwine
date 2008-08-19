@@ -53,7 +53,7 @@ void ShortcutsListPart::itemActivated(const QModelIndex & index)
 {
     /* run the shortcut */
     using namespace QtWine;
-    WineApplication a = shortcutsProvider->wineApplicationByModelRow(index.row());
+    WineApplication a = static_cast<ShortcutsModel*>(model())->wineApplicationByModelRow(index.row());
     WineProcess *p = new WineProcess(a);
     p->setAutoDeleteEnabled(true);
 
@@ -103,7 +103,7 @@ void ShortcutsListPart::loadModel()
 {
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup group = config->group("ShortcutsListPart").group("MetaListViewWidget");
-    setModel(shortcutsProvider->model(), 1, group);
+    setModel(qtwineApp->programShortcutsModel(), 1, group);
 }
 
 void ShortcutsListPart::createShortcut()

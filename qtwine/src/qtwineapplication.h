@@ -22,15 +22,15 @@
 
 #include <KUniqueApplication>
 #include <QPointer>
-#include "providers/wineinstallationsprovider.h"
-#include "providers/wineconfigurationsprovider.h"
-#include "providers/shortcutsprovider.h"
+#include "models/wineinstallationsmodel.h"
+#include "models/wineconfigurationsmodel.h"
+#include "models/shortcutsmodel.h"
 class QtWineMainWindow;
 
 #define qtwineApp static_cast<QtWineApplication*>(kapp)
-#define installationsProvider (qtwineApp->wineInstallationsProvider())
-#define configurationsProvider (qtwineApp->wineConfigurationsProvider())
-#define shortcutsProvider (qtwineApp->programShortcutsProvider())
+//#define installationsModel (qtwineApp->wineInstallationsModel())
+//#define configurationsModel (qtwineApp->wineConfigurationsModel())
+//#define shortcutsModel (qtwineApp->programShortcutsModel())
 
 
 class QtWineApplication : public KUniqueApplication
@@ -41,9 +41,9 @@ public:
     ~QtWineApplication();
     int newInstance();
 
-    WineInstallationsProvider *wineInstallationsProvider() const;
-    WineConfigurationsProvider *wineConfigurationsProvider() const;
-    ShortcutsProvider *programShortcutsProvider() const;
+    WineInstallationsModel *wineInstallationsModel() const;
+    WineConfigurationsModel *wineConfigurationsModel() const;
+    ShortcutsModel *programShortcutsModel() const;
 
 public slots:
     void showPreferencesDialog();
@@ -53,14 +53,14 @@ signals:
 
 private:
     void initializeDatabase();
-    void initializeProviders();
-    void deleteProviders();
+    void initializeModels();
+    void deleteModels();
     void shutDownDatabase();
 
     QPointer<QtWineMainWindow> m_mainWindow;
-    WineInstallationsProvider *m_installationsProvider;
-    WineConfigurationsProvider *m_configurationsProvider;
-    ShortcutsProvider *m_shortcutsProvider;
+    WineInstallationsModel *m_installationsModel;
+    WineConfigurationsModel *m_configurationsModel;
+    ShortcutsModel *m_shortcutsModel;
 };
 
 #endif

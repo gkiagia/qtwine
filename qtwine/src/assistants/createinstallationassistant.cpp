@@ -86,7 +86,7 @@ void CreateInstallationAssistant::initializePage(int id)
 		newInstallation.setWineServer(field("wineserver").value<KUrl>().path());
 		newInstallation.setWineDllPath(field("winedllpath").value<KUrl>().path());
 
-		WineInstallationsProvider *p = installationsProvider;
+		WineInstallationsModel *p = qtwineApp->wineInstallationsModel();
 		if ( !p->importInstallation( field("installationName").toString(), newInstallation ) )
 			setField("FinishLabelText", i18n("Creating a new installation has failed"
 							" for unknown reason"));

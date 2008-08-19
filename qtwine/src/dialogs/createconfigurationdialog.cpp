@@ -18,8 +18,6 @@
 #include "ui_createConfigurationDialog.h"
 #include "qtwinepreferences.h"
 #include "../qtwineapplication.h"
-#include "../providers/wineconfigurationsprovider.h"
-#include "../providers/wineinstallationsprovider.h"
 
 #include <KLocalizedString>
 #include <KMessageBox>
@@ -49,14 +47,16 @@ void CreateConfigurationDialog::setCreationMode(bool create)
 {
     MainWidget *m = static_cast<MainWidget*>(mainWidget());
     if (create) {
-        m->comboBox->setModel(installationsProvider->model());
-        m->comboBox->setModelColumn(installationsProvider->model()->fieldIndex("name"));
-        m->comboBox->setCurrentIndex(installationsProvider->idToRow(QtWinePreferences::defaultWineInstallation()));
+        WineInstallationsModel *model = qtwineApp->wineInstallationsModel();
+        m->comboBox->setModel(model);
+        m->comboBox->setModelColumn(model->fieldIndex("name"));
+        m->comboBox->setCurrentIndex(model->idToRow(QtWinePreferences::defaultWineInstallation()));
         m->comboLabel->setText(i18n("Wine installation to use:"));
     } else {
-        m->comboBox->setModel(configurationsProvider->model());
-        m->comboBox->setModelColumn(configurationsProvider->model()->fieldIndex("name"));
-        m->comboBox->setCurrentIndex(configurationsProvider->idToRow(QtWinePreferences::defaultWineConfiguration()));
+        WineConfigurationsModel *model = qtwineApp->wineConfigurationsModel();
+        m->comboBox->setModel(model);
+        m->comboBox->setModelColumn(model->fieldIndex("name"));
+        m->comboBox->setCurrentIndex(model->idToRow(QtWinePreferences::defaultWineConfiguration()));
         m->comboLabel->setText(i18n("Wine configuration to copy:"));
     }
 }
@@ -71,8 +71,8 @@ void CreateConfigurationDialog::accept()
     }
 
     if ( m->createRadio->isChecked() ) {
-        if ( !configurationsProvider->createConfiguration(name,
-              installationsProvider->rowToId(m->comboBox->currentIndex())) )
+        int installationId = qtwineApp->wineInstallationsModel()->rowToId(m->comboBox->currentIndex());
+        if ( !qtwineApp->wineConfigurationsModel()->createConfiguration(name, installationId) )
             return; // do not close the dialog. an error message should have been already shown.
     } else {
         //TODO implement me

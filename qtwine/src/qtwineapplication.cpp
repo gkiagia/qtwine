@@ -37,13 +37,13 @@ QtWineApplication::QtWineApplication()
     : KUniqueApplication(), m_mainWindow(NULL)
 {
     initializeDatabase();
-    initializeProviders();
+    initializeModels();
 }
 
 QtWineApplication::~QtWineApplication()
 {
     delete m_mainWindow;
-    deleteProviders();
+    deleteModels();
     shutDownDatabase();
 }
 
@@ -67,19 +67,19 @@ int QtWineApplication::newInstance()
 	return returnValue;
 }
 
-WineInstallationsProvider *QtWineApplication::wineInstallationsProvider() const
+WineInstallationsModel *QtWineApplication::wineInstallationsModel() const
 {
-    return m_installationsProvider;
+    return m_installationsModel;
 }
 
-WineConfigurationsProvider *QtWineApplication::wineConfigurationsProvider() const
+WineConfigurationsModel *QtWineApplication::wineConfigurationsModel() const
 {
-    return m_configurationsProvider;
+    return m_configurationsModel;
 }
 
-ShortcutsProvider *QtWineApplication::programShortcutsProvider() const
+ShortcutsModel *QtWineApplication::programShortcutsModel() const
 {
-    return m_shortcutsProvider;
+    return m_shortcutsModel;
 }
 
 void QtWineApplication::initializeDatabase()
@@ -101,18 +101,18 @@ void QtWineApplication::initializeDatabase()
 	}
 }
 
-void QtWineApplication::initializeProviders()
+void QtWineApplication::initializeModels()
 {
-    m_installationsProvider = new WineInstallationsProvider(this);
-    m_configurationsProvider = new WineConfigurationsProvider(this);
-    m_shortcutsProvider = new ShortcutsProvider(this);
+    m_installationsModel = new WineInstallationsModel(this);
+    m_configurationsModel = new WineConfigurationsModel(this);
+    m_shortcutsModel = new ShortcutsModel(this);
 }
 
-void QtWineApplication::deleteProviders()
+void QtWineApplication::deleteModels()
 {
-    delete m_installationsProvider;
-    delete m_configurationsProvider;
-    delete m_shortcutsProvider;
+    delete m_installationsModel;
+    delete m_configurationsModel;
+    delete m_shortcutsModel;
 }
 
 void QtWineApplication::shutDownDatabase()
