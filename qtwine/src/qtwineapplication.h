@@ -41,9 +41,9 @@ public:
     ~QtWineApplication();
     int newInstance();
 
-    WineInstallationsModel *wineInstallationsModel() const;
-    WineConfigurationsModel *wineConfigurationsModel() const;
-    ShortcutsModel *programShortcutsModel() const;
+    inline WineInstallationsModel *wineInstallationsModel() const;
+    inline WineConfigurationsModel *wineConfigurationsModel() const;
+    inline ShortcutsModel *programShortcutsModel() const;
 
 public slots:
     void showPreferencesDialog();
@@ -62,5 +62,20 @@ private:
     WineConfigurationsModel *m_configurationsModel;
     ShortcutsModel *m_shortcutsModel;
 };
+
+inline WineInstallationsModel *QtWineApplication::wineInstallationsModel() const
+{
+    return m_installationsModel;
+}
+
+inline WineConfigurationsModel *QtWineApplication::wineConfigurationsModel() const
+{
+    return m_configurationsModel;
+}
+
+inline ShortcutsModel *QtWineApplication::programShortcutsModel() const
+{
+    return m_shortcutsModel;
+}
 
 #endif

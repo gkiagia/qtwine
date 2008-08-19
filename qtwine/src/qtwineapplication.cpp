@@ -67,21 +67,6 @@ int QtWineApplication::newInstance()
 	return returnValue;
 }
 
-WineInstallationsModel *QtWineApplication::wineInstallationsModel() const
-{
-    return m_installationsModel;
-}
-
-WineConfigurationsModel *QtWineApplication::wineConfigurationsModel() const
-{
-    return m_configurationsModel;
-}
-
-ShortcutsModel *QtWineApplication::programShortcutsModel() const
-{
-    return m_shortcutsModel;
-}
-
 void QtWineApplication::initializeDatabase()
 {
 	if ( !QSqlDatabase::isDriverAvailable("QSQLITE") ){
