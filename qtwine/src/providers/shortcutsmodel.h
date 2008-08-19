@@ -17,17 +17,17 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
-#ifndef SHORTCUTSPROVIDER_H
-#define SHORTCUTSPROVIDER_H
+#ifndef SHORTCUTSMODEL_H
+#define SHORTCUTSMODEL_H
 
-#include "abstractsqltableprovider.h"
+#include "qtwinesqltablemodel.h"
 namespace QtWine { class WineApplication; }
 
-class ShortcutsProvider : public AbstractSqlTableProvider
+class ShortcutsModel : public QtWineSqlTableModel
 {
     Q_OBJECT
 public:
-    explicit ShortcutsProvider(QObject *parent = 0);
+    explicit ShortcutsModel(QObject *parent = 0);
 
     QtWine::WineApplication wineApplicationByModelRow(int row) const;
     QtWine::WineApplication wineApplicationFromRecord(const QSqlRecord & record) const;

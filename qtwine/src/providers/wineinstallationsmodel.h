@@ -17,19 +17,19 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
-#ifndef WINEINSTALLATIONSPROVIDER_H
-#define WINEINSTALLATIONSPROVIDER_H
+#ifndef WINEINSTALLATIONSMODEL_H
+#define WINEINSTALLATIONSMODEL_H
 
-#include "abstractsqltableprovider.h"
+#include "qtwinesqltablemodel.h"
 #include <QHash>
 namespace QtWine { class WineInstallation; }
-class WineConfigurationsProvider;
+class WineConfigurationsModel;
 
-class WineInstallationsProvider : public AbstractSqlTableProvider
+class WineInstallationsModel : public QtWineSqlTableModel
 {
     Q_OBJECT
 public:
-    WineInstallationsProvider(QObject *parent = 0);
+    WineInstallationsModel(QObject *parent = 0);
 
     QtWine::WineInstallation installationById(int id) const;
     QtWine::WineInstallation installationByModelRow(int row) const;

@@ -17,7 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
-#include "wineinstallationsprovider.h"
+#include "wineinstallationsmodel.h"
 
 #include "wineinstallation.h"
 
@@ -30,24 +30,22 @@
 
 using namespace QtWine;
 
-WineInstallationsProvider::WineInstallationsProvider(QObject *parent)
-    : AbstractSqlTableProvider(parent)
+WineInstallationsModel::WineInstallationsModel(QObject *parent)
+    : QtWineSqlTableModel(parent)
 {
     QSqlDatabase db = QSqlDatabase::database();
     if ( !db.tables().contains("wine_installations") )
         createFirstTimeTable();
 
-    QSqlTableModel *model = new QSqlTableModel();
-    model->setTable("wine_installations");
-    setModel(model);
+    setTable("wine_installations");
 
     updateVersionFields();
     updateDistroInstallation();
-    connect(model, SIGNAL(beforeInsert(QSqlRecord&)), SLOT(model_beforeInsert(QSqlRecord&)) );
-    connect(model, SIGNAL(beforeUpdate(int, QSqlRecord&)), SLOT(model_beforeUpdate(int, QSqlRecord&)) );
+    connect(this, SIGNAL(beforeInsert(QSqlRecord&)), SLOT(model_beforeInsert(QSqlRecord&)) );
+    connect(this, SIGNAL(beforeUpdate(int, QSqlRecord&)), SLOT(model_beforeUpdate(int, QSqlRecord&)) );
 }
 
-void WineInstallationsProvider::createFirstTimeTable()
+void WineInstallationsModel::createFirstTimeTable()
 {
     QSqlQuery query;
     query.exec("create table wine_installations(id int primary key,"
@@ -61,24 +59,24 @@ void WineInstallationsProvider::createFirstTimeTable()
     query.exec();
 }
 
-void WineInstallationsProvider::updateVersionFields()
+void WineInstallationsModel::updateVersionFields()
 {
-    int i, j=model()->fieldIndex("wineversion");
+    int i, j=fieldIndex("wineversion");
     QModelIndex index;
     WineInstallation inst;
 
-    for (i=0; i < model()->rowCount(); ++i) {
-        index = model()->index(i,j);
+    for (i=0; i < rowCount(); ++i) {
+        index = index(i,j);
         inst = installationByModelRow(i);
-        model()->setData(index, inst.wineVersion());
+        setData(index, inst.wineVersion());
     }
 
-    model()->submit();
+    submit();
 }
 
-void WineInstallationsProvider::updateDistroInstallation()
+void WineInstallationsModel::updateDistroInstallation()
 {
-    QSqlRecord record = model()->record(0);
+    QSqlRecord record = record(0);
     if ( record.isEmpty() or record.value("id").toInt() != 1
         or QFile::exists(record.value("wineloader").toString()) )
         return; //do not update if wineloader still exists or the installation is not the one we want
@@ -97,10 +95,10 @@ void WineInstallationsProvider::updateDistroInstallation()
     record.setValue("wineloader", inst.wineLoader());
     record.setValue("wineserver", inst.wineServer());
     record.setValue("wineversion", inst.wineVersion());
-    model()->setRecord(0, record); //put the new information back to the model
+    setRecord(0, record); //put the new information back to the model
 }
 
-WineInstallation WineInstallationsProvider::installationById(int id) const
+WineInstallation WineInstallationsModel::installationById(int id) const
 {
     int row = idToRow(id);
     if ( row == -1 )
@@ -109,13 +107,13 @@ WineInstallation WineInstallationsProvider::installationById(int id) const
     return installationByModelRow(row);
 }
 
-WineInstallation WineInstallationsProvider::installationByModelRow(int row) const
+WineInstallation WineInstallationsModel::installationByModelRow(int row) const
 {
-    QSqlRecord record = model()->record(row);
+    QSqlRecord record = record(row);
     return installationFromRecord(record);
 }
 
-WineInstallation WineInstallationsProvider::installationFromRecord(const QSqlRecord & record) const
+WineInstallation WineInstallationsModel::installationFromRecord(const QSqlRecord & record) const
 {
     WineInstallation installation;
     installation.setPrefix(record.value("prefix").toString());
@@ -125,17 +123,17 @@ WineInstallation WineInstallationsProvider::installationFromRecord(const QSqlRec
     return installation;
 }
 
-bool WineInstallationsProvider::importInstallation(const QString & name,
-                                                   const WineInstallation & installation)
+bool WineInstallationsModel::importInstallation(const QString & name,
+                                                const WineInstallation & installation)
 {
-    QSqlRecord record = model()->record(); // an empty record with info about the table's fields
+    QSqlRecord record = record(); // an empty record with info about the table's fields
     record.setValue("id", generateId(name));
     record.setValue("name", name);
     record.setValue("prefix", installation.prefix());
     record.setValue("wineloader", installation.wineLoader());
     record.setValue("wineserver", installation.wineServer());
     record.setValue("winedllpath", installation.wineDllPath());
-    return model()->insertRecord(-1, record);
+    return insertRecord(-1, record);
 }
 
 #if 0
@@ -144,7 +142,7 @@ bool WineInstallationsProvider::importInstallation(const QString & name,
  * \todo Prompt the user if this is the only installation available
  * or if the installation is used by a configuration.
  */
-bool WineInstallationsProvider::removeInstallation(uint id)
+bool WineInstallationsModel::removeInstallation(uint id)
 {
 	QModelIndex index = find(id);
 	if ( !index.isValid() )
@@ -154,33 +152,33 @@ bool WineInstallationsProvider::removeInstallation(uint id)
 }
 #endif
 
-bool WineInstallationsProvider::installationIsLocked(int id) const
+bool WineInstallationsModel::installationIsLocked(int id) const
 {
     return m_lockedInstallations.value(id) != 0;
 }
 
-void WineInstallationsProvider::lockInstallation(int id)
+void WineInstallationsModel::lockInstallation(int id)
 {
     m_lockedInstallations[id]++;
 }
 
-void WineInstallationsProvider::unlockInstallation(int id)
+void WineInstallationsModel::unlockInstallation(int id)
 {
     if ( m_lockedInstallations.value(id) > 0 )
         m_lockedInstallations[id]--;
 }
 
-void WineInstallationsProvider::model_beforeInsert(QSqlRecord & record)
+void WineInstallationsModel::model_beforeInsert(QSqlRecord & record)
 {
     WineInstallation i = installationFromRecord(record);
     record.setValue("wineversion", i.wineVersion());
 }
 
-void WineInstallationsProvider::model_beforeUpdate(int, QSqlRecord & record)
+void WineInstallationsModel::model_beforeUpdate(int, QSqlRecord & record)
 {
     WineInstallation i = installationFromRecord(record);
     record.setValue("wineversion", i.wineVersion());
     record.setGenerated("wineversion", true);
 }
 
-#include "wineinstallationsprovider.moc"
+#include "wineinstallationsmodel.moc"

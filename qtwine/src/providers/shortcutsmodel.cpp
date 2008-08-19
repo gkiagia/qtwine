@@ -17,7 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
-#include "shortcutsprovider.h"
+#include "shortcutsmodel.h"
 #include "../qtwineapplication.h"
 
 #include "wineapplication.h"
@@ -25,8 +25,6 @@
 #include "winedlloverrides.h"
 
 #include <QSqlQuery>
-#include <QSqlRelationalTableModel>
-#include <QSqlRelation>
 #include <QSqlRecord>
 #include <QStringList>
 
@@ -34,22 +32,20 @@
 
 using namespace QtWine;
 
-ShortcutsProvider::ShortcutsProvider(QObject *parent)
-    : AbstractSqlTableProvider(parent)
+ShortcutsModel::ShortcutsModel(QObject *parent)
+    : QtWineSqlTableModel(parent)
 {
     QSqlDatabase db = QSqlDatabase::database();
     if ( !db.tables().contains("shortcuts") )
         createFirstTimeTable();
 
-    QSqlRelationalTableModel *model = new QSqlRelationalTableModel();
-    model->setTable("shortcuts");
-    model->setRelation(model->fieldIndex("wineconfiguration"),
-                       QSqlRelation("wine_configurations", "id", "name"));
-    setModel(model);
-    connect(model, SIGNAL(primeInsert(int, QSqlRecord&)), this, SLOT(slotPrimeInsert(int, QSqlRecord&)) );
+    setTable("shortcuts");
+    setRelation(fieldIndex("wineconfiguration"), QSqlRelation("wine_configurations", "id", "name"));
+
+    connect(this, SIGNAL(primeInsert(int, QSqlRecord&)), SLOT(slotPrimeInsert(int, QSqlRecord&)) );
 }
 
-void ShortcutsProvider::createFirstTimeTable()
+void ShortcutsModel::createFirstTimeTable()
 {
     QSqlQuery query;
     query.exec("create table shortcuts(id int primary key,"
@@ -59,7 +55,7 @@ void ShortcutsProvider::createFirstTimeTable()
                " run_in_terminal boolean, is_cui_application boolean)");
 }
 
-WineApplication ShortcutsProvider::wineApplicationByModelRow(int row) const
+WineApplication ShortcutsModel::wineApplicationByModelRow(int row) const
 {
     // we use another model here because the QSqlRelation hides the
     // field "wineconfiguration" from the original model
@@ -71,7 +67,7 @@ WineApplication ShortcutsProvider::wineApplicationByModelRow(int row) const
     return wineApplicationFromRecord(record);
 }
 
-WineApplication ShortcutsProvider::wineApplicationFromRecord(const QSqlRecord & record) const
+WineApplication ShortcutsModel::wineApplicationFromRecord(const QSqlRecord & record) const
 {
     WineApplication a;
     if ( record.isEmpty() ) return a;
@@ -88,13 +84,14 @@ WineApplication ShortcutsProvider::wineApplicationFromRecord(const QSqlRecord & 
     a.setWineDebugOptions( WineDebugOptions(record.value("winedebugoptions").toString()) );
     a.setIsConsoleApplication( record.value("is_cui_application").toBool() );
 
-    WineConfiguration c = configurationsProvider->configurationById(record.value("wineconfiguration").toInt());
+    WineConfiguration c = qtwineApp->wineConfigurationsModel()
+                            ->configurationById(record.value("wineconfiguration").toInt());
     a.setWinePrefix( c.winePrefix() );
     a.setWineInstallation( c.wineInstallation() );
     return a;
 }
 
-void ShortcutsProvider::slotPrimeInsert(int row, QSqlRecord & record)
+void ShortcutsModel::slotPrimeInsert(int row, QSqlRecord & record)
 {
     Q_UNUSED(row);
     record.setValue("id", generateId(KRandom::randomString(5)));
@@ -102,4 +99,4 @@ void ShortcutsProvider::slotPrimeInsert(int row, QSqlRecord & record)
     record.setValue("wineconfiguration", 1); //FIXME I am not working :)
 }
 
-#include "shortcutsprovider.moc"
+#include "shortcutsmodel.moc"

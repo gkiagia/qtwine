@@ -17,7 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
-#include "wineconfigurationsprovider.h"
+#include "wineconfigurationsmodel.h"
 #include "../qtwineapplication.h"
 #include "qtwinepreferences.h"
 
@@ -25,8 +25,6 @@
 
 #include <QSqlQuery>
 #include <QSqlRecord>
-#include <QSqlRelationalTableModel>
-#include <QSqlRelation>
 #include <QFile>
 #include <QDir>
 
@@ -37,26 +35,23 @@
 using namespace QtWine;
 
 
-WineConfigurationsProvider::WineConfigurationsProvider(QObject *parent)
-    : AbstractSqlTableProvider(parent)
+WineConfigurationsModel::WineConfigurationsModel(QObject *parent)
+    : QtWineSqlTableModel(parent)
 {
     QSqlDatabase db = QSqlDatabase::database();
     if ( !db.tables().contains("wine_configurations") )
         createFirstTimeTable();
 
-    QSqlRelationalTableModel *model = new QSqlRelationalTableModel();
-    model->setTable("wine_configurations");
-    model->setRelation(model->fieldIndex("wineinstallation"),
-                    QSqlRelation("wine_installations", "id", "name"));
-    setModel(model);
+    setTable("wine_configurations");
+    setRelation(fieldIndex("wineinstallation"), QSqlRelation("wine_installations", "id", "name"));
         
     lockInstallations();
-    connect(model, SIGNAL(beforeInsert(QSqlRecord&)), SLOT(model_beforeInsert(QSqlRecord&)) );
-    connect(model, SIGNAL(beforeUpdate(int, QSqlRecord&)), SLOT(model_beforeUpdate(int, QSqlRecord&)) );
-    connect(model, SIGNAL(beforeDelete(int)), SLOT(model_beforeDelete(int)) );
+    connect(this, SIGNAL(beforeInsert(QSqlRecord&)), SLOT(model_beforeInsert(QSqlRecord&)) );
+    connect(this, SIGNAL(beforeUpdate(int, QSqlRecord&)), SLOT(model_beforeUpdate(int, QSqlRecord&)) );
+    connect(this, SIGNAL(beforeDelete(int)), SLOT(model_beforeDelete(int)) );
 }
 
-void WineConfigurationsProvider::createFirstTimeTable()
+void WineConfigurationsModel::createFirstTimeTable()
 {
     QSqlQuery query;
     query.exec("create table wine_configurations(id int primary key,"
@@ -74,7 +69,7 @@ void WineConfigurationsProvider::createFirstTimeTable()
     query.exec();
 }
 
-WineConfiguration WineConfigurationsProvider::configurationById(int id) const
+WineConfiguration WineConfigurationsModel::configurationById(int id) const
 {
     int row = idToRow(id);
     if ( row == -1 )
@@ -83,7 +78,7 @@ WineConfiguration WineConfigurationsProvider::configurationById(int id) const
     return configurationByModelRow(row);
 }
 
-WineConfiguration WineConfigurationsProvider::configurationByModelRow(int row) const
+WineConfiguration WineConfigurationsModel::configurationByModelRow(int row) const
 {
     // we use another model here because the QSqlRelation hides the
     // field "wineinstallation" from the original model
@@ -93,19 +88,19 @@ WineConfiguration WineConfigurationsProvider::configurationByModelRow(int row) c
     return configurationFromRecord(record);
 }
 
-WineConfiguration WineConfigurationsProvider::configurationFromRecord(const QSqlRecord & record) const
+WineConfiguration WineConfigurationsModel::configurationFromRecord(const QSqlRecord & record) const
 {
     WineConfiguration c;
     if ( record.isEmpty() ) return c;
 
     c.setWinePrefix(record.value("wineprefix").toString());
 
-    WineInstallationsProvider *p = qtwineApp->wineInstallationsProvider();
-    c.setWineInstallation( p->installationById(record.value("wineinstallation").toInt()) );
+    WineInstallationsModel *m = qtwineApp->wineInstallationsModel();
+    c.setWineInstallation( m->installationById(record.value("wineinstallation").toInt()) );
     return c;
 }
 
-bool WineConfigurationsProvider::createConfiguration(const QString & name, int installationId)
+bool WineConfigurationsModel::createConfiguration(const QString & name, int installationId)
 {
     QDir cfgPrefixDir(QtWinePreferences::configurationsPrefix());
     if ( !cfgPrefixDir.mkpath(name) ) {
@@ -117,10 +112,10 @@ bool WineConfigurationsProvider::createConfiguration(const QString & name, int i
     return importConfiguration(name, cfgPrefixDir.filePath(name), installationId);
 }
 
-bool WineConfigurationsProvider::importConfiguration(const QString & name,
-                                                     const QString & wineprefix, int installationId)
+bool WineConfigurationsModel::importConfiguration(const QString & name,
+                                                  const QString & wineprefix, int installationId)
 {
-    WineInstallationsProvider *p = installationsProvider; //just a shorter name :)
+    WineInstallationsModel *p = qtwineApp->wineInstallationsModel(); //just a shorter name :)
     int installationRow = p->idToRow(installationId);
 
     if ( installationRow == -1 ) {
@@ -128,27 +123,26 @@ bool WineConfigurationsProvider::importConfiguration(const QString & name,
         return false;
     }
 
-    QSqlRelationalTableModel *m = static_cast<QSqlRelationalTableModel*>(model());
-    if ( KDE_ISUNLIKELY(!m->insertRow(m->rowCount())) ) {
+    if ( KDE_ISUNLIKELY(!insertRow(rowCount())) ) {
         kDebug() << "could not insert row... that's quite impossible";
         return false;
     }
 
-    int newRow = m->rowCount()-1;
-    m->setData( m->index(newRow, m->fieldIndex("id")), generateId(name) );
-    m->setData( m->index(newRow, m->fieldIndex("name")), name );
-    m->setData( m->index(newRow, m->fieldIndex("wineprefix")), wineprefix );
+    int newRow = rowCount()-1;
+    setData( index(newRow, fieldIndex("id")), generateId(name) );
+    setData( index(newRow, fieldIndex("name")), name );
+    setData( index(newRow, fieldIndex("wineprefix")), wineprefix );
 
     // set the "wineinstallation" field (using Qt::EditRole, so we insert the id)
-    QModelIndex index =  m->index(newRow, m->fieldIndex("wine_installations_name"));
-    m->setData( index, installationId, Qt::EditRole );
+    QModelIndex index =  index(newRow, fieldIndex("wine_installations_name"));
+    setData( index, installationId, Qt::EditRole );
 
     // set the "wineinstallation" field (using Qt::DisplayRole, so we insert the name)
-    QModelIndex installationNameIndex = // points to the "name" field of the installation.
-        p->model()->index(installationRow, p->model()->fieldIndex("name"));
-    m->setData( index, installationNameIndex.data(Qt::DisplayRole), Qt::DisplayRole );
+    // installationNameIndex points to the "name" field of the installation.
+    QModelIndex installationNameIndex = p->index(installationRow, p->fieldIndex("name"));
+    setData( index, installationNameIndex.data(Qt::DisplayRole), Qt::DisplayRole );
 
-    return model()->submit();
+    return submit();
 }
 
 
@@ -157,26 +151,27 @@ This is because if an installation is deleted while a configuration is using it,
 will disappear from the view of the user but remain forever in the database.
 */
 
-void WineConfigurationsProvider::lockInstallations()
+void WineConfigurationsModel::lockInstallations()
 {
-    for (int i=0; i < model()->rowCount(); ++i)
-        installationsProvider->lockInstallation(rowToId(i));
+    for (int i=0; i < rowCount(); ++i)
+        qtwineApp->wineInstallationsModel()->lockInstallation(rowToId(i));
 }
 
-void WineConfigurationsProvider::model_beforeInsert(QSqlRecord & record)
+void WineConfigurationsModel::model_beforeInsert(QSqlRecord & record)
 {
-    installationsProvider->lockInstallation(record.value("id").toInt());
+    qtwineApp->wineInstallationsModel()->lockInstallation(record.value("id").toInt());
 }
 
-void WineConfigurationsProvider::model_beforeUpdate(int row, QSqlRecord & record)
+void WineConfigurationsModel::model_beforeUpdate(int row, QSqlRecord & record)
 {
-    installationsProvider->unlockInstallation(rowToId(row));
-    installationsProvider->lockInstallation(record.value("id").toInt());
+    WineInstallationsModel *m = qtwineApp->wineInstallationsModel();
+    m->unlockInstallation(rowToId(row));
+    m->lockInstallation(record.value("id").toInt());
 }
 
-void WineConfigurationsProvider::model_beforeDelete(int row)
+void WineConfigurationsModel::model_beforeDelete(int row)
 {
-    installationsProvider->unlockInstallation(rowToId(row));
+    qtwineApp->wineInstallationsModel()->unlockInstallation(rowToId(row));
 }
     
-#include "wineconfigurationsprovider.moc"
+#include "wineconfigurationsmodel.moc"
