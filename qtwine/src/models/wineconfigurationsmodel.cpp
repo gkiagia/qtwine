@@ -43,6 +43,7 @@ WineConfigurationsModel::WineConfigurationsModel(QObject *parent)
         createFirstTimeTable();
 
     setTable("wine_configurations");
+    select();
     setRelation(fieldIndex("wineinstallation"), QSqlRelation("wine_installations", "id", "name"));
         
     lockInstallations();
@@ -53,6 +54,8 @@ WineConfigurationsModel::WineConfigurationsModel(QObject *parent)
 
 void WineConfigurationsModel::createFirstTimeTable()
 {
+    kDebug() << "Creating table for the first time";
+
     QSqlQuery query;
     query.exec("create table wine_configurations(id int primary key,"
                " name varchar(256), wineprefix varchar(1024),"

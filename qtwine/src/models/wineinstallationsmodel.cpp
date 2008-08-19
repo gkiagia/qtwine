@@ -27,6 +27,7 @@
 
 #include <KMessage>
 #include <KLocalizedString>
+#include <KDebug>
 
 using namespace QtWine;
 
@@ -38,6 +39,7 @@ WineInstallationsModel::WineInstallationsModel(QObject *parent)
         createFirstTimeTable();
 
     setTable("wine_installations");
+    select();
 
     updateVersionFields();
     updateDistroInstallation();
@@ -47,6 +49,8 @@ WineInstallationsModel::WineInstallationsModel(QObject *parent)
 
 void WineInstallationsModel::createFirstTimeTable()
 {
+    kDebug() << "Creating table for the first time";
+
     QSqlQuery query;
     query.exec("create table wine_installations(id int primary key,"
                " name varchar(256), prefix varchar(1024),"
@@ -80,6 +84,8 @@ void WineInstallationsModel::updateDistroInstallation()
     if ( rec.isEmpty() or rec.value("id").toInt() != 1
         or QFile::exists(rec.value("wineloader").toString()) )
         return; //do not update if wineloader still exists or the installation is not the one we want
+
+    kDebug() << "Distro installation changed. Updating";
 
     WineInstallation inst = WineInstallation::findWineInPath();
     if ( inst.isInvalid() ) {

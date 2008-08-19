@@ -121,7 +121,7 @@ void WineConfigurationsListPart::loadModel()
     int defaultRow = qtwineApp->wineConfigurationsModel()->idToRow(defaultId);
 
     if ( KDE_ISUNLIKELY(defaultRow == -1) )
-        kWarning() << "Default item has invalid index";
+        kWarning() << "Default item has invalid index. ID:" << defaultId << "Row:" << defaultRow;
 
     enableDefaultItem("set_default_configuration", defaultRow == -1 ? defaultRow : 0);
     connect(this, SIGNAL(defaultItemRowUpdated(int, int)), SLOT(saveNewDefaultItem(int)) );

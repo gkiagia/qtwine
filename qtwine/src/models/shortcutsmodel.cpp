@@ -29,6 +29,7 @@
 #include <QStringList>
 
 #include <KRandom>
+#include <KDebug>
 
 using namespace QtWine;
 
@@ -40,6 +41,7 @@ ShortcutsModel::ShortcutsModel(QObject *parent)
         createFirstTimeTable();
 
     setTable("shortcuts");
+    select();
     setRelation(fieldIndex("wineconfiguration"), QSqlRelation("wine_configurations", "id", "name"));
 
     connect(this, SIGNAL(primeInsert(int, QSqlRecord&)), SLOT(slotPrimeInsert(int, QSqlRecord&)) );
@@ -47,6 +49,8 @@ ShortcutsModel::ShortcutsModel(QObject *parent)
 
 void ShortcutsModel::createFirstTimeTable()
 {
+    kDebug() << "Creating table for the first time";
+
     QSqlQuery query;
     query.exec("create table shortcuts(id int primary key,"
                " name varchar(256), wineconfiguration int, icon varchar(1024),"

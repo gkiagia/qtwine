@@ -80,7 +80,7 @@ void WineInstallationsListPart::loadModel()
     int defaultRow = qtwineApp->wineInstallationsModel()->idToRow(defaultId);
 
     if ( KDE_ISUNLIKELY(defaultRow == -1) )
-        kWarning() << "Default item has invalid index";
+        kWarning() << "Default item has invalid id. ID:" << defaultId << "Row:" << defaultRow;
 
     enableDefaultItem("set_default_installation", defaultRow == -1 ? defaultRow : 0);
     connect(this, SIGNAL(defaultItemRowUpdated(int, int)), SLOT(saveNewDefaultItem(int)) );
