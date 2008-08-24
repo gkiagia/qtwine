@@ -37,15 +37,15 @@ QtWineSqlTableModel::QtWineSqlTableModel(QObject *parent)
 
 int QtWineSqlTableModel::idToRow(int id) const
 {
-    int column = 0;
-    QModelIndex start = index(0, column);
+    QModelIndex start = index(0, 0);
     QModelIndexList results = match(start, Qt::DisplayRole, QVariant(QString::number(id)) );
-    return (results.size() > 0) ? results.at(0).row() : -1;
+    return KDE_ISLIKELY(results.size() > 0) ? results.at(0).row() : -1;
 }
 
 int QtWineSqlTableModel::rowToId(int row) const
 {
-    if ( row < 0 or row >= rowCount() ) return -1;
+    if ( KDE_ISUNLIKELY(row < 0 or row >= rowCount()) )
+        return -1;
     return record(row).value("id").toInt();
 }
 

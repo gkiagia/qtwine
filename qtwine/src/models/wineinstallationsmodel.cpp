@@ -35,7 +35,7 @@ WineInstallationsModel::WineInstallationsModel(QObject *parent)
     : QtWineSqlTableModel(parent)
 {
     QSqlDatabase db = QSqlDatabase::database();
-    if ( !db.tables().contains("wine_installations") )
+    if ( KDE_ISUNLIKELY(!db.tables().contains("wine_installations")) )
         createFirstTimeTable();
 
     setTable("wine_installations");

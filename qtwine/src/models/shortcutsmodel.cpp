@@ -37,7 +37,7 @@ ShortcutsModel::ShortcutsModel(QObject *parent)
     : QtWineSqlTableModel(parent)
 {
     QSqlDatabase db = QSqlDatabase::database();
-    if ( !db.tables().contains("shortcuts") )
+    if ( KDE_ISUNLIKELY(!db.tables().contains("shortcuts")) )
         createFirstTimeTable();
 
     setTable("shortcuts");

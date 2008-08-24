@@ -39,7 +39,7 @@ WineConfigurationsModel::WineConfigurationsModel(QObject *parent)
     : QtWineSqlTableModel(parent)
 {
     QSqlDatabase db = QSqlDatabase::database();
-    if ( !db.tables().contains("wine_configurations") )
+    if ( KDE_ISUNLIKELY(!db.tables().contains("wine_configurations")) )
         createFirstTimeTable();
 
     setTable("wine_configurations");
@@ -121,7 +121,7 @@ bool WineConfigurationsModel::importConfiguration(const QString & name,
     WineInstallationsModel *p = qtwineApp->wineInstallationsModel(); //just a shorter name :)
     int installationRow = p->idToRow(installationId);
 
-    if ( installationRow == -1 ) {
+    if ( KDE_ISUNLIKELY(installationRow == -1) ) {
         kDebug() << "invalid installation id";
         return false;
     }
