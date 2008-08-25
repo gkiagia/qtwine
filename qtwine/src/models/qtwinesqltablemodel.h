@@ -37,6 +37,19 @@ public:
     int rowToId(int row) const;
     QSqlRecord recordById(int id) const;
 
+    /*! Returns the integer value of an int field that has been related
+     * with some text on another model (for example, the "wineinstallation"
+     * field of the "wine_configurations" table).
+     * \param row the row of this model for which we want to retrieve the
+     * related field's value.
+     * \param fieldName the name of the field in this model that has been
+     * related to the other model.
+     * \note This function is a workaround because doing model.record(row)
+     * returns a QSqlRecord that cannot access the integer value of the related
+     * field. It only gives access to the related text from the other model.
+     */
+    int relationId(int row, const char *fieldName);
+
 protected:
     /*! Generates a unique identifier for an item.
      * It is used to generate IDs for new items. \a name

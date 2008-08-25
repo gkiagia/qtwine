@@ -22,10 +22,12 @@
 #include <KMessage>
 #include <KLocalizedString>
 #include <KRandom>
+#include <KDebug>
 
 #include <QHash>
 #include <QSqlError>
 #include <QSqlRecord>
+#include <QSqlQuery>
 
 #include <climits>
 
@@ -52,6 +54,18 @@ int QtWineSqlTableModel::rowToId(int row) const
 QSqlRecord QtWineSqlTableModel::recordById(int id) const
 {
     return record(idToRow(id));
+}
+
+int QtWineSqlTableModel::relationId(int row, const char *fieldName)
+{
+    QSqlQuery query;
+    query.exec( QString("SELECT %1 FROM %2").arg(fieldName).arg(tableName()) );
+
+    /* FIXME use QSqlQuery::seek when qt bug #217003 (sqlite QSqlQuery::seek()
+     * cannot get the last record after the query) is resolved */
+    query.next();
+    for (int i=0; i != row; query.next(), ++i) {}
+    return query.value(0).toInt();
 }
 
 int QtWineSqlTableModel::generateId(const QString & name) const
