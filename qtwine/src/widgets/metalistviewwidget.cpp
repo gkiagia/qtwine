@@ -171,8 +171,6 @@ MetaListViewWidget::ActivationClickMode MetaListViewWidget::activationClickMode(
 
 void MetaListViewWidget::setActivationClickMode(ActivationClickMode mode)
 {
-	if ( m_activationClickMode == mode ) return;
-
 	bool singleClickEnabled = false;
 	switch (mode) {
 		case UseKdeDefault:
