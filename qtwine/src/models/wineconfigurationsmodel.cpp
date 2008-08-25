@@ -43,8 +43,8 @@ WineConfigurationsModel::WineConfigurationsModel(QObject *parent)
         createFirstTimeTable();
 
     setTable("wine_configurations");
-    select();
     setRelation(fieldIndex("wineinstallation"), QSqlRelation("wine_installations", "id", "name"));
+    select();
         
     lockInstallations();
     connect(this, SIGNAL(beforeInsert(QSqlRecord&)), SLOT(model_beforeInsert(QSqlRecord&)) );

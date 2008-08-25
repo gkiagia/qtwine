@@ -41,8 +41,8 @@ ShortcutsModel::ShortcutsModel(QObject *parent)
         createFirstTimeTable();
 
     setTable("shortcuts");
-    select();
     setRelation(fieldIndex("wineconfiguration"), QSqlRelation("wine_configurations", "id", "name"));
+    select();
 
     connect(this, SIGNAL(primeInsert(int, QSqlRecord&)), SLOT(slotPrimeInsert(int, QSqlRecord&)) );
 }
