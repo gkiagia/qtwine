@@ -143,21 +143,21 @@ bool WineInstallationsModel::importInstallation(const QString & name,
     return insertRecord(-1, rec);
 }
 
-#if 0
-/*! Removes the installation with ID \a id.
- * \return True on success, false on failure.
- * \todo Prompt the user if this is the only installation available
- * or if the installation is used by a configuration.
- */
-bool WineInstallationsModel::removeInstallation(uint id)
+bool WineInstallationsModel::removeRows(int row, int count, const QModelIndex & parent)
 {
-	QModelIndex index = find(id);
-	if ( !index.isValid() )
-		return false;
+    while ( count != 0 ) {
+        int current_row = row + count - 1;
+        if ( installationIsLocked(rowToId(current_row)) ) {
+            KMessage::message(KMessage::Sorry, i18n("Sorry but you cannot delete this wine installation "
+                                            "because it is currently used by some wine configuration.") );
+            return false;
+        }
+        if ( !QtWineSqlTableModel::removeRows(current_row, 1, parent) ) return false;
+        --count;
+    }
 
-	return m_sqlModel->removeRow(index.row());
+    return true;
 }
-#endif
 
 bool WineInstallationsModel::installationIsLocked(int id) const
 {
@@ -166,11 +166,13 @@ bool WineInstallationsModel::installationIsLocked(int id) const
 
 void WineInstallationsModel::lockInstallation(int id)
 {
+    kDebug() << "locking installation" << id;
     m_lockedInstallations[id]++;
 }
 
 void WineInstallationsModel::unlockInstallation(int id)
 {
+    kDebug() << "unlocking installation" << id;
     if ( m_lockedInstallations.value(id) > 0 )
         m_lockedInstallations[id]--;
 }

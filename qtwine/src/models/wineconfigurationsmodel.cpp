@@ -157,24 +157,24 @@ will disappear from the view of the user but remain forever in the database.
 void WineConfigurationsModel::lockInstallations()
 {
     for (int i=0; i < rowCount(); ++i)
-        qtwineApp->wineInstallationsModel()->lockInstallation(rowToId(i));
+        qtwineApp->wineInstallationsModel()->lockInstallation(relationId(i, "wineinstallation"));
 }
 
 void WineConfigurationsModel::model_beforeInsert(QSqlRecord & record)
 {
-    qtwineApp->wineInstallationsModel()->lockInstallation(record.value("id").toInt());
+    qtwineApp->wineInstallationsModel()->lockInstallation(record.value("wineinstallation").toInt());
 }
 
 void WineConfigurationsModel::model_beforeUpdate(int row, QSqlRecord & record)
 {
     WineInstallationsModel *m = qtwineApp->wineInstallationsModel();
-    m->unlockInstallation(rowToId(row));
-    m->lockInstallation(record.value("id").toInt());
+    m->unlockInstallation(relationId(row, "wineinstallation"));
+    m->lockInstallation(record.value("wineinstallation").toInt());
 }
 
 void WineConfigurationsModel::model_beforeDelete(int row)
 {
-    qtwineApp->wineInstallationsModel()->unlockInstallation(rowToId(row));
+    qtwineApp->wineInstallationsModel()->unlockInstallation(relationId(row, "wineinstallation"));
 }
     
 #include "wineconfigurationsmodel.moc"

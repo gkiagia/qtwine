@@ -23,14 +23,10 @@
 #include "../dialogs/installationeditor.h"
 #include "../assistants/createinstallationassistant.h"
 
-#include <QSqlRecord>
-
 #include <KAction>
 #include <KActionCollection>
 #include <KIcon>
 #include <KLocalizedString>
-#include <KMessageBox>
-
 
 WineInstallationsListPart::WineInstallationsListPart(QObject *parent)
     : MetaListViewPart(parent)
@@ -106,15 +102,7 @@ void WineInstallationsListPart::addInstallation()
 
 void WineInstallationsListPart::removeInstallation()
 {
-    int row = selectedIndex().row();
-/* TODO move in the model
-    if ( installationsProvider->installationIsLocked(installationsProvider->rowToId(row)) ) {
-        KMessageBox::sorry(widget(), i18n("Sorry but you cannot delete this wine installation "
-                                    "because it is currently used by some wine configuration.") );
-        return;
-    }
-*/
-    model()->removeRow(row);
+    model()->removeRow(selectedIndex().row());
 }
 
 void WineInstallationsListPart::installationProperties()
