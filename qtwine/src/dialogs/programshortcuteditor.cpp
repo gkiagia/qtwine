@@ -20,7 +20,7 @@
 #include "programshortcuteditor.h"
 #include "../utils/urlrequestercapabledelegate.h"
 #include "../widgets/iconrequesterbutton.h"
-#include "../widgets/winedlloverridesedit.h"
+#include "../widgets/winedlloverridesrequester.h"
 #include "../qtwineapplication.h"
 
 #include <KLineEdit>
@@ -46,7 +46,6 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
 
     /* setup gui */
     setCaption(makeStandardCaption(i18n("Program Shortcut Editor"), this));
-    setFaceType(KPageDialog::Tabbed);
 
     QWidget *page = new QWidget(this);
     addPage(page, i18n("Shortcut properties"));
@@ -84,6 +83,9 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     QWidget *configurationEdit =
                 delegate->createEditor(this, QStyleOptionViewItem(), configurationColumnIndex);
     formLayout->addRow(i18n("Uses wine &configuration:"), configurationEdit);
+    
+    WineDllOverridesRequester *dllOverridesEdit = new WineDllOverridesRequester(this);
+    formLayout->addRow(i18n("Wine &dll overrides:"), dllOverridesEdit);
 
     QComboBox *configurationCombo = qobject_cast<QComboBox*>(configurationEdit);
     Q_ASSERT(configurationCombo);
@@ -102,9 +104,6 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     mainLayout->addLayout(formLayout);
     mainLayout->addWidget(optionsGroup);
     //resizeLayout(mainLayout, marginHint(), spacingHint()); //TODO ask the kde devs - is this really needed?
-
-    WineDllOverridesEdit *dllOverridesEdit = new WineDllOverridesEdit(this);
-    addPage(dllOverridesEdit, i18n("Wine dll overrides") );
 
     /* map data */
     mapper = new QDataWidgetMapper(this);
