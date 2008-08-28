@@ -68,6 +68,7 @@ void MetaListViewWidget::initialize(QAbstractItemModel *model, const KConfigGrou
 	if ( group.isValid() ) {
 		setMetaBarPosition( readEntry(group, "metaBarPosition", Right) );
 		setListViewMode( readEntry(group, "listViewMode", QListView::ListMode) );
+                m_splitter->restoreState( group.readEntry("splitterState", QByteArray()) );
                 m_configGroup = group;
 	} else {
 		setMetaBarPosition(Right);
@@ -96,6 +97,7 @@ void MetaListViewWidget::saveSettings(KConfigGroup & group)
 {
 	writeEntry(group, "metaBarPosition", metaBarPosition());
 	writeEntry(group, "listViewMode", listViewMode());
+    group.writeEntry("splitterState", m_splitter->saveState());
 }
 
 
