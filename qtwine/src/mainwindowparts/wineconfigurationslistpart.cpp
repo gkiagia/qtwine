@@ -123,7 +123,7 @@ void WineConfigurationsListPart::loadModel()
     if ( KDE_ISUNLIKELY(defaultRow == -1) )
         kWarning() << "Default item has invalid index. ID:" << defaultId << "Row:" << defaultRow;
 
-    enableDefaultItem("set_default_configuration", defaultRow == -1 ? defaultRow : 0);
+    enableDefaultItem("set_default_configuration", KDE_ISLIKELY(defaultRow != -1) ? defaultRow : 0);
     connect(this, SIGNAL(defaultItemRowUpdated(int, int)), SLOT(saveNewDefaultItem(int)) );
 }
 
