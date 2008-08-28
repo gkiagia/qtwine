@@ -22,42 +22,40 @@
 #include <QIcon>
 #include <QLabel>
 #include <QVBoxLayout>
-#include <KLocalizedString>
 
 MetaBar::MetaBar(QWidget *parent)
-	: QWidget(parent)
+    : QWidget(parent)
 {
-	//setupUi(this);
-	m_iconLabel = new QLabel(this);
-	m_iconLabel->setAlignment(Qt::AlignCenter);
+    m_iconLabel = new QLabel(this);
+    m_iconLabel->setAlignment(Qt::AlignCenter);
 
     QFrame *separator = new QFrame(this);
     separator->setFrameShape(QFrame::HLine);
 
-	m_metaTextLabel = new MetaTextLabel(this);
+    m_metaTextLabel = new MetaTextLabel(this);
 
-	QVBoxLayout *layout = new QVBoxLayout(this);
-	layout->addWidget(m_iconLabel);
-	layout->addWidget(separator);
-	layout->addWidget(m_metaTextLabel);
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->addWidget(m_iconLabel);
+    layout->addWidget(separator);
+    layout->addWidget(m_metaTextLabel);
 
-	// ensure that widgets in the information side bar are aligned towards the top
-	layout->addStretch(1);
+    // ensure that widgets in the information side bar are aligned towards the top
+    layout->addStretch(1);
 }
 
 void MetaBar::setIcon(const QIcon & icon)
 {
-	m_iconLabel->setPixmap(icon.pixmap(48, 48));
+    m_iconLabel->setPixmap(icon.pixmap(48, 48));
 }
 
 void MetaBar::addInformationPair(const QString & label, const QString & value)
 {
-	m_metaTextLabel->add(label + ':', value);
+    m_metaTextLabel->add(label + ':', value);
 }
 
 void MetaBar::clearInformation()
 {
-	m_metaTextLabel->clear();
+    m_metaTextLabel->clear();
 }
 
 #include "metabar.moc"

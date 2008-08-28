@@ -21,24 +21,23 @@
 #define METABAR_H
 
 #include <QWidget>
-class QString;
 class QIcon;
-class MetaTextLabel;
 class QLabel;
+class MetaTextLabel;
 
 class MetaBar : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	MetaBar(QWidget *parent = 0);
+    MetaBar(QWidget *parent = 0);
 
-	void setIcon(const QIcon & icon);
-	void addInformationPair(const QString & label, const QString & value);
-	void clearInformation();
+    void setIcon(const QIcon & icon);
+    void addInformationPair(const QString & label, const QString & value);
+    void clearInformation();
 
 private:
-	QLabel *m_iconLabel;
-	MetaTextLabel *m_metaTextLabel;
+    QLabel *m_iconLabel;
+    MetaTextLabel *m_metaTextLabel;
 };
 
 #endif
