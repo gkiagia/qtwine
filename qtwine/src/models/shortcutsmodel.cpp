@@ -30,6 +30,7 @@
 
 #include <KRandom>
 #include <KDebug>
+#include <KLocalizedString>
 
 using namespace QtWine;
 
@@ -99,7 +100,7 @@ void ShortcutsModel::slotPrimeInsert(int row, QSqlRecord & record)
 {
     Q_UNUSED(row);
     record.setValue("id", generateId(KRandom::randomString(5)));
-    record.setValue("name", "New shortcut");
+    record.setValue("name", i18n("New shortcut"));
 
     //This is not working. There is a workaround for it in the ProgramShortcutEditor constructor.
     //record.setValue("wineconfiguration", 1);
