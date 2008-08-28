@@ -30,63 +30,62 @@ class MetaBar;
 
 class MetaListViewWidget : public QWidget
 {
-	Q_OBJECT
-	Q_ENUMS(MetaBarPosition)
-	Q_ENUMS(ActivationClickMode)
-	Q_PROPERTY(MetaBarPosition metaBarPosition READ metaBarPosition WRITE setMetaBarPosition)
-	Q_PROPERTY(QListView::ViewMode listViewMode READ listViewMode WRITE setListViewMode)
-	Q_PROPERTY(bool multipleSelectionEnabled READ multipleSelectionEnabled
-			WRITE setMultipleSelectionEnabled)
-	Q_PROPERTY(ActivationClickMode activationClickMode READ activationClickMode
-			WRITE setActivationClickMode)
+    Q_OBJECT
+    Q_ENUMS(MetaBarPosition)
+    Q_ENUMS(ActivationClickMode)
+    Q_PROPERTY(MetaBarPosition metaBarPosition READ metaBarPosition WRITE setMetaBarPosition)
+    Q_PROPERTY(QListView::ViewMode listViewMode READ listViewMode WRITE setListViewMode)
+    Q_PROPERTY(bool multipleSelectionEnabled READ multipleSelectionEnabled
+                                                WRITE setMultipleSelectionEnabled)
+    Q_PROPERTY(ActivationClickMode activationClickMode READ activationClickMode
+                                                WRITE setActivationClickMode)
 public:
-	enum MetaBarPosition { Left, Right, Hidden };
-	enum ActivationClickMode { UseKdeDefault, SingleClick, DoubleClick };
+    enum MetaBarPosition { Left, Right, Hidden };
+    enum ActivationClickMode { UseKdeDefault, SingleClick, DoubleClick };
 
-	MetaListViewWidget(QWidget *parent = 0);
-        ~MetaListViewWidget();
+    MetaListViewWidget(QWidget *parent = 0);
+    ~MetaListViewWidget();
 
-	QListView *listView() const { return m_listView; }
-	MetaBar *metaBar() const { return m_metaBar; }
+    QListView *listView() const { return m_listView; }
+    MetaBar *metaBar() const { return m_metaBar; }
 
-	MetaBarPosition metaBarPosition() const;
-	void setMetaBarPosition(MetaBarPosition pos);
+    MetaBarPosition metaBarPosition() const;
+    void setMetaBarPosition(MetaBarPosition pos);
 
-	QListView::ViewMode listViewMode() const;
-	void setListViewMode(QListView::ViewMode m);
+    QListView::ViewMode listViewMode() const;
+    void setListViewMode(QListView::ViewMode m);
 
-	bool multipleSelectionEnabled() const;
-	void setMultipleSelectionEnabled(bool enabled);
+    bool multipleSelectionEnabled() const;
+    void setMultipleSelectionEnabled(bool enabled);
 
-	ActivationClickMode activationClickMode() const;
-	void setActivationClickMode(ActivationClickMode mode);
+    ActivationClickMode activationClickMode() const;
+    void setActivationClickMode(ActivationClickMode mode);
 
     void initialize(QAbstractItemModel *model, const KConfigGroup & group = KConfigGroup());
-    void saveSettings(KConfigGroup & group);
-
-public slots:
-    void loadGlobalPreferences();
 
 signals:
-	void itemActivated(const QModelIndex & index);
-	void selectionChanged(const QItemSelection & selected);
-	void contextMenuRequested(const QModelIndex & index);
+    void itemActivated(const QModelIndex & index);
+    void selectionChanged(const QItemSelection & selected);
+    void contextMenuRequested(const QModelIndex & index);
 
 private slots:
-	void slotItemHovered(const QModelIndex & index);
-	void slotHoverSelectTimerTimeout();
-	void slotContextMenuRequested(const QPoint & pos);
+    void slotItemHovered(const QModelIndex & index);
+    void slotHoverSelectTimerTimeout();
+    void slotContextMenuRequested(const QPoint & pos);
+    void loadGlobalPreferences();
 
 private:
-	QListView *m_listView;
-	QSplitter *m_splitter;
-	MetaBar *m_metaBar;
-	MetaBarPosition m_metaBarPosition;
-	ActivationClickMode m_activationClickMode;
+    void saveSettings(KConfigGroup & group);
 
-	QModelIndex m_hoveredIndex;
-	QTimer m_hoverSelectTimer;
-        KConfigGroup m_configGroup;
+    QListView *m_listView;
+    QSplitter *m_splitter;
+    MetaBar *m_metaBar;
+    MetaBarPosition m_metaBarPosition;
+    ActivationClickMode m_activationClickMode;
+
+    QModelIndex m_hoveredIndex;
+    QTimer m_hoverSelectTimer;
+    KConfigGroup m_configGroup;
 };
 
 #endif
