@@ -22,10 +22,12 @@
 #include "../widgets/iconrequesterbutton.h"
 #include "../widgets/winedlloverridesrequester.h"
 #include "../qtwineapplication.h"
+#include "qtwinepreferences.h"
 
 #include <KLineEdit>
 #include <KUrlRequester>
 #include <KLocalizedString>
+#include <KDebug>
 
 #include <QLabel>
 #include <QHBoxLayout>
@@ -87,10 +89,6 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     WineDllOverridesRequester *dllOverridesEdit = new WineDllOverridesRequester(this);
     formLayout->addRow(i18n("Wine &dll overrides:"), dllOverridesEdit);
 
-    QComboBox *configurationCombo = qobject_cast<QComboBox*>(configurationEdit);
-    Q_ASSERT(configurationCombo);
-    configurationCombo->setCurrentIndex(1);
-
     QGroupBox *optionsGroup = new QGroupBox(i18n("Options"), page);
     QCheckBox *terminalBox = new QCheckBox(i18n("Show debugging output in a terminal"), page);
     QCheckBox *cuiAppBox = new QCheckBox(i18n("This is a Windows CUI (DOS) application"), page);
@@ -131,6 +129,18 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     connect(terminalBox, SIGNAL(toggled(bool)), SLOT(enableChangesDependentButtons()) );
     connect(cuiAppBox, SIGNAL(toggled(bool)), SLOT(enableChangesDependentButtons()) );
     connect(dllOverridesEdit, SIGNAL(overridesChanged()), SLOT(enableChangesDependentButtons()) );
+    
+    /* This is a HACK to load the default configuration in the combo box
+     * because setting it from ShortcutsModel::slotPrimeInsert doesn't work
+     * for some strange reason...
+     */
+    QComboBox *configurationCombo = qobject_cast<QComboBox*>(configurationEdit);
+    Q_ASSERT(configurationCombo);
+    if ( configurationCombo->currentIndex() < 0 ) {
+        kDebug() << "Configuration not set. using the default:" << QtWinePreferences::defaultWineConfiguration();
+        QtWineSqlTableModel *cfgModel = qtwineApp->wineConfigurationsModel();
+        configurationCombo->setCurrentIndex(cfgModel->idToRow(QtWinePreferences::defaultWineConfiguration()));
+    }
 }
 
 void ProgramShortcutEditor::slotExecutableChanged(const KUrl & newUrl)

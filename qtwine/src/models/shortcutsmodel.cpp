@@ -100,7 +100,9 @@ void ShortcutsModel::slotPrimeInsert(int row, QSqlRecord & record)
     Q_UNUSED(row);
     record.setValue("id", generateId(KRandom::randomString(5)));
     record.setValue("name", "New shortcut");
-    record.setValue("wineconfiguration", 1); //FIXME I am not working :)
+
+    //This is not working. There is a workaround for it in the ProgramShortcutEditor constructor.
+    //record.setValue("wineconfiguration", 1);
 }
 
 #include "shortcutsmodel.moc"
