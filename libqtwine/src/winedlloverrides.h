@@ -97,12 +97,14 @@ public:
 	~WineDllOverrides();
 
 
-	/*! Parses the string \a dllOverridesStr which must be in the
-	 * same format that wine would expect to see in the WINEDLLOVERRIDES
-	 * environment variable and adds the overrides listed in the string
-	 * to the list of overrides that this class holds.
-	 */
-	bool parseString(const QString & dllOverridesStr);
+    /*! Parses the string \a dllOverridesStr which must be in the
+     * same format that wine would expect to see in the WINEDLLOVERRIDES
+     * environment variable and adds the overrides listed in the string
+     * to the list of overrides that this class holds.
+     * \returns true if the override was parsed and added successfully
+     * or if \a dllOverridesStr is empty and false otherwise
+     */
+    bool parseString(const QString & dllOverridesStr);
 
     /*! Adds an override for the library \a dll to be loaded in the order
      * that \a type defines. This is equivalent to operator<<().

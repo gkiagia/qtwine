@@ -59,6 +59,9 @@ WineDllOverrides::WineDllOverrides(const char * dllOverridesStr)
 
 bool WineDllOverrides::parseString(const QString & dllOverridesStr)
 {
+    if ( dllOverridesStr.isEmpty() )
+        return true; //no override is ok :)
+
     bool returnValue = false;
     QStringList list = dllOverridesStr.split(';', QString::SkipEmptyParts);
     foreach (QString str, list) {
