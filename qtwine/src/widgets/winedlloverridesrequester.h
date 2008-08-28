@@ -19,8 +19,6 @@
 
 #include "winedlloverrides.h"
 #include <KHBox>
-class WineDllOverridesRequesterPrivate;
-
 
 class WineDllOverridesRequester : public KHBox
 {
@@ -41,7 +39,8 @@ Q_SIGNALS:
     void overridesChanged();
 
 private:
-    WineDllOverridesRequesterPrivate *const d;
+    class Private;
+    Private *const d;
     Q_PRIVATE_SLOT(d, void toolButtonClicked())
     Q_PRIVATE_SLOT(d, void lineEditTextChanged())
 };

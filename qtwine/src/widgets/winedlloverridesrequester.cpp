@@ -25,10 +25,10 @@
 
 using namespace QtWine;
 
-class WineDllOverridesRequesterPrivate
+class WineDllOverridesRequester::Private
 {
 public:
-    WineDllOverridesRequesterPrivate(WineDllOverridesRequester *qq) : q(qq) {}
+    Private(WineDllOverridesRequester *qq) : q(qq) {}
     void toolButtonClicked();
     void lineEditTextChanged();
 
@@ -39,13 +39,13 @@ public:
 };
 
 WineDllOverridesRequester::WineDllOverridesRequester(QWidget *parent)
-    : KHBox(parent), d(new WineDllOverridesRequesterPrivate(this))
+    : KHBox(parent), d(new Private(this))
 {
     d->m_lineEdit = new KLineEdit(this);
     d->m_toolButton = new QToolButton(this);
     d->m_toolButton->setIcon(KIcon("document-properties"));
     setSpacing(KDialog::spacingHint());
-    connect(d->m_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(lineEditTextChanged()) );
+    connect(d->m_lineEdit, SIGNAL(textEdited(QString)), this, SLOT(lineEditTextChanged()) );
     connect(d->m_toolButton, SIGNAL(clicked()), this, SLOT(toolButtonClicked()) );
 }
 
@@ -76,7 +76,7 @@ void WineDllOverridesRequester::setDllOverrides(const WineDllOverrides & overrid
     emit overridesChanged();
 }
 
-void WineDllOverridesRequesterPrivate::toolButtonClicked()
+void WineDllOverridesRequester::Private::toolButtonClicked()
 {
     KDialog dialog;
     dialog.setCaption(KDialog::makeStandardCaption(i18n("Edit wine's dll overrides"), &dialog));
@@ -88,11 +88,13 @@ void WineDllOverridesRequesterPrivate::toolButtonClicked()
         q->setDllOverrides(edit->dllOverrides());
 }
 
-void WineDllOverridesRequesterPrivate::lineEditTextChanged()
+void WineDllOverridesRequester::Private::lineEditTextChanged()
 {
     WineDllOverrides v;
-    if ( v.parseString(m_lineEdit->text()) )
+    if ( v.parseString(m_lineEdit->text()) ) {
         m_overrides = v;
+        emit q->overridesChanged();
+    }
 }
 
 #include "winedlloverridesrequester.moc"
