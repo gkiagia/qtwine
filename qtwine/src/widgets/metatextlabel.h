@@ -1,5 +1,8 @@
 /***************************************************************************
+ *   This file is part of the dolphin project. Modified for QtWine.        *
+ *                                                                         *
  *   Copyright (C) 2008 by Peter Penz <peter.penz@gmx.at>                  *
+ *   Copyright (C) 2008 by George Kiagiadakis <gkiagia@users.sf.net>       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,8 +25,8 @@
 
 #include <QWidget>
 
-class KVBox;
 class QHBoxLayout;
+class QFormLayout;
 
 /**
  * @brief Displays general meta in several lines.
@@ -42,8 +45,9 @@ public:
     void add(const QString& labelText, const QString& infoText);
 
 private:
-    KVBox* m_lines;
+    QWidget* m_lines;
     QHBoxLayout* m_layout;
+    QFormLayout *m_formLayout;
 };
 
 #endif

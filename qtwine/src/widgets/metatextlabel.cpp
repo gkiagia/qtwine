@@ -1,5 +1,8 @@
 /***************************************************************************
+ *   This file is part of the dolphin project. Modified for QtWine.        *
+ *                                                                         *
  *   Copyright (C) 2008 by Peter Penz <peter.penz@gmx.at>                  *
+ *   Copyright (C) 2008 by George Kiagiadakis <gkiagia@users.sf.net>       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,15 +19,13 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA            *
  ***************************************************************************/
-
 #include "metatextlabel.h"
 
-#include <kglobalsettings.h>
-#include <klocale.h>
-#include <kvbox.h>
+#include <KGlobalSettings>
+#include <KSqueezedTextLabel>
 
 #include <QHBoxLayout>
-#include <QLabel>
+#include <QFormLayout>
 
 MetaTextLabel::MetaTextLabel(QWidget* parent) :
     QWidget(parent),
@@ -55,19 +56,18 @@ void MetaTextLabel::add(const QString& labelText, const QString& infoText)
     if (m_lines == 0) {
         Q_ASSERT(m_layout == 0);
 
-        m_lines = new KVBox(this);
-        m_layout = new QHBoxLayout();
+        m_lines = new QWidget(this);
+        m_layout = new QHBoxLayout(this);
         m_layout->addWidget(m_lines);
-        setLayout(m_layout);
-
+        m_formLayout = new QFormLayout(m_lines);
+        m_formLayout->setLabelAlignment(Qt::AlignRight);
         m_lines->show();
     }
 
-    QWidget* line = new QWidget(m_lines);
-
-    QLabel* label = new QLabel(labelText, line);
+    QLabel* label = new QLabel(labelText, m_lines);
     label->setFont(KGlobalSettings::smallestReadableFont());
     label->setAlignment(Qt::AlignRight | Qt::AlignTop);
+    label->setWordWrap(true);
 
     QPalette palette = label->palette();
     QColor foreground = palette.color(QPalette::Foreground);
@@ -75,16 +75,16 @@ void MetaTextLabel::add(const QString& labelText, const QString& infoText)
     palette.setColor(QPalette::Foreground, foreground);
     label->setPalette(palette);
 
-    QLabel* info = new QLabel(infoText, line);
+    QLabel *info = 0;
+    if (infoText.contains(' '))
+        info = new QLabel(infoText, m_lines);
+    else
+        info = new KSqueezedTextLabel(infoText, m_lines);
     info->setFont(KGlobalSettings::smallestReadableFont());
     info->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     info->setWordWrap(true);
 
-    QHBoxLayout* layout = new QHBoxLayout(line);
-    layout->addWidget(label, 50);
-    layout->addWidget(info, 50);
-
-    line->show();
+    m_formLayout->addRow(label, info);
 }
 
 #include "metatextlabel.moc"
