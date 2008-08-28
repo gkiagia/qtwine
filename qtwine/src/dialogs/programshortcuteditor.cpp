@@ -50,7 +50,8 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     setCaption(makeStandardCaption(i18n("Program Shortcut Editor"), this));
 
     QWidget *page = new QWidget(this);
-    addPage(page, i18n("Shortcut properties"));
+    KPageWidgetItem *pageItem = addPage(page, i18n("Shortcut properties"));
+    pageItem->setIcon(KIcon("document-properties"));
 
     QLabel *nameLabel = new QLabel(i18n("Name:"), page);
     KLineEdit *nameEdit = new KLineEdit(page);
@@ -59,7 +60,6 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     nameLayout->addWidget(nameEdit);
 
     IconRequesterButton *iconButton = new IconRequesterButton(page);
-    iconButton->setIconSize(QSize(48,48));
     QHBoxLayout *iconLayout = new QHBoxLayout;
     iconLayout->addWidget(iconButton);
     iconLayout->addLayout(nameLayout);
@@ -101,7 +101,6 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     mainLayout->addWidget(hLine);
     mainLayout->addLayout(formLayout);
     mainLayout->addWidget(optionsGroup);
-    //resizeLayout(mainLayout, marginHint(), spacingHint()); //TODO ask the kde devs - is this really needed?
 
     /* map data */
     mapper = new QDataWidgetMapper(this);

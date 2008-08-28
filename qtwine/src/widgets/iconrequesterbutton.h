@@ -32,6 +32,8 @@ public:
     QString iconFileName() const;
     void setIconFileName(const QString & icon);
 
+    virtual QSize sizeHint() const;
+
 signals:
     void iconChanged();
 

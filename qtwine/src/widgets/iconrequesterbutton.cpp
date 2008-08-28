@@ -26,6 +26,7 @@
 IconRequesterButton::IconRequesterButton(QWidget *parent)
     : QPushButton(parent)
 {
+    setIconSize(QSize(48,48));
     connect(this, SIGNAL(clicked()), this, SLOT(slotIconClicked()) );
 }
 
@@ -66,6 +67,11 @@ void IconRequesterButton::slotIconClicked()
                                                 this, i18n("Select an icon"));
     if ( !icon.isEmpty() )
         setIconFileName(icon);
+}
+
+QSize IconRequesterButton::sizeHint() const
+{
+    return QSize(64,64);
 }
 
 #include "iconrequesterbutton.moc"
