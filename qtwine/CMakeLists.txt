@@ -44,7 +44,6 @@ SET( QTWINE_SOURCES
     src/widgets/metabar.cpp
     src/widgets/metatextlabel.cpp
     src/widgets/metalistviewwidget.cpp
-    src/widgets/infoseparator.cpp
     src/widgets/iconrequesterbutton.cpp
     src/widgets/winedlloverridesedit.cpp
     src/widgets/winedlloverridesrequester.cpp

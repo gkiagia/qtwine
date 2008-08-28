@@ -19,7 +19,6 @@
  ***************************************************************************/
 #include "metabar.h"
 #include "metatextlabel.h"
-#include "infoseparator.h"
 #include <QIcon>
 #include <QLabel>
 #include <QVBoxLayout>
@@ -32,7 +31,9 @@ MetaBar::MetaBar(QWidget *parent)
 	m_iconLabel = new QLabel(this);
 	m_iconLabel->setAlignment(Qt::AlignCenter);
 
-	InfoSeparator *separator = new InfoSeparator(this);
+    QFrame *separator = new QFrame(this);
+    separator->setFrameShape(QFrame::HLine);
+
 	m_metaTextLabel = new MetaTextLabel(this);
 
 	QVBoxLayout *layout = new QVBoxLayout(this);
