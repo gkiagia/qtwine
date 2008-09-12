@@ -28,34 +28,34 @@ LIBQTWINE_BEGIN_NAMESPACE
 namespace WinePath {
 
 QString convertPath(const QString & path, PathConversionType convType,
-		    const WineConfiguration & configuration)
+                    const WineConfiguration & configuration)
 {
-	WineApplication a("winepath.exe", configuration);
-	a.setWineDebugOptions("-all");
+    WineApplication a("winepath.exe", configuration);
+    a.setWineDebugOptions("-all");
 
-	switch (convType) {
-		case UnixToWindows:
-			a << "-w";
-			break;
-		case WindowsToUnix:
-			a << "-u";
-			break;
-		case DosToWindows:
-			a << "-l";
-			break;
-		case WindowsToDos:
-			a << "-s";
-			break;
-		default:
-			Q_ASSERT(false);
-	}
+    switch (convType) {
+        case UnixToWindows:
+            a << "-w";
+            break;
+        case WindowsToUnix:
+            a << "-u";
+            break;
+        case DosToWindows:
+            a << "-l";
+            break;
+        case WindowsToDos:
+            a << "-s";
+            break;
+        default:
+            Q_ASSERT(false);
+    }
 
-	a << path;
+    a << path;
 
-	WineProcess process(a);
-	process.setOutputChannelMode(KProcess::OnlyStdoutChannel);
-	process.execute();
-	return QString(process.readAllStandardOutput()).trimmed();
+    WineProcess process(a);
+    process.setOutputChannelMode(KProcess::OnlyStdoutChannel);
+    process.execute();
+    return QString(process.readAllStandardOutput()).trimmed();
 }
 
 
@@ -63,15 +63,15 @@ static const WineConfiguration *conversion_configuration = NULL;
 
 static void unixToWindows2(QString & path)
 {
-	if ( QFile::exists(path) )
-		path = WinePath::unixToWindows(path, *conversion_configuration);
+    if ( QFile::exists(path) )
+        path = WinePath::unixToWindows(path, *conversion_configuration);
 }
 
 void convertWineArguments(QStringList & arguments, const WineConfiguration & configuration)
 {
-	conversion_configuration = &configuration;
-	QtConcurrent::blockingMap(arguments, &unixToWindows2);
-	conversion_configuration = NULL;
+    conversion_configuration = &configuration;
+    QtConcurrent::blockingMap(arguments, &unixToWindows2);
+    conversion_configuration = NULL;
 }
 
 } // end namespace WinePath

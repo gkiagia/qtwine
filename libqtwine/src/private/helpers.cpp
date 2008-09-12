@@ -34,14 +34,14 @@ namespace Helpers {
  */
 QString generateTempFileName(const QString & baseName)
 {
-	QString tmpDir = KGlobal::hasMainComponent() ?
-			KGlobal::dirs()->saveLocation("tmp") : QDir::tempPath();
-	Q_ASSERT(!tmpDir.isEmpty());
+    QString tmpDir = KGlobal::hasMainComponent() ?
+            KGlobal::dirs()->saveLocation("tmp") : QDir::tempPath();
+    Q_ASSERT(!tmpDir.isEmpty());
 
-	if ( !tmpDir.endsWith('/') )
-		tmpDir.append('/');
+    if ( !tmpDir.endsWith('/') )
+        tmpDir.append('/');
 
-	return tmpDir.append(baseName).append(KRandom::randomString(10)).append(".tmp");
+    return tmpDir.append(baseName).append(KRandom::randomString(10)).append(".tmp");
 }
 
 /*! Generates a unique socket name. On unix, this also contains a
@@ -51,17 +51,17 @@ QString generateTempFileName(const QString & baseName)
 QString generateSocketAddress(const QString & baseName)
 {
 #ifdef Q_OS_UNIX
-	QString tmpDir = KGlobal::hasMainComponent() ?
-			KGlobal::dirs()->saveLocation("socket") : QDir::tempPath();
-	Q_ASSERT(!tmpDir.isEmpty());
+    QString tmpDir = KGlobal::hasMainComponent() ?
+            KGlobal::dirs()->saveLocation("socket") : QDir::tempPath();
+    Q_ASSERT(!tmpDir.isEmpty());
 
-	if ( !tmpDir.endsWith('/') )
-		tmpDir.append('/');
+    if ( !tmpDir.endsWith('/') )
+        tmpDir.append('/');
 #else
-	QString tmpDir;
+    QString tmpDir;
 #endif
 
-	return tmpDir.append(baseName).append(KRandom::randomString(10)).append(".socket");
+    return tmpDir.append(baseName).append(KRandom::randomString(10)).append(".socket");
 }
 
 }

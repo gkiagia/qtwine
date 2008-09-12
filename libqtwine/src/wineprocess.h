@@ -35,26 +35,26 @@ class WineProcessPrivate;
  */
 class LIBQTWINE_EXPORT WineProcess : public MonitoredProcess
 {
-	Q_OBJECT
-	Q_DECLARE_PRIVATE(WineProcess)
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(WineProcess)
 public:
-	enum SetEnvMode { Keep, Replace, ListPrepend, ListAppend };
+    enum SetEnvMode { Keep, Replace, ListPrepend, ListAppend };
 
-	explicit WineProcess(QObject *parent = 0);
-	explicit WineProcess(const WineApplication & app, QObject *parent = 0);
-	virtual ~WineProcess();
+    explicit WineProcess(QObject *parent = 0);
+    explicit WineProcess(const WineApplication & app, QObject *parent = 0);
+    virtual ~WineProcess();
 
-	bool wineHasError() const;
-	QString lastWineError() const;
+    bool wineHasError() const;
+    QString lastWineError() const;
 
-	void setEnv(const QString & variable, const QString & value, SetEnvMode mode = Replace);
-	void setWineApplication(const WineApplication & app);
+    void setEnv(const QString & variable, const QString & value, SetEnvMode mode = Replace);
+    void setWineApplication(const WineApplication & app);
 
 public Q_SLOTS:
-	virtual void startMonitored();
+    virtual void startMonitored();
 
 Q_SIGNALS:
-	void wineError(const QString & errorMessage);
+    void wineError(const QString & errorMessage);
 };
 
 LIBQTWINE_END_NAMESPACE

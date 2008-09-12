@@ -30,37 +30,37 @@ LIBQTWINE_BEGIN_NAMESPACE
 
 class ProcessIOConnector : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	enum ProcessChannel {
-		NoChannel = 0x0,
-		StandardInput = 0x1,
-		StandardOutput = 0x2,
-		StandardError = 0x4,
-		AllOutput = StandardOutput | StandardError,
-		All = StandardInput | StandardOutput | StandardError
-	};
-	Q_DECLARE_FLAGS(ProcessChannels, ProcessChannel)
+    enum ProcessChannel {
+        NoChannel = 0x0,
+        StandardInput = 0x1,
+        StandardOutput = 0x2,
+        StandardError = 0x4,
+        AllOutput = StandardOutput | StandardError,
+        All = StandardInput | StandardOutput | StandardError
+    };
+    Q_DECLARE_FLAGS(ProcessChannels, ProcessChannel)
 
-	ProcessIOConnector(KProcess *process);
-	~ProcessIOConnector();
+    ProcessIOConnector(KProcess *process);
+    ~ProcessIOConnector();
 
 public slots:
-	void connectIODevice(QIODevice *device, ProcessChannels channels);
-	void disconnectIODevice(QIODevice *device);
-	void disconnectAll();
+    void connectIODevice(QIODevice *device, ProcessChannels channels);
+    void disconnectIODevice(QIODevice *device);
+    void disconnectAll();
 
 private slots:
-	void inputComingFromIODevice();
-	void IODeviceAboutToClose();
-	void processReadStdout();
-	void processReadStderr();
+    void inputComingFromIODevice();
+    void IODeviceAboutToClose();
+    void processReadStdout();
+    void processReadStderr();
 
 private:
-	void writeToIODevices(const QByteArray & data, ProcessIOConnector::ProcessChannels channel);
+    void writeToIODevices(const QByteArray & data, ProcessIOConnector::ProcessChannels channel);
 
-	KProcess *m_process;
-	QHash<QIODevice*, ProcessChannels> m_connectedDevices;
+    KProcess *m_process;
+    QHash<QIODevice*, ProcessChannels> m_connectedDevices;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(ProcessIOConnector::ProcessChannels)

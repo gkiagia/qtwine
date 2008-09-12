@@ -31,16 +31,16 @@ LIBQTWINE_BEGIN_NAMESPACE
 class WineProcessPrivate : public MonitoredProcessPrivate
 {
 public:
-	WineProcessPrivate(WineProcess *qq)
-		: MonitoredProcessPrivate(qq), m_errDetector(NULL) {}
-	virtual ~WineProcessPrivate() {}
+    WineProcessPrivate(WineProcess *qq)
+        : MonitoredProcessPrivate(qq), m_errDetector(NULL) {}
+    virtual ~WineProcessPrivate() {}
 
-	WineErrorDetector *m_errDetector;
+    WineErrorDetector *m_errDetector;
 };
 
 
 WineProcess::WineProcess(QObject *parent)
-	: MonitoredProcess(new WineProcessPrivate(this), parent)
+    : MonitoredProcess(new WineProcessPrivate(this), parent)
 {
 }
 
@@ -48,55 +48,55 @@ WineProcess::WineProcess(QObject *parent)
  * WineApplication \a app and has \a parent as a parent.
  */
 WineProcess::WineProcess(const WineApplication & app, QObject *parent)
-	: MonitoredProcess(new WineProcessPrivate(this), parent)
+    : MonitoredProcess(new WineProcessPrivate(this), parent)
 {
-	setWineApplication(app);
+    setWineApplication(app);
 }
 
 WineProcess::~WineProcess() {}
 
 void WineProcess::setWineApplication(const WineApplication & app)
 {
-	if ( app.isInvalid() ) {
-		kWarning() << "Called with an invalid WineApplication argument. This will fail!";
-		return;
-	}
+    if ( app.isInvalid() ) {
+        kWarning() << "Called with an invalid WineApplication argument. This will fail!";
+        return;
+    }
 
-	WineInstallation installation = app.wineInstallation();
-	setProgram(installation.wineLoader());
+    WineInstallation installation = app.wineInstallation();
+    setProgram(installation.wineLoader());
 
-	//setup argv
-	if ( app.isConsoleApplication() )
-		*this << "wineconsole.exe" << "--backend=user";
-	if ( app.runsInDebugger() )
-		*this << "winedbg.exe"; // FIXME any options here? before or after wineconsole?
+    //setup argv
+    if ( app.isConsoleApplication() )
+        *this << "wineconsole.exe" << "--backend=user";
+    if ( app.runsInDebugger() )
+        *this << "winedbg.exe"; // FIXME any options here? before or after wineconsole?
 
-	*this << app.executable();
-	*this << app.arguments();
+    *this << app.executable();
+    *this << app.arguments();
 
-	//setup environment
-	setEnv("WINEPREFIX", app.winePrefix());
-	setEnv("WINELOADER", installation.wineLoader());
-	setEnv("WINESERVER", installation.wineServer());
-	setEnv("WINEDLLPATH", installation.wineDllPath());
-	setEnv("WINEDEBUG", app.wineDebugOptions());
-	setEnv("WINEDLLOVERRIDES", app.wineDllOverrides());
-	setEnv("PATH", installation.prefix() + "/bin", ListPrepend);
+    //setup environment
+    setEnv("WINEPREFIX", app.winePrefix());
+    setEnv("WINELOADER", installation.wineLoader());
+    setEnv("WINESERVER", installation.wineServer());
+    setEnv("WINEDLLPATH", installation.wineDllPath());
+    setEnv("WINEDEBUG", app.wineDebugOptions());
+    setEnv("WINEDLLOVERRIDES", app.wineDllOverrides());
+    setEnv("PATH", installation.prefix() + "/bin", ListPrepend);
 
-	//TODO check which other OSes use dyld (or maybe set both vars on all OSes?)
+    //TODO check which other OSes use dyld (or maybe set both vars on all OSes?)
 #ifdef Q_OS_DARWIN
-	const char *ld_lib_path = "DYLD_LIBRARY_PATH";
+    const char *ld_lib_path = "DYLD_LIBRARY_PATH";
 #else
-	const char *ld_lib_path = "LD_LIBRARY_PATH";
+    const char *ld_lib_path = "LD_LIBRARY_PATH";
 #endif
-	setEnv(ld_lib_path, installation.prefix() + "/lib", ListPrepend);
+    setEnv(ld_lib_path, installation.prefix() + "/lib", ListPrepend);
 
-	//setup working directory
-	if ( !app.workingDirectory().isEmpty() )
-		setWorkingDirectory(app.workingDirectory());
-	else
-		//FIXME what about winelib tools? is this working?
-		setWorkingDirectory( QFileInfo(app.executable()).absolutePath() );
+    //setup working directory
+    if ( !app.workingDirectory().isEmpty() )
+        setWorkingDirectory(app.workingDirectory());
+    else
+        //FIXME what about winelib tools? is this working?
+        setWorkingDirectory( QFileInfo(app.executable()).absolutePath() );
 }
 
 /*! Sets the environment variable \a variable to have the value \a value.
@@ -108,61 +108,61 @@ void WineProcess::setWineApplication(const WineApplication & app)
  */
 void WineProcess::setEnv(const QString & variable, const QString & value, SetEnvMode mode)
 {
-	if ( mode == Keep || mode == Replace ) {
-		KProcess::setEnv(variable, value, static_cast<bool>(mode));
-		return;
-	}
+    if ( mode == Keep || mode == Replace ) {
+        KProcess::setEnv(variable, value, static_cast<bool>(mode));
+        return;
+    }
 
-	QStringList env = environment();
-	if ( env.isEmpty() )
-		env = systemEnvironment();
+    QStringList env = environment();
+    if ( env.isEmpty() )
+        env = systemEnvironment();
 
-	QString var(variable);
-	var.append('=');
+    QString var(variable);
+    var.append('=');
 
-	for (QStringList::Iterator it = env.begin(); it != env.end(); ++it) {
-		if ((*it).startsWith(var)) {
-			int i;
-			switch(mode) {
-				case ListPrepend:
-					i = (*it).indexOf('=') + 1;
-					(*it).insert(i, value + ':');
-					break;
-				case ListAppend:
-					(*it).append(':').append(value);
-					break;
-				default:
-					Q_ASSERT(false);
-			}
-			setEnvironment(env);
-			return;
-		}
-	}
+    for (QStringList::Iterator it = env.begin(); it != env.end(); ++it) {
+        if ((*it).startsWith(var)) {
+            int i;
+            switch(mode) {
+                case ListPrepend:
+                    i = (*it).indexOf('=') + 1;
+                    (*it).insert(i, value + ':');
+                    break;
+                case ListAppend:
+                    (*it).append(':').append(value);
+                    break;
+                default:
+                    Q_ASSERT(false);
+            }
+            setEnvironment(env);
+            return;
+        }
+    }
 
-	env << var.append(value);
-	setEnvironment(env);
+    env << var.append(value);
+    setEnvironment(env);
 }
 
 bool WineProcess::wineHasError() const
 {
-	const Q_D(WineProcess);
-	return (d->m_errDetector) ? !d->m_errDetector->lastError().isEmpty() : false;
+    const Q_D(WineProcess);
+    return (d->m_errDetector) ? !d->m_errDetector->lastError().isEmpty() : false;
 }
 
 QString WineProcess::lastWineError() const
 {
-	const Q_D(WineProcess);
-	return (d->m_errDetector) ? d->m_errDetector->lastError() : QString();
+    const Q_D(WineProcess);
+    return (d->m_errDetector) ? d->m_errDetector->lastError() : QString();
 }
 
 void WineProcess::startMonitored()
 {
-	Q_D(WineProcess);
-	d->m_errDetector = new WineErrorDetector(d->m_connector);
-	d->m_connector->connectIODevice(d->m_errDetector, ProcessIOConnector::StandardError);
-	connect(d->m_errDetector, SIGNAL(errorDetected(QString)), SIGNAL(wineError(QString)) );
+    Q_D(WineProcess);
+    d->m_errDetector = new WineErrorDetector(d->m_connector);
+    d->m_connector->connectIODevice(d->m_errDetector, ProcessIOConnector::StandardError);
+    connect(d->m_errDetector, SIGNAL(errorDetected(QString)), SIGNAL(wineError(QString)) );
 
-	MonitoredProcess::startMonitored();
+    MonitoredProcess::startMonitored();
 }
 
 #include "wineprocess.moc"

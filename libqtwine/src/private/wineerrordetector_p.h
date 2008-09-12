@@ -38,23 +38,23 @@ LIBQTWINE_BEGIN_NAMESPACE
  */
 class WineErrorDetector : public QIODevice
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	inline WineErrorDetector(QObject *parent = 0) : QIODevice(parent), m_state(1) {}
-	bool open(QIODevice::OpenMode mode);
-	QString lastError() const { return m_lastError; }
+    inline WineErrorDetector(QObject *parent = 0) : QIODevice(parent), m_state(1) {}
+    bool open(QIODevice::OpenMode mode);
+    QString lastError() const { return m_lastError; }
 
 signals:
-	void errorDetected(const QString & message);
+    void errorDetected(const QString & message);
 
 protected:
-	qint64 readData( char *data, qint64 maxSize );
-	qint64 writeData( const char *data, qint64 maxSize );
+    qint64 readData( char *data, qint64 maxSize );
+    qint64 writeData( const char *data, qint64 maxSize );
 
 private:
-	char m_state;
-	QByteArray m_msg;
-	QString m_lastError;
+    char m_state;
+    QByteArray m_msg;
+    QString m_lastError;
 };
 
 LIBQTWINE_END_NAMESPACE

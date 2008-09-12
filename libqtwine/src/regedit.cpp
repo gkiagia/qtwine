@@ -27,32 +27,32 @@ namespace RegEdit {
 
 bool importRegFile(const QString & fileName, const WineConfiguration & wcfg)
 {
-	WineApplication regedit("regedit.exe", wcfg);
-	regedit.setWineDebugOptions("-all");
-	regedit << fileName;
+    WineApplication regedit("regedit.exe", wcfg);
+    regedit.setWineDebugOptions("-all");
+    regedit << fileName;
 
-	WineProcess p(regedit);
-	return !p.execute();
+    WineProcess p(regedit);
+    return !p.execute();
 }
 
 bool exportKey(const QString & key, const QString & fileName, const WineConfiguration & wcfg)
 {
-	WineApplication regedit("regedit.exe", wcfg);
-	regedit.setWineDebugOptions("-all");
-	regedit << "/E" << fileName << key;
+    WineApplication regedit("regedit.exe", wcfg);
+    regedit.setWineDebugOptions("-all");
+    regedit << "/E" << fileName << key;
 
-	WineProcess p(regedit);
-	return !p.execute();
+    WineProcess p(regedit);
+    return !p.execute();
 }
 
 bool deleteKey(const QString & key, const WineConfiguration & wcfg)
 {
-	WineApplication regedit("regedit.exe", wcfg);
-	regedit.setWineDebugOptions("-all");
-	regedit << "/D" << key;
+    WineApplication regedit("regedit.exe", wcfg);
+    regedit.setWineDebugOptions("-all");
+    regedit << "/D" << key;
 
-	WineProcess p(regedit);
-	return !p.execute();
+    WineProcess p(regedit);
+    return !p.execute();
 }
 
 } //end namespace RegEdit

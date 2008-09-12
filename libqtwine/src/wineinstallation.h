@@ -58,104 +58,104 @@ class WineInstallationData;
 class LIBQTWINE_EXPORT WineInstallation
 {
 public:
-	/*! Constructs an invalid WineInstallation. \sa isInvalid() */
-	WineInstallation();
+    /*! Constructs an invalid WineInstallation. \sa isInvalid() */
+    WineInstallation();
 
-	/*! Constructs a WineInstallation that uses \a prefix
-	 * as a prefix directory.
-	 */
-	WineInstallation(const QString & prefix);
+    /*! Constructs a WineInstallation that uses \a prefix
+     * as a prefix directory.
+     */
+    WineInstallation(const QString & prefix);
 
-	/*! Constructs a new WineInstallation that is copy of \a other.
-	 * Note that this function is both fast and safe because
-	 * WineInstallation uses implicit sharing.
-	 */
-	WineInstallation(const WineInstallation & other);
+    /*! Constructs a new WineInstallation that is copy of \a other.
+     * Note that this function is both fast and safe because
+     * WineInstallation uses implicit sharing.
+     */
+    WineInstallation(const WineInstallation & other);
 
-	/*! Destroys this WineInstallation object. */
-	~WineInstallation();
-
-
-	/*! Makes \a this a copy of \a other. Note that this function is
-	 * both fast and safe because WineInstallation uses implicit sharing.
-	 */
-	WineInstallation & operator=(const WineInstallation & other);
+    /*! Destroys this WineInstallation object. */
+    ~WineInstallation();
 
 
-	/*! Checks if this WineInstallation is invalid. A WineInstallation
-	 * requires at least a prefix() to be set, so it is invalid if
-	 * prefix() is empty.
-	 * \returns true if no prefix has been set, false otherwise
-	 * \note this does not check if there really is a wine installation
-	 * under the prefix() directory.
-	 */
-	bool isInvalid() const;
-
-	/*! Returns prefix() + \a element. This is provided to make life easier.
-	 * It automatically handles missing directory separators between prefix()
-	 * and \a element.
-	 */
-	QString elementPath(const QString & element) const;
-
-	/*! Runs wineLoader() with the "--version" argument, parses and
-	 * returns the version of wine in the format "MAJOR.MINOR.PATCH-EXTRA"
-	 * It will return an empty string if wineLoader() does not exist
-	 * or does not have enough permissions to be executed.
-	 */
-	QString wineVersion() const;
+    /*! Makes \a this a copy of \a other. Note that this function is
+     * both fast and safe because WineInstallation uses implicit sharing.
+     */
+    WineInstallation & operator=(const WineInstallation & other);
 
 
-	/*! Returns the prefix directory of this installation. */
-	QString prefix() const;
+    /*! Checks if this WineInstallation is invalid. A WineInstallation
+     * requires at least a prefix() to be set, so it is invalid if
+     * prefix() is empty.
+     * \returns true if no prefix has been set, false otherwise
+     * \note this does not check if there really is a wine installation
+     * under the prefix() directory.
+     */
+    bool isInvalid() const;
 
-	/*! Sets the prefix directory of this installation. */
-	void setPrefix(const QString & path);
+    /*! Returns prefix() + \a element. This is provided to make life easier.
+     * It automatically handles missing directory separators between prefix()
+     * and \a element.
+     */
+    QString elementPath(const QString & element) const;
 
-
-	/*! Returns the path to the directory where wine stores its dll files ($WINEDLLPATH).
-	 * If this path has not been set with setWineDllPath(), this function
-	 * returns a default value based on prefix() (which is "prefix/lib/wine").
-	 */
-	QString wineDllPath() const;
-
-	/*! Sets the path to the directory where wine stores its dll files ($WINEDLLPATH). */
-	void setWineDllPath(const QString & path);
-
-
-	/*! Returns the path to the "wine" executable ($WINELOADER).
-	 * If this path has not been set with setWineLoader(), this function
-	 * returns a default value based on prefix() (which is "prefix/bin/wine").
-	 * \note On debian and some other distributions, sometimes wine lives in
-	 * /usr/lib/wine/wine.bin. So, if the file "prefix/lib/wine/wine.bin" exists,
-	 * this function returns this path instead of "prefix/bin/wine".
-	 */
-	QString wineLoader() const;
-
-	/*! Sets the path to the "wine" executable ($WINELOADER). */
-	void setWineLoader(const QString & loader);
+    /*! Runs wineLoader() with the "--version" argument, parses and
+     * returns the version of wine in the format "MAJOR.MINOR.PATCH-EXTRA"
+     * It will return an empty string if wineLoader() does not exist
+     * or does not have enough permissions to be executed.
+     */
+    QString wineVersion() const;
 
 
-	/*! Returns the path to the "wineserver" executable ($WINESERVER).
-	 * If this path has not been set with setWineServer(), this function
-	 * returns a default value based on prefix() (which is "prefix/bin/wineserver").
-	 * \note On debian and some other distributions, sometimes wineserver lives in
-	 * /usr/lib/wine/wineserver. So, if the file "prefix/lib/wine/wineserver" exists,
-	 * this function returns this path instead of "prefix/bin/wineserver".
-	 */
-	QString wineServer() const;
+    /*! Returns the prefix directory of this installation. */
+    QString prefix() const;
 
-	/*! Sets the path to the "wineserver" executable ($WINESERVER). */
-	void setWineServer(const QString & server);
+    /*! Sets the prefix directory of this installation. */
+    void setPrefix(const QString & path);
 
 
-	/*! Finds wine in $PATH and returns a WineInstallation object that
-	 * represents this installation. For example, if /usr/bin/wine is found,
-	 * this function will return an installation that has /usr as a prefix.
-	 */
-	static WineInstallation findWineInPath();
+    /*! Returns the path to the directory where wine stores its dll files ($WINEDLLPATH).
+     * If this path has not been set with setWineDllPath(), this function
+     * returns a default value based on prefix() (which is "prefix/lib/wine").
+     */
+    QString wineDllPath() const;
+
+    /*! Sets the path to the directory where wine stores its dll files ($WINEDLLPATH). */
+    void setWineDllPath(const QString & path);
+
+
+    /*! Returns the path to the "wine" executable ($WINELOADER).
+     * If this path has not been set with setWineLoader(), this function
+     * returns a default value based on prefix() (which is "prefix/bin/wine").
+     * \note On debian and some other distributions, sometimes wine lives in
+     * /usr/lib/wine/wine.bin. So, if the file "prefix/lib/wine/wine.bin" exists,
+     * this function returns this path instead of "prefix/bin/wine".
+     */
+    QString wineLoader() const;
+
+    /*! Sets the path to the "wine" executable ($WINELOADER). */
+    void setWineLoader(const QString & loader);
+
+
+    /*! Returns the path to the "wineserver" executable ($WINESERVER).
+     * If this path has not been set with setWineServer(), this function
+     * returns a default value based on prefix() (which is "prefix/bin/wineserver").
+     * \note On debian and some other distributions, sometimes wineserver lives in
+     * /usr/lib/wine/wineserver. So, if the file "prefix/lib/wine/wineserver" exists,
+     * this function returns this path instead of "prefix/bin/wineserver".
+     */
+    QString wineServer() const;
+
+    /*! Sets the path to the "wineserver" executable ($WINESERVER). */
+    void setWineServer(const QString & server);
+
+
+    /*! Finds wine in $PATH and returns a WineInstallation object that
+     * represents this installation. For example, if /usr/bin/wine is found,
+     * this function will return an installation that has /usr as a prefix.
+     */
+    static WineInstallation findWineInPath();
 
 private:
-	QSharedDataPointer<WineInstallationData> d;
+    QSharedDataPointer<WineInstallationData> d;
 };
 
 /*! \relates WineInstallation

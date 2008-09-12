@@ -34,7 +34,7 @@ K_GLOBAL_STATIC_WITH_ARGS(QString, terminalApplication, ("xterm"))
 
 void setDefaultTerminalApplication(const QString & str)
 {
-	*terminalApplication = str;
+    *terminalApplication = str;
 }
 
 /*! This is the default MonitoredWineProcess::OpenTerminalFn function
@@ -48,57 +48,57 @@ void setDefaultTerminalApplication(const QString & str)
  */
 QIODevice *defaultOpenTerminalFn(const QString & title)
 {
-	// check if terminal helper exists in $PATH
-	// (to avoid waiting for 5 secs in server->waitForNewConnection() below )
-	QStringList env = QProcess::systemEnvironment();
-	QString pathString = env.at( env.indexOf(QRegExp("^PATH=.*")) );
-	pathString.remove(0, 5); //remove the starting "PATH="
-	QStringList path = pathString.split(':', QString::SkipEmptyParts);
+    // check if terminal helper exists in $PATH
+    // (to avoid waiting for 5 secs in server->waitForNewConnection() below )
+    QStringList env = QProcess::systemEnvironment();
+    QString pathString = env.at( env.indexOf(QRegExp("^PATH=.*")) );
+    pathString.remove(0, 5); //remove the starting "PATH="
+    QStringList path = pathString.split(':', QString::SkipEmptyParts);
 
-	bool found = false;
-	foreach( QString prefix, path ) {
-		if ( QFile::exists( prefix + "/"HELPER_EXECUTABLE ) ) {
-			found = true;
-			break;
-		}
-	}
+    bool found = false;
+    foreach( QString prefix, path ) {
+        if ( QFile::exists( prefix + "/"HELPER_EXECUTABLE ) ) {
+            found = true;
+            break;
+        }
+    }
 
-	if ( KDE_ISUNLIKELY(not found) ) {
-		kError() << "Could not find the terminal helper executable";
-		return NULL;
-	}
+    if ( KDE_ISUNLIKELY(not found) ) {
+        kError() << "Could not find the terminal helper executable";
+        return NULL;
+    }
 
-	KProcess *terminal = new KProcess;
-	QLocalServer *server = new QLocalServer(terminal);
-	server->listen(Helpers::generateSocketAddress("libqtwine_terminal_socket"));
+    KProcess *terminal = new KProcess;
+    QLocalServer *server = new QLocalServer(terminal);
+    server->listen(Helpers::generateSocketAddress("libqtwine_terminal_socket"));
 
-	*terminal << *terminalApplication << "-T" << title << "-e" <<
-			HELPER_EXECUTABLE << server->fullServerName();
-	terminal->start();
+    *terminal << *terminalApplication << "-T" << title << "-e" <<
+                HELPER_EXECUTABLE << server->fullServerName();
+    terminal->start();
 
-	if ( !terminal->waitForStarted(5000) ) {
-		kError() << "Could not start the terminal." <<
-			"KProcess error message:" << terminal->errorString();
-		delete server;
-		delete terminal;
-		return NULL;
-	}
+    if ( !terminal->waitForStarted(5000) ) {
+        kError() << "Could not start the terminal."
+                 << "KProcess error message:" << terminal->errorString();
+        delete server;
+        delete terminal;
+        return NULL;
+    }
 
-	if ( !server->waitForNewConnection(5000) ) {
-		kError() << "Waiting for the terminal helper to connect on the socket timed out." <<
-			"QLocalServer error string:" << server->errorString();
-		delete server;
-		delete terminal;
-		return NULL;
-	}
+    if ( !server->waitForNewConnection(5000) ) {
+        kError() << "Waiting for the terminal helper to connect on the socket timed out." <<
+            "QLocalServer error string:" << server->errorString();
+        delete server;
+        delete terminal;
+        return NULL;
+    }
 
-	QLocalSocket *socket = server->nextPendingConnection();
-	server->close();
+    QLocalSocket *socket = server->nextPendingConnection();
+    server->close();
 
-	// this will also delete server and socket due to QObject parent-child relationships
-	QObject::connect(terminal, SIGNAL(finished(int, QProcess::ExitStatus)),
-			 terminal, SLOT(deleteLater()) );
-	return socket;
+    // this will also delete server and socket due to QObject parent-child relationships
+    QObject::connect(terminal, SIGNAL(finished(int, QProcess::ExitStatus)),
+                     terminal, SLOT(deleteLater()) );
+    return socket;
 }
 
 LIBQTWINE_END_NAMESPACE

@@ -58,123 +58,123 @@ class WineApplicationData;
 class LIBQTWINE_EXPORT WineApplication
 {
 public:
-	//constructors
-	/*! Constructs an invalid WineApplication. \sa isInvalid() */
-	WineApplication();
+    //constructors
+    /*! Constructs an invalid WineApplication. \sa isInvalid() */
+    WineApplication();
 
-	/*! Creates a new WineApplication that represents the specified
-	 * \a executable using the specified wine \a configuration.
-	 */
-	WineApplication(const QString & executable, const WineConfiguration & configuration);
+    /*! Creates a new WineApplication that represents the specified
+     * \a executable using the specified wine \a configuration.
+     */
+    WineApplication(const QString & executable, const WineConfiguration & configuration);
 
-	/*! Creates a new WineApplication object that is copy of \a other. */
-	WineApplication(const WineApplication & other);
+    /*! Creates a new WineApplication object that is copy of \a other. */
+    WineApplication(const WineApplication & other);
 
-	/*! Destroys this WineApplication object. */
-	~WineApplication();
+    /*! Destroys this WineApplication object. */
+    ~WineApplication();
 
-	//query functions
+    //query functions
 
-	/*! Returns true if this WineApplication object is invalid,
-	 * which means that it can not be used with WineProcess to launch
-	 * a windows application. To be valid, a WineApplication object
-	 * requires to have specified an executable and a wine configuration
-	 * (winePrefix() and wineInstallation()).
-	 */
-	bool isInvalid() const;
+    /*! Returns true if this WineApplication object is invalid,
+     * which means that it can not be used with WineProcess to launch
+     * a windows application. To be valid, a WineApplication object
+     * requires to have specified an executable and a wine configuration
+     * (winePrefix() and wineInstallation()).
+     */
+    bool isInvalid() const;
 
-	//operators
+    //operators
 
-	/*! Appends a command line argument to the list of command line
-	 * arguments that will be passed to the windows executable.
-	 * If an executable has not been set yet, \a arg will be set as
-	 * the executable and command line arguments will be left untouched.
-	 */
-	WineApplication & operator<<(const QString & arg);
+    /*! Appends a command line argument to the list of command line
+     * arguments that will be passed to the windows executable.
+     * If an executable has not been set yet, \a arg will be set as
+     * the executable and command line arguments will be left untouched.
+     */
+    WineApplication & operator<<(const QString & arg);
 
-	/*! \overload */
-	WineApplication & operator<<(const QStringList & args);
+    /*! \overload */
+    WineApplication & operator<<(const QStringList & args);
 
-	/*! Makes \a this a copy of \a other */
-	WineApplication & operator=(const WineApplication & other);
+    /*! Makes \a this a copy of \a other */
+    WineApplication & operator=(const WineApplication & other);
 
-	//transformers
+    //transformers
 
-	/*! Sets the executable name and command line arguments. */
-	void setApplication(const QString & executable,
-			    const QStringList & arguments = QStringList());
+    /*! Sets the executable name and command line arguments. */
+    void setApplication(const QString & executable,
+                        const QStringList & arguments = QStringList());
 
-	/*! Sets the working directory of the windows application. */
-	void setWorkingDirectory(const QString & dir);
+    /*! Sets the working directory of the windows application. */
+    void setWorkingDirectory(const QString & dir);
 
-	/*! Sets the WINEPREFIX environment variable for the instance of
-	 * wine that will execute this application.
-	 */
-	void setWinePrefix(const QString & winePrefixPath);
+    /*! Sets the WINEPREFIX environment variable for the instance of
+     * wine that will execute this application.
+     */
+    void setWinePrefix(const QString & winePrefixPath);
 
-	/*! Sets the installation of wine that will be used to run this app. */
-	void setWineInstallation(const WineInstallation & installation);
+    /*! Sets the installation of wine that will be used to run this app. */
+    void setWineInstallation(const WineInstallation & installation);
 
-	/*! Sets the WINEDLLOVERRIDES environment variable for the
-	 * instance of wine that will execute this application.
-	 */
-	void setWineDllOverrides(const WineDllOverrides & dllOverrides);
+    /*! Sets the WINEDLLOVERRIDES environment variable for the
+     * instance of wine that will execute this application.
+     */
+    void setWineDllOverrides(const WineDllOverrides & dllOverrides);
 
-	/*! Sets the WINEDEBUG environment variable for the instance of
-	 * wine that will execute this application.
-	 */
-	void setWineDebugOptions(const WineDebugOptions & wineDebug);
+    /*! Sets the WINEDEBUG environment variable for the instance of
+     * wine that will execute this application.
+     */
+    void setWineDebugOptions(const WineDebugOptions & wineDebug);
 
-	/*! Defines whether the windows application is a CUI
-	 * (Console User Interface / DOS) application.
-	 * For wine to run correctly such applications, they need
-	 * to be run in the "wineconsole" terminal emulator, so,
-	 * if \a isCuiApp is true, the application will be
-	 * executed inside "wineconsole", otherwise it will be
-	 * executed normally.
-	 */
-	void setIsConsoleApplication(bool isCuiApp);
+    /*! Defines whether the windows application is a CUI
+     * (Console User Interface / DOS) application.
+     * For wine to run correctly such applications, they need
+     * to be run in the "wineconsole" terminal emulator, so,
+     * if \a isCuiApp is true, the application will be
+     * executed inside "wineconsole", otherwise it will be
+     * executed normally.
+     */
+    void setIsConsoleApplication(bool isCuiApp);
 
-	/*! Enables this application to be run inside winedbg.exe for debugging purposes.
-	 * \todo There is work to do with this option. It may not work as expected.
-	 */
-	void enableRunInDebugger(bool enable);
+    /*! Enables this application to be run inside winedbg.exe for debugging purposes.
+     * \todo There is work to do with this option. It may not work as expected.
+     */
+    void enableRunInDebugger(bool enable);
 
-	// TODO void enableVirtualDesktop(const QString & name, const QPair<int, int> & resolution);
+    // TODO void enableVirtualDesktop(const QString & name, const QPair<int, int> & resolution);
 
-	// accessors
+    // accessors
 
-	/*! Returns the name (or filename) of the windows executable
-	 * that this object represents.
-	 */
-	QString executable() const;
+    /*! Returns the name (or filename) of the windows executable
+     * that this object represents.
+     */
+    QString executable() const;
 
-	/*! Returns the command line arguments that are to be passed to the executable. */
-	QStringList arguments() const;
+    /*! Returns the command line arguments that are to be passed to the executable. */
+    QStringList arguments() const;
 
-	/*! Returns the path to the working directory of the windows application. */
-	QString workingDirectory() const;
+    /*! Returns the path to the working directory of the windows application. */
+    QString workingDirectory() const;
 
-	/*! Returns the value that will be given to $WINEPREFIX. */
-	QString winePrefix() const;
+    /*! Returns the value that will be given to $WINEPREFIX. */
+    QString winePrefix() const;
 
-	/*! Returns the WineInstallation that will be used to launch this application. */
-	WineInstallation wineInstallation() const;
+    /*! Returns the WineInstallation that will be used to launch this application. */
+    WineInstallation wineInstallation() const;
 
-	/*! Returns the value that will be given to $WINEDLLOVERRIDES. */
-	WineDllOverrides wineDllOverrides() const;
+    /*! Returns the value that will be given to $WINEDLLOVERRIDES. */
+    WineDllOverrides wineDllOverrides() const;
 
-	/*! Returns the value that will be given to $WINEDEBUG. */
-	WineDebugOptions wineDebugOptions() const;
+    /*! Returns the value that will be given to $WINEDEBUG. */
+    WineDebugOptions wineDebugOptions() const;
 
-	/*! Returns true if this application is a Console User Interface (CUI) application. */
-	bool isConsoleApplication() const;
+    /*! Returns true if this application is a Console User Interface (CUI) application. */
+    bool isConsoleApplication() const;
 
-	/*! Returns true if this application is to be run inside winedbg.exe. */
-	bool runsInDebugger() const;
+    /*! Returns true if this application is to be run inside winedbg.exe. */
+    bool runsInDebugger() const;
 
 private:
-	QSharedDataPointer<WineApplicationData> d;
+    QSharedDataPointer<WineApplicationData> d;
 };
 
 /*! \relates WineApplication

@@ -41,43 +41,43 @@ class WineConfigurationData;
 class LIBQTWINE_EXPORT WineConfiguration
 {
 public:
-	/*! Constructs an invalid WineConfiguration object. \sa isInvalid() */
-	WineConfiguration();
+    /*! Constructs an invalid WineConfiguration object. \sa isInvalid() */
+    WineConfiguration();
 
-	/*! Creates a new WineConfiguration object that has set its winePrefix() field
-	 * to be \a winePrefix and its wineInstallation() field to be \a installation.
-	 */
-	WineConfiguration(const QString & winePrefix, const WineInstallation & installation);
+    /*! Creates a new WineConfiguration object that has set its winePrefix() field
+     * to be \a winePrefix and its wineInstallation() field to be \a installation.
+     */
+    WineConfiguration(const QString & winePrefix, const WineInstallation & installation);
 
-	/*! Creates a new WineConfiguration object that is copy of \a other. */
-	WineConfiguration(const WineConfiguration & other);
+    /*! Creates a new WineConfiguration object that is copy of \a other. */
+    WineConfiguration(const WineConfiguration & other);
 
-	/*! Destroys this WineConfiguration object. */
-	~WineConfiguration();
+    /*! Destroys this WineConfiguration object. */
+    ~WineConfiguration();
 
-	/*! Makes \a this a copy of \a other. \note This function is
-	 * both fast and safe because WineConfiguration uses implicit sharing.
-	 */
-	WineConfiguration & operator=(const WineConfiguration & other);
+    /*! Makes \a this a copy of \a other. \note This function is
+     * both fast and safe because WineConfiguration uses implicit sharing.
+     */
+    WineConfiguration & operator=(const WineConfiguration & other);
 
-	/*! Checks if this WineConfiguration is invalid. A WineConfiguration
-	 * requires to have both a winePrefix() and a wineInstallation() set,
-	 * so it is invalid if either of those two fields is invalid or empty.
-	 * \returns false if either winePrefix() is empty or wineInstallation()
-	 * is invalid, true otherwise
-	 * \note This does not check if the winePrefix() directory really exists.
-	 * \sa WineInstallation::isInvalid()
-	 */
-	bool isInvalid() const;
+    /*! Checks if this WineConfiguration is invalid. A WineConfiguration
+     * requires to have both a winePrefix() and a wineInstallation() set,
+     * so it is invalid if either of those two fields is invalid or empty.
+     * \returns false if either winePrefix() is empty or wineInstallation()
+     * is invalid, true otherwise
+     * \note This does not check if the winePrefix() directory really exists.
+     * \sa WineInstallation::isInvalid()
+     */
+    bool isInvalid() const;
 
-	QString winePrefix() const;
-	void setWinePrefix(const QString & winePrefix);
+    QString winePrefix() const;
+    void setWinePrefix(const QString & winePrefix);
 
-	WineInstallation wineInstallation() const;
-	void setWineInstallation(const WineInstallation & installation);
+    WineInstallation wineInstallation() const;
+    void setWineInstallation(const WineInstallation & installation);
 
 private:
-	QSharedDataPointer<WineConfigurationData> d;
+    QSharedDataPointer<WineConfigurationData> d;
 };
 
 /*! \relates WineConfiguration

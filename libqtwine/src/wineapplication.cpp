@@ -28,183 +28,183 @@ LIBQTWINE_BEGIN_NAMESPACE
 class WineApplicationData : public QSharedData
 {
 public:
-	WineApplicationData();
-	WineApplicationData(const WineApplicationData & other);
-	~WineApplicationData();
+    WineApplicationData();
+    WineApplicationData(const WineApplicationData & other);
+    ~WineApplicationData();
 
-	//basic stuff
-	QString *executable;
-	QStringList *arguments;
-	QString *workingDirectory;
+    //basic stuff
+    QString *executable;
+    QStringList *arguments;
+    QString *workingDirectory;
 
-	//wine environment variables
-	QString *winePrefix;
-	WineInstallation *wineInstallation;
-	WineDllOverrides *wineDllOverrides;
-	WineDebugOptions *wineDebugOptions;
+    //wine environment variables
+    QString *winePrefix;
+    WineInstallation *wineInstallation;
+    WineDllOverrides *wineDllOverrides;
+    WineDebugOptions *wineDebugOptions;
 
-	//qtwine misc
-	bool isConsoleApplication;
-	bool runInDebugger;
+    //qtwine misc
+    bool isConsoleApplication;
+    bool runInDebugger;
 };
 
 WineApplicationData::WineApplicationData()
-	: QSharedData()
+    : QSharedData()
 {
-	isConsoleApplication = runInDebugger = false;
-	executable = workingDirectory = winePrefix = NULL;
-	arguments = NULL;
-	wineInstallation = NULL;
-	wineDllOverrides = NULL;
-	wineDebugOptions = NULL;
+    isConsoleApplication = runInDebugger = false;
+    executable = workingDirectory = winePrefix = NULL;
+    arguments = NULL;
+    wineInstallation = NULL;
+    wineDllOverrides = NULL;
+    wineDebugOptions = NULL;
 }
 
 WineApplicationData::WineApplicationData(const WineApplicationData & other)
-	: QSharedData(other)
+    : QSharedData(other)
 {
 #define COPY(T, var) var = (other.var) ? new T(*other.var) : NULL;
-	COPY(QString, executable);
-	COPY(QStringList, arguments);
-	COPY(QString, workingDirectory);
-	COPY(QString, winePrefix);
-	COPY(WineInstallation, wineInstallation);
-	COPY(WineDllOverrides, wineDllOverrides);
-	COPY(WineDebugOptions, wineDebugOptions);
-	isConsoleApplication = other.isConsoleApplication;
-	runInDebugger = other.runInDebugger;
+    COPY(QString, executable);
+    COPY(QStringList, arguments);
+    COPY(QString, workingDirectory);
+    COPY(QString, winePrefix);
+    COPY(WineInstallation, wineInstallation);
+    COPY(WineDllOverrides, wineDllOverrides);
+    COPY(WineDebugOptions, wineDebugOptions);
+    isConsoleApplication = other.isConsoleApplication;
+    runInDebugger = other.runInDebugger;
 #undef COPY
 }
 
 WineApplicationData::~WineApplicationData()
 {
-	delete executable;
-	delete arguments;
-	delete workingDirectory;
-	delete winePrefix;
-	delete wineInstallation;
-	delete wineDllOverrides;
-	delete wineDebugOptions;
+    delete executable;
+    delete arguments;
+    delete workingDirectory;
+    delete winePrefix;
+    delete wineInstallation;
+    delete wineDllOverrides;
+    delete wineDebugOptions;
 }
 
-	//constructors
+    //constructors
 WineApplication::WineApplication() : d(new WineApplicationData) {}
 
 WineApplication::WineApplication(const QString & executable,
-				 const WineConfiguration & configuration)
-	: d(new WineApplicationData)
+                                 const WineConfiguration & configuration)
+    : d(new WineApplicationData)
 {
-	setApplication(executable);
-	setWinePrefix(configuration.winePrefix());
-	setWineInstallation(configuration.wineInstallation());
+    setApplication(executable);
+    setWinePrefix(configuration.winePrefix());
+    setWineInstallation(configuration.wineInstallation());
 }
 
 WineApplication::WineApplication(const WineApplication & other) : d(other.d) {}
 WineApplication::~WineApplication() {}
 
-	// query functions
+    // query functions
 
 bool WineApplication::isInvalid() const
 {
-	return  executable().isEmpty() or
-		winePrefix().isEmpty() or
-		wineInstallation().isInvalid();
+    return  executable().isEmpty() or
+        winePrefix().isEmpty() or
+        wineInstallation().isInvalid();
 }
 
-	//operators
+    //operators
 
 WineApplication & WineApplication::operator<<(const QString & arg)
 {
-	if ( !d->executable ) {
-		d->executable = new QString;
-		*d->executable = arg;
-		return *this;
-	}
+    if ( !d->executable ) {
+        d->executable = new QString;
+        *d->executable = arg;
+        return *this;
+    }
 
-	if ( !d->arguments )
-		d->arguments = new QStringList;
-	*d->arguments << arg;
-	return *this;
+    if ( !d->arguments )
+        d->arguments = new QStringList;
+    *d->arguments << arg;
+    return *this;
 }
 
 WineApplication & WineApplication::operator<<(const QStringList & args)
 {
-	QStringList copy(args);
-	if ( !d->executable ) {
-		d->executable = new QString;
-		*d->executable = copy.takeFirst();
-	}
+    QStringList copy(args);
+    if ( !d->executable ) {
+        d->executable = new QString;
+        *d->executable = copy.takeFirst();
+    }
 
-	if ( !d->arguments )
-		d->arguments = new QStringList;
-	*d->arguments << copy;
-	return *this;
+    if ( !d->arguments )
+        d->arguments = new QStringList;
+    *d->arguments << copy;
+    return *this;
 }
 
 WineApplication & WineApplication::operator=(const WineApplication & other)
 {
-	d = other.d;
-	return *this;
+    d = other.d;
+    return *this;
 }
 
-	//transformers
+    //transformers
 
 #define ASSIGN_VAR(T, d_var, var) \
-	do { \
-		if ( !d->d_var ) \
-			d->d_var = new T; \
-		*d->d_var = var; \
-	} while(0)
+    do { \
+        if ( !d->d_var ) \
+            d->d_var = new T; \
+        *d->d_var = var; \
+    } while(0)
 
 void WineApplication::setApplication(const QString & executable, const QStringList & arguments)
 {
-	ASSIGN_VAR(QString, executable, executable);
+    ASSIGN_VAR(QString, executable, executable);
 
-	if (d->arguments)
-		d->arguments->clear();
+    if (d->arguments)
+        d->arguments->clear();
 
-	if ( !arguments.isEmpty() )
-		operator<<(arguments);
+    if ( !arguments.isEmpty() )
+        operator<<(arguments);
 }
 
 void WineApplication::setWorkingDirectory(const QString & dir)
 {
-	ASSIGN_VAR(QString, workingDirectory, dir);
+    ASSIGN_VAR(QString, workingDirectory, dir);
 }
 
 void WineApplication::setWinePrefix(const QString & winePrefixPath)
 {
-	ASSIGN_VAR(QString, winePrefix, winePrefixPath);
+    ASSIGN_VAR(QString, winePrefix, winePrefixPath);
 }
 
 void WineApplication::setWineInstallation(const WineInstallation & installation)
 {
-	ASSIGN_VAR(WineInstallation, wineInstallation, installation);
+    ASSIGN_VAR(WineInstallation, wineInstallation, installation);
 }
 
 void WineApplication::setWineDllOverrides(const WineDllOverrides & dllOverrides)
 {
-	ASSIGN_VAR(WineDllOverrides, wineDllOverrides, dllOverrides);
+    ASSIGN_VAR(WineDllOverrides, wineDllOverrides, dllOverrides);
 }
 
 void WineApplication::setWineDebugOptions(const WineDebugOptions & wineDebug)
 {
-	ASSIGN_VAR(WineDebugOptions, wineDebugOptions, wineDebug);
+    ASSIGN_VAR(WineDebugOptions, wineDebugOptions, wineDebug);
 }
 
 void WineApplication::setIsConsoleApplication(bool isCuiApp)
 {
-	d->isConsoleApplication = isCuiApp;
+    d->isConsoleApplication = isCuiApp;
 }
 
 void WineApplication::enableRunInDebugger(bool enable)
 {
-	d->runInDebugger = enable;
+    d->runInDebugger = enable;
 }
 
 #undef ASSIGN_VAR
 
 
-	// accessors
+    // accessors
 
 #define RETURN_VAR(T, var)  return (d->var) ? *d->var : T()
 
@@ -218,17 +218,17 @@ QString WineApplication::winePrefix() const { RETURN_VAR(QString, winePrefix); }
 
 WineInstallation WineApplication::wineInstallation() const
 {
-	RETURN_VAR(WineInstallation, wineInstallation);
+    RETURN_VAR(WineInstallation, wineInstallation);
 }
 
 WineDllOverrides WineApplication::wineDllOverrides() const
 {
-	RETURN_VAR(WineDllOverrides, wineDllOverrides);
+    RETURN_VAR(WineDllOverrides, wineDllOverrides);
 }
 
 WineDebugOptions WineApplication::wineDebugOptions() const
 {
-	RETURN_VAR(WineDebugOptions, wineDebugOptions);
+    RETURN_VAR(WineDebugOptions, wineDebugOptions);
 }
 
 bool WineApplication::isConsoleApplication() const { return d->isConsoleApplication; }
@@ -239,17 +239,17 @@ bool WineApplication::runsInDebugger() const { return d->runInDebugger; }
 
 QDebug operator<<(QDebug dbg, const WineApplication & a)
 {
-	dbg.nospace() << "(WineApplication, [executable: " << a.executable() << "], ";
-	dbg.nospace() << "[arguments: " << a.arguments() << "], ";
-	dbg.nospace() << "[workingDirectory: " << a.workingDirectory() << "], ";
-	dbg.nospace() << "[winePrefix: " << a.winePrefix() << "], ";
-	dbg.nospace() << "[wineInstallation: " << a.wineInstallation() << "], ";
-	dbg.nospace() << "[wineDllOverrides: " << a.wineDllOverrides() << "], ";
-	dbg.nospace() << "[wineDebugOptions: " << a.wineDebugOptions() << "], ";
-	dbg.nospace() << "[isConsoleApplication: " << a.isConsoleApplication() << "], ";
-	dbg.nospace() << "[runsInDebugger: " << a.runsInDebugger() << "] )";
+    dbg.nospace() << "(WineApplication, [executable: " << a.executable() << "], ";
+    dbg.nospace() << "[arguments: " << a.arguments() << "], ";
+    dbg.nospace() << "[workingDirectory: " << a.workingDirectory() << "], ";
+    dbg.nospace() << "[winePrefix: " << a.winePrefix() << "], ";
+    dbg.nospace() << "[wineInstallation: " << a.wineInstallation() << "], ";
+    dbg.nospace() << "[wineDllOverrides: " << a.wineDllOverrides() << "], ";
+    dbg.nospace() << "[wineDebugOptions: " << a.wineDebugOptions() << "], ";
+    dbg.nospace() << "[isConsoleApplication: " << a.isConsoleApplication() << "], ";
+    dbg.nospace() << "[runsInDebugger: " << a.runsInDebugger() << "] )";
 
-	return dbg.space();
+    return dbg.space();
 }
 
 LIBQTWINE_END_NAMESPACE

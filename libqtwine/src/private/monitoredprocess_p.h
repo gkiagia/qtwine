@@ -29,21 +29,21 @@ LIBQTWINE_BEGIN_NAMESPACE
 
 class MonitoredProcessPrivate
 {
-	Q_DECLARE_PUBLIC(MonitoredProcess)
+    Q_DECLARE_PUBLIC(MonitoredProcess)
 public:
-	MonitoredProcessPrivate(MonitoredProcess *qq)
-		: m_connector(NULL), m_autoDelete(false), q_ptr(qq) {}
-	virtual ~MonitoredProcessPrivate() {}
+    MonitoredProcessPrivate(MonitoredProcess *qq)
+        : m_connector(NULL), m_autoDelete(false), q_ptr(qq) {}
+    virtual ~MonitoredProcessPrivate() {}
 
-	void _p_autoDeleteHandler();
+    void _p_autoDeleteHandler();
 
-	QPointer<QIODevice> m_terminalDevice;
-	ProcessIOConnector *m_connector;
-	QFile *m_logFile[3];
-	bool m_autoDelete;
+    QPointer<QIODevice> m_terminalDevice;
+    ProcessIOConnector *m_connector;
+    QFile *m_logFile[3];
+    bool m_autoDelete;
 
 protected:
-	MonitoredProcess *const q_ptr;
+    MonitoredProcess *const q_ptr;
 };
 
 LIBQTWINE_END_NAMESPACE

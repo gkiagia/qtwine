@@ -25,45 +25,45 @@ LIBQTWINE_BEGIN_NAMESPACE
 class WineDebugOptionsPrivate
 {
 public:
-	inline bool parseString(const QString & wineDebugStr) { s = wineDebugStr; return true; }
-	inline QString toString() const { return s; }
+    inline bool parseString(const QString & wineDebugStr) { s = wineDebugStr; return true; }
+    inline QString toString() const { return s; }
 
 private:
-	QString s;
+    QString s;
 };
 
 
 WineDebugOptions::WineDebugOptions() : d(new WineDebugOptionsPrivate) {}
 
 WineDebugOptions::WineDebugOptions(const WineDebugOptions & other)
-	: d(new WineDebugOptionsPrivate(*other.d)) {}
+    : d(new WineDebugOptionsPrivate(*other.d)) {}
 
 /*! Creates a WineDebugOptions object which initializes itself
  * by parsing the \a wineDebugStr string. \sa parseString()
  */
 WineDebugOptions::WineDebugOptions(const QString & wineDebugStr)
-	: d(new WineDebugOptionsPrivate)
+    : d(new WineDebugOptionsPrivate)
 {
-	parseString(wineDebugStr);
+    parseString(wineDebugStr);
 }
 
 /*! \overload */
 WineDebugOptions::WineDebugOptions(const char * wineDebugStr)
-	: d(new WineDebugOptionsPrivate)
+    : d(new WineDebugOptionsPrivate)
 {
-	parseString(wineDebugStr);
+    parseString(wineDebugStr);
 }
 
 WineDebugOptions::~WineDebugOptions()
 {
-	delete d;
+    delete d;
 }
 
 WineDebugOptions & WineDebugOptions::operator=(const WineDebugOptions &other)
 {
-	delete d;
-	d = new WineDebugOptionsPrivate(*other.d);
-	return *this;
+    delete d;
+    d = new WineDebugOptionsPrivate(*other.d);
+    return *this;
 }
 
 /*! Parses the string \a wineDebugStr which must be in the
@@ -73,23 +73,23 @@ WineDebugOptions & WineDebugOptions::operator=(const WineDebugOptions &other)
  */
 bool WineDebugOptions::parseString(const QString & wineDebugStr)
 {
-	return d->parseString(wineDebugStr);
+    return d->parseString(wineDebugStr);
 }
 
 void WineDebugOptions::enableChannel(const QString & channel, WineDebugOptions::DebugClass ch_class)
 {
-	Q_UNUSED(channel);
-	Q_UNUSED(ch_class);
-	kDebug() << "Not implemented yet";
-	return;
+    Q_UNUSED(channel);
+    Q_UNUSED(ch_class);
+    kDebug() << "Not implemented yet";
+    return;
 }
 
 void WineDebugOptions::disableChannel(const QString & channel, WineDebugOptions::DebugClass ch_class)
 {
-	Q_UNUSED(channel);
-	Q_UNUSED(ch_class);
-	kDebug() << "Not implemented yet";
-	return;
+    Q_UNUSED(channel);
+    Q_UNUSED(ch_class);
+    kDebug() << "Not implemented yet";
+    return;
 }
 
 /*! Cast operator. Casts this class to a QString
@@ -100,7 +100,7 @@ void WineDebugOptions::disableChannel(const QString & channel, WineDebugOptions:
  */
 WineDebugOptions::operator QString() const
 {
-	return d->toString();
+    return d->toString();
 }
 
 LIBQTWINE_END_NAMESPACE

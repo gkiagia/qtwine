@@ -25,11 +25,10 @@ class QString;
 
 LIBQTWINE_BEGIN_NAMESPACE
 
-namespace Helpers {
-
-QString generateTempFileName(const QString & baseName);
-QString generateSocketAddress(const QString & baseName);
-
+namespace Helpers
+{
+    QString generateTempFileName(const QString & baseName);
+    QString generateSocketAddress(const QString & baseName);
 }
 
 LIBQTWINE_END_NAMESPACE

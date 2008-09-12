@@ -41,23 +41,23 @@ class WineDebugOptionsPrivate;
 class LIBQTWINE_EXPORT WineDebugOptions
 {
 public:
-	enum DebugClass { All, Err, Warn, Fixme, Trace };
+    enum DebugClass { All, Err, Warn, Fixme, Trace };
 
-	WineDebugOptions();
-	WineDebugOptions(const QString & wineDebugStr);
-	WineDebugOptions(const char * wineDebugStr);
-	WineDebugOptions(const WineDebugOptions & other);
-	~WineDebugOptions();
+    WineDebugOptions();
+    WineDebugOptions(const QString & wineDebugStr);
+    WineDebugOptions(const char * wineDebugStr);
+    WineDebugOptions(const WineDebugOptions & other);
+    ~WineDebugOptions();
 
-	bool parseString(const QString & wineDebugStr);
-	void enableChannel(const QString & channel, DebugClass ch_class = All);
-	void disableChannel(const QString & channel, DebugClass ch_class = All);
+    bool parseString(const QString & wineDebugStr);
+    void enableChannel(const QString & channel, DebugClass ch_class = All);
+    void disableChannel(const QString & channel, DebugClass ch_class = All);
 
-	operator QString() const;
-	WineDebugOptions & operator=(const WineDebugOptions &other);
+    operator QString() const;
+    WineDebugOptions & operator=(const WineDebugOptions &other);
 
 private:
-	WineDebugOptionsPrivate *d;
+    WineDebugOptionsPrivate *d;
 };
 
 LIBQTWINE_END_NAMESPACE

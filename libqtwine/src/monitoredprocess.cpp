@@ -35,25 +35,25 @@ LIBQTWINE_BEGIN_NAMESPACE
  */
 class TerminalFunctionHelper {
 public:
-	TerminalFunctionHelper() {
-		QMutexLocker l(&mutex);
-		QIODevice *defaultOpenTerminalFn(const QString & title);
-		function = defaultOpenTerminalFn;
-	}
+    TerminalFunctionHelper() {
+        QMutexLocker l(&mutex);
+        QIODevice *defaultOpenTerminalFn(const QString & title);
+        function = defaultOpenTerminalFn;
+    }
 
-	MonitoredProcess::OpenTerminalFn get() {
-		QMutexLocker l(&mutex);
-		return function;
-	}
+    MonitoredProcess::OpenTerminalFn get() {
+        QMutexLocker l(&mutex);
+        return function;
+    }
 
-	void set(MonitoredProcess::OpenTerminalFn func) {
-		QMutexLocker l(&mutex);
-		function = func;
-	}
+    void set(MonitoredProcess::OpenTerminalFn func) {
+        QMutexLocker l(&mutex);
+        function = func;
+    }
 
 private:
-	QMutex mutex;
-	MonitoredProcess::OpenTerminalFn function;
+    QMutex mutex;
+    MonitoredProcess::OpenTerminalFn function;
 };
 
 K_GLOBAL_STATIC(TerminalFunctionHelper, terminalFunctionHelper)
@@ -66,131 +66,131 @@ K_GLOBAL_STATIC(TerminalFunctionHelper, terminalFunctionHelper)
  */
 void MonitoredProcessPrivate::_p_autoDeleteHandler()
 {
-	Q_Q(MonitoredProcess);
+    Q_Q(MonitoredProcess);
 
-	/* If the terminal is open, delete this process object when the terminal closes
-	 * else respect autoDelete and delete this process object immediately. */
-	if ( m_terminalDevice && m_terminalDevice->isOpen() )
-		QObject::connect(m_terminalDevice, SIGNAL(aboutToClose()), q, SLOT(deleteLater()) );
-	else
-		q->deleteLater();
+    /* If the terminal is open, delete this process object when the terminal closes
+     * else respect autoDelete and delete this process object immediately. */
+    if ( m_terminalDevice && m_terminalDevice->isOpen() )
+        QObject::connect(m_terminalDevice, SIGNAL(aboutToClose()), q, SLOT(deleteLater()) );
+    else
+        q->deleteLater();
 }
 
 MonitoredProcess::MonitoredProcess(QObject *parent)
-	: KProcess(parent), d_ptr(new MonitoredProcessPrivate(this))
+    : KProcess(parent), d_ptr(new MonitoredProcessPrivate(this))
 {
-	Q_D(MonitoredProcess);
-	d->m_connector = new ProcessIOConnector(this);
+    Q_D(MonitoredProcess);
+    d->m_connector = new ProcessIOConnector(this);
 }
 
 MonitoredProcess::MonitoredProcess(MonitoredProcessPrivate *dd, QObject *parent)
-	: KProcess(parent), d_ptr(dd)
+    : KProcess(parent), d_ptr(dd)
 {
-	Q_D(MonitoredProcess);
-	d->m_connector = new ProcessIOConnector(this);
+    Q_D(MonitoredProcess);
+    d->m_connector = new ProcessIOConnector(this);
 }
 
 MonitoredProcess::~MonitoredProcess()
 {
-	delete d_ptr;
+    delete d_ptr;
 }
 
 QString MonitoredProcess::logFile(ProcessOutputChannel channel) const
 {
-	const Q_D(MonitoredProcess);
-	if ( d->m_logFile[channel] )
-		return d->m_logFile[channel]->fileName();
-	else
-		return QString();
+    const Q_D(MonitoredProcess);
+    if ( d->m_logFile[channel] )
+        return d->m_logFile[channel]->fileName();
+    else
+        return QString();
 }
 
 void MonitoredProcess::setLogFile(const QString & fileName, ProcessOutputChannel channel)
 {
-	if ( fileName.isEmpty() ) {
-		kDebug() << "log fileName is empty";
-		return;
-	}
+    if ( fileName.isEmpty() ) {
+        kDebug() << "log fileName is empty";
+        return;
+    }
 
-	Q_D(MonitoredProcess);
+    Q_D(MonitoredProcess);
 
-	delete d->m_logFile[channel];
-	QFile *log = new QFile(fileName, d->m_connector);
-	d->m_logFile[channel] = log;
+    delete d->m_logFile[channel];
+    QFile *log = new QFile(fileName, d->m_connector);
+    d->m_logFile[channel] = log;
 
-	if ( !log->open(QIODevice::WriteOnly | QIODevice::Truncate) ) {
-		KMessage::message(KMessage::Error, i18n("Could not open the log file."
-			"Check that it (or its directory) has sufficient permissions."));
-		delete log;
-		d->m_logFile[channel] = NULL;
-		return;
-	}
+    if ( !log->open(QIODevice::WriteOnly | QIODevice::Truncate) ) {
+        KMessage::message(KMessage::Error, i18n("Could not open the log file."
+                "Check that it (or its directory) has sufficient permissions."));
+        delete log;
+        d->m_logFile[channel] = NULL;
+        return;
+    }
 
-	ProcessIOConnector::ProcessChannels c;
-	if ( channel & StandardOutput ) c |= ProcessIOConnector::StandardOutput;
-	if ( channel & StandardError ) c |= ProcessIOConnector::StandardError;
+    ProcessIOConnector::ProcessChannels c;
+    if ( channel & StandardOutput ) c |= ProcessIOConnector::StandardOutput;
+    if ( channel & StandardError ) c |= ProcessIOConnector::StandardError;
 
-	d->m_connector->connectIODevice(log, c);
+    d->m_connector->connectIODevice(log, c);
 }
 
 bool MonitoredProcess::autoDeleteEnabled() const
 {
-	const Q_D(MonitoredProcess);
-	return d->m_autoDelete;
+    const Q_D(MonitoredProcess);
+    return d->m_autoDelete;
 }
 
 void MonitoredProcess::setAutoDeleteEnabled(bool enabled)
 {
-	Q_D(MonitoredProcess);
-	d->m_autoDelete = enabled;
+    Q_D(MonitoredProcess);
+    d->m_autoDelete = enabled;
 
-	if ( enabled )
-		connect(this, SIGNAL(finished(int, QProcess::ExitStatus)),
-			this, SLOT(_p_autoDeleteHandler()) );
-	else
-		disconnect(this, SIGNAL(finished(int, QProcess::ExitStatus)),
-			   this, SLOT(_p_autoDeleteHandler()) );
+    if ( enabled )
+        connect(this, SIGNAL(finished(int, QProcess::ExitStatus)),
+                this, SLOT(_p_autoDeleteHandler()) );
+    else
+        disconnect(this, SIGNAL(finished(int, QProcess::ExitStatus)),
+                   this, SLOT(_p_autoDeleteHandler()) );
 }
 
 void MonitoredProcess::setOpenTerminalFunction(OpenTerminalFn termFunc)
 {
-	terminalFunctionHelper->set(termFunc);
+    terminalFunctionHelper->set(termFunc);
 }
 
 void MonitoredProcess::startMonitored()
 {
-	start();
+    start();
 }
 
 void MonitoredProcess::openTerminal(MonitoredProcess::ProcessOutputChannel channel)
 {
-	Q_D(MonitoredProcess);
-	if ( d->m_terminalDevice ) {
-		kDebug() << "Terminal is already open";
-		return;
-	}
+    Q_D(MonitoredProcess);
+    if ( d->m_terminalDevice ) {
+        kDebug() << "Terminal is already open";
+        return;
+    }
 
-	OpenTerminalFn newTerminal = terminalFunctionHelper->get();
-	Q_ASSERT_X(newTerminal, Q_FUNC_INFO, "OpenTerminalFunction has not been set");
+    OpenTerminalFn newTerminal = terminalFunctionHelper->get();
+    Q_ASSERT_X(newTerminal, Q_FUNC_INFO, "OpenTerminalFunction has not been set");
 
-	QString title;
-	if ( KGlobal::hasMainComponent() )
-		title = KGlobal::mainComponent().aboutData()->appName();
-	else
-		title = i18n("<Unknown application>");
+    QString title;
+    if ( KGlobal::hasMainComponent() )
+        title = KGlobal::mainComponent().aboutData()->appName();
+    else
+        title = i18n("<Unknown application>");
 
-	QStringList p = program();
-	if ( !p.isEmpty() ) {
-		title.append(" - ");
-		title.append(p.join(" "));
-	}
+    QStringList p = program();
+    if ( !p.isEmpty() ) {
+        title.append(" - ");
+        title.append(p.join(" "));
+    }
 
-	d->m_terminalDevice = newTerminal(title);
-	if ( d->m_terminalDevice ) {
-		ProcessIOConnector::ProcessChannels c = ProcessIOConnector::StandardInput;
-		if ( channel & StandardOutput ) c |= ProcessIOConnector::StandardOutput;
-		if ( channel & StandardError ) c |= ProcessIOConnector::StandardError;
-		d->m_connector->connectIODevice(d->m_terminalDevice, c);
-	}
+    d->m_terminalDevice = newTerminal(title);
+    if ( d->m_terminalDevice ) {
+        ProcessIOConnector::ProcessChannels c = ProcessIOConnector::StandardInput;
+        if ( channel & StandardOutput ) c |= ProcessIOConnector::StandardOutput;
+        if ( channel & StandardError ) c |= ProcessIOConnector::StandardError;
+        d->m_connector->connectIODevice(d->m_terminalDevice, c);
+    }
 }
 
 #include "monitoredprocess.moc"

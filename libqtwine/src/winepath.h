@@ -26,34 +26,34 @@ LIBQTWINE_BEGIN_NAMESPACE
 
 namespace WinePath
 {
-	enum PathConversionType { UnixToWindows, WindowsToUnix, DosToWindows, WindowsToDos };
+    enum PathConversionType { UnixToWindows, WindowsToUnix, DosToWindows, WindowsToDos };
 
-	LIBQTWINE_EXPORT QString convertPath(const QString & path, PathConversionType convType,
-					     const WineConfiguration & configuration);
+    LIBQTWINE_EXPORT QString convertPath(const QString & path, PathConversionType convType,
+                                         const WineConfiguration & configuration);
 
-	LIBQTWINE_EXPORT void convertWineArguments(QStringList & arguments,
-						   const WineConfiguration & configuration);
+    LIBQTWINE_EXPORT void convertWineArguments(QStringList & arguments,
+                                               const WineConfiguration & configuration);
 
 
-	inline QString unixToWindows(const QString & path, const WineConfiguration & configuration)
-	{
-		return convertPath(path, UnixToWindows, configuration);
-	}
+    inline QString unixToWindows(const QString & path, const WineConfiguration & configuration)
+    {
+        return convertPath(path, UnixToWindows, configuration);
+    }
 
-	inline QString windowsToUnix(const QString & path, const WineConfiguration & configuration)
-	{
-		return convertPath(path, WindowsToUnix, configuration);
-	}
+    inline QString windowsToUnix(const QString & path, const WineConfiguration & configuration)
+    {
+        return convertPath(path, WindowsToUnix, configuration);
+    }
 
-	inline QString dosToWindows(const QString & path, const WineConfiguration & configuration)
-	{
-		return convertPath(path, DosToWindows, configuration);
-	}
+    inline QString dosToWindows(const QString & path, const WineConfiguration & configuration)
+    {
+        return convertPath(path, DosToWindows, configuration);
+    }
 
-	inline QString windowsToDos(const QString & path, const WineConfiguration & configuration)
-	{
-		return convertPath(path, WindowsToDos, configuration);
-	}
+    inline QString windowsToDos(const QString & path, const WineConfiguration & configuration)
+    {
+        return convertPath(path, WindowsToDos, configuration);
+    }
 
 } // end namespace WinePath
 

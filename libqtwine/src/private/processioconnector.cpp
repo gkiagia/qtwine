@@ -27,111 +27,111 @@ LIBQTWINE_BEGIN_NAMESPACE
 // PUBLIC
 
 ProcessIOConnector::ProcessIOConnector(KProcess *process)
-	: QObject(process), m_process(process)
+    : QObject(process), m_process(process)
 {
-	Q_ASSERT(m_process);
+    Q_ASSERT(m_process);
 
-	m_process->setOutputChannelMode(KProcess::SeparateChannels);
-	connect(m_process, SIGNAL(readyReadStandardOutput()), SLOT(processReadStdout()) );
-	connect(m_process, SIGNAL(readyReadStandardError()), SLOT(processReadStderr()) );
+    m_process->setOutputChannelMode(KProcess::SeparateChannels);
+    connect(m_process, SIGNAL(readyReadStandardOutput()), SLOT(processReadStdout()) );
+    connect(m_process, SIGNAL(readyReadStandardError()), SLOT(processReadStderr()) );
 }
 
 ProcessIOConnector::~ProcessIOConnector()
 {
-	disconnectAll();
+    disconnectAll();
 }
 
 void ProcessIOConnector::connectIODevice(QIODevice *device, ProcessChannels channels)
 {
-	if ( !device->isOpen() ) {
-		QIODevice::OpenMode openMode = QIODevice::NotOpen;
+    if ( !device->isOpen() ) {
+        QIODevice::OpenMode openMode = QIODevice::NotOpen;
 
-		if ( channels & StandardInput )
-			openMode |= QIODevice::ReadOnly;
+        if ( channels & StandardInput )
+            openMode |= QIODevice::ReadOnly;
 
-		if ( (channels & StandardOutput) || (channels & StandardError) )
-			openMode |= QIODevice::WriteOnly;
+        if ( (channels & StandardOutput) || (channels & StandardError) )
+            openMode |= QIODevice::WriteOnly;
 
-		if ( !device->open(openMode) ) {
-			kError() << "Cannot open QIODevice. QIODevice error message:"
-				 << device->errorString();
-			return;
-		}
-	}
+        if ( !device->open(openMode) ) {
+            kError() << "Cannot open QIODevice. QIODevice error message:"
+                     << device->errorString();
+            return;
+        }
+    }
 
-	if ( channels & ProcessIOConnector::StandardInput )
-		connect(device, SIGNAL(readyRead()), SLOT(inputComingFromIODevice()) );
+    if ( channels & ProcessIOConnector::StandardInput )
+        connect(device, SIGNAL(readyRead()), SLOT(inputComingFromIODevice()) );
 
-	connect(device, SIGNAL(aboutToClose()), SLOT(IODeviceAboutToClose()) );
-	m_connectedDevices.insert(device, channels);
+    connect(device, SIGNAL(aboutToClose()), SLOT(IODeviceAboutToClose()) );
+    m_connectedDevices.insert(device, channels);
 }
 
 void ProcessIOConnector::disconnectIODevice(QIODevice *device)
 {
-	Q_ASSERT(device);
+    Q_ASSERT(device);
 
-	if ( m_connectedDevices.contains(device) ) {
-		device->disconnect(this);
-		m_connectedDevices.remove(device);
-		device->close();
-	} else
-		kDebug() << "Cannot disconnect device. Device is not connected.";
+    if ( m_connectedDevices.contains(device) ) {
+        device->disconnect(this);
+        m_connectedDevices.remove(device);
+        device->close();
+    } else
+        kDebug() << "Cannot disconnect device. Device is not connected.";
 }
 
 void ProcessIOConnector::disconnectAll()
 {
-	QHashIterator<QIODevice*, ProcessChannels> it(m_connectedDevices);
-	while( it.hasNext() ) {
-		it.next();
-		it.key()->disconnect(this);
-		it.key()->close();
-	}
-	m_connectedDevices.clear();
+    QHashIterator<QIODevice*, ProcessChannels> it(m_connectedDevices);
+    while( it.hasNext() ) {
+        it.next();
+        it.key()->disconnect(this);
+        it.key()->close();
+    }
+    m_connectedDevices.clear();
 }
 
 // PRIVATE
 
 void ProcessIOConnector::inputComingFromIODevice()
 {
-	if ( m_process ) {
-		QIODevice *device = qobject_cast<QIODevice*>(sender());
-		Q_ASSERT_X(device, Q_FUNC_INFO, "sender() is not a QIODevice");
-		m_process->write( device->readAll() );
-	}
+    if ( m_process ) {
+        QIODevice *device = qobject_cast<QIODevice*>(sender());
+        Q_ASSERT_X(device, Q_FUNC_INFO, "sender() is not a QIODevice");
+        m_process->write( device->readAll() );
+    }
 }
 
 void ProcessIOConnector::IODeviceAboutToClose()
 {
-	QIODevice *device = qobject_cast<QIODevice*>(sender());
-	Q_ASSERT_X(device, Q_FUNC_INFO, "sender() is not a QIODevice");
-	disconnectIODevice(device);
+    QIODevice *device = qobject_cast<QIODevice*>(sender());
+    Q_ASSERT_X(device, Q_FUNC_INFO, "sender() is not a QIODevice");
+    disconnectIODevice(device);
 }
 
 void ProcessIOConnector::processReadStdout()
 {
-	if ( !m_connectedDevices.isEmpty() ) {
-		QByteArray data = m_process->readAllStandardOutput();
-		writeToIODevices(data, ProcessIOConnector::StandardOutput);
-	}
+    if ( !m_connectedDevices.isEmpty() ) {
+        QByteArray data = m_process->readAllStandardOutput();
+        writeToIODevices(data, ProcessIOConnector::StandardOutput);
+    }
 }
 
 void ProcessIOConnector::processReadStderr()
 {
-	if ( !m_connectedDevices.isEmpty() ) {
-		QByteArray data = m_process->readAllStandardError();
-		writeToIODevices(data, ProcessIOConnector::StandardError);
-	}
+    if ( !m_connectedDevices.isEmpty() ) {
+        QByteArray data = m_process->readAllStandardError();
+        writeToIODevices(data, ProcessIOConnector::StandardError);
+    }
 }
 
 void ProcessIOConnector::writeToIODevices(const QByteArray & data,
-					  ProcessIOConnector::ProcessChannels channel)
+                                          ProcessIOConnector::ProcessChannels channel)
 {
-	QHashIterator<QIODevice*, ProcessChannels> it(m_connectedDevices);
-	while( it.hasNext() ) {
-		it.next();
-		if ( it.value() & channel )
-			it.key()->write(data);
-	}
+    QHashIterator<QIODevice*, ProcessChannels> it(m_connectedDevices);
+    while( it.hasNext() ) {
+        it.next();
+        if ( it.value() & channel )
+            it.key()->write(data);
+    }
 }
 
 #include "processioconnector_p.moc"
