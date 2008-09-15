@@ -34,4 +34,13 @@
 # define LIBQTWINE_PREPEND_NAMESPACE(class) class
 #endif
 
+#if defined(__GNUC__) && __GNUC__ - 0 >= 3
+# define LIBQTWINE_ISLIKELY( x )    __builtin_expect(!!(x),1)
+# define LIBQTWINE_ISUNLIKELY( x )  __builtin_expect(!!(x),0)
+#else
+# define LIBQTWINE_ISLIKELY( x )   ( x )
+# define LIBQTWINE_ISUNLIKELY( x )  ( x )
+#endif
+
+
 #endif

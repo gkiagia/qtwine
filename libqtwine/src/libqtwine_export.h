@@ -1,10 +1,9 @@
 #ifndef LIBQTWINE_EXPORT
-# include <kdemacros.h>
-# if defined(MAKE_QTWINE_LIB)
-   /* We are building this library */
-#  define LIBQTWINE_EXPORT KDE_EXPORT
+# if defined(__GNUC__)
+#  define LIBQTWINE_NO_EXPORT __attribute__ ((visibility("hidden")))
+#  define LIBQTWINE_EXPORT __attribute__ ((visibility("default")))
 # else
-   /* We are using this library */
-#  define LIBQTWINE_EXPORT KDE_IMPORT
+#  define LIBQTWINE_NO_EXPORT
+#  define LIBQTWINE_EXPORT
 # endif
 #endif

@@ -63,7 +63,7 @@ QIODevice *defaultOpenTerminalFn(const QString & title)
         }
     }
 
-    if ( KDE_ISUNLIKELY(not found) ) {
+    if ( LIBQTWINE_ISUNLIKELY(not found) ) {
         kError() << "Could not find the terminal helper executable";
         return NULL;
     }
