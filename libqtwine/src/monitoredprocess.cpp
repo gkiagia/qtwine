@@ -21,7 +21,7 @@
 #include <QFile>
 #include <QMutex>
 #include <QMutexLocker>
-#include <KDebug>
+#include <QDebug>
 #include <KLocalizedString>
 #include <KMessage>
 #include <KGlobal>
@@ -107,7 +107,7 @@ QString MonitoredProcess::logFile(ProcessOutputChannel channel) const
 void MonitoredProcess::setLogFile(const QString & fileName, ProcessOutputChannel channel)
 {
     if ( fileName.isEmpty() ) {
-        kDebug() << "log fileName is empty";
+        qDebug() << "log fileName is empty";
         return;
     }
 
@@ -165,7 +165,7 @@ void MonitoredProcess::openTerminal(MonitoredProcess::ProcessOutputChannel chann
 {
     Q_D(MonitoredProcess);
     if ( d->m_terminalDevice ) {
-        kDebug() << "Terminal is already open";
+        qDebug() << "Terminal is already open";
         return;
     }
 

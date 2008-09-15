@@ -20,7 +20,6 @@
 #include "wineprocess.h"
 #include <QtGlobal>
 #include <QFileInfo>
-#include <KDebug>
 #include "winedebugoptions.h"
 #include "winedlloverrides.h"
 #include "private/wineerrordetector_p.h"
@@ -57,10 +56,7 @@ WineProcess::~WineProcess() {}
 
 void WineProcess::setWineApplication(const WineApplication & app)
 {
-    if ( app.isInvalid() ) {
-        kWarning() << "Called with an invalid WineApplication argument. This will fail!";
-        return;
-    }
+    Q_ASSERT( !app.isInvalid() );
 
     WineInstallation installation = app.wineInstallation();
     setProgram(installation.wineLoader());

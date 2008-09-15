@@ -18,7 +18,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 #include "winedlloverrides.h"
-#include <KDebug>
+#include <QDebug>
 #include <QLinkedList>
 #include <QStringList>
 
@@ -67,7 +67,7 @@ bool WineDllOverrides::parseString(const QString & dllOverridesStr)
     foreach (QString str, list) {
         QStringList parts = str.split('=');
         if ( parts.size() != 2 ) {
-            kDebug() << "Skipping string" << str << "as it does not seem to be a WineDllOverride";
+            qDebug() << "Skipping string" << str << "as it does not seem to be a WineDllOverride";
             continue;
         }
 
@@ -79,8 +79,7 @@ bool WineDllOverrides::parseString(const QString & dllOverridesStr)
         else if ( parts[1] == "n,b" ) type = FirstNativeThenBuiltin;
         else if ( parts[1] == "b,n" ) type = FirstBuiltinThenNative;
         else {
-            kDebug() << "Could not determine override type for override:" << str;
-            kDebug() << "Skipping this override...";
+            qDebug() << "Could not determine override type for override:" << str << "Skipping this override...";
             continue;
         }
 

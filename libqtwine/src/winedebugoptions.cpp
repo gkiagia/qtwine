@@ -18,7 +18,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 #include "winedebugoptions.h"
-#include <KDebug>
+#include <QDebug>
 
 LIBQTWINE_BEGIN_NAMESPACE
 
@@ -80,7 +80,7 @@ void WineDebugOptions::enableChannel(const QString & channel, WineDebugOptions::
 {
     Q_UNUSED(channel);
     Q_UNUSED(ch_class);
-    kDebug() << "Not implemented yet";
+    qDebug() << Q_FUNC_INFO << "Not implemented yet";
     return;
 }
 
@@ -88,7 +88,7 @@ void WineDebugOptions::disableChannel(const QString & channel, WineDebugOptions:
 {
     Q_UNUSED(channel);
     Q_UNUSED(ch_class);
-    kDebug() << "Not implemented yet";
+    qDebug() << Q_FUNC_INFO << "Not implemented yet";
     return;
 }
 

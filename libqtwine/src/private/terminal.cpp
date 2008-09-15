@@ -21,7 +21,7 @@
 #include <QLocalSocket>
 #include <QFile>
 #include <KProcess>
-#include <KDebug>
+#include <QDebug>
 #include <KGlobal>
 #include "helpers.h"
 #include "../libqtwine_global.h"
@@ -64,7 +64,7 @@ QIODevice *defaultOpenTerminalFn(const QString & title)
     }
 
     if ( LIBQTWINE_ISUNLIKELY(not found) ) {
-        kError() << "Could not find the terminal helper executable";
+        qCritical() << "Could not find the terminal helper executable";
         return NULL;
     }
 
@@ -77,7 +77,7 @@ QIODevice *defaultOpenTerminalFn(const QString & title)
     terminal->start();
 
     if ( !terminal->waitForStarted(5000) ) {
-        kError() << "Could not start the terminal."
+        qCritical() << "Could not start the terminal."
                  << "KProcess error message:" << terminal->errorString();
         delete server;
         delete terminal;
@@ -85,7 +85,7 @@ QIODevice *defaultOpenTerminalFn(const QString & title)
     }
 
     if ( !server->waitForNewConnection(5000) ) {
-        kError() << "Waiting for the terminal helper to connect on the socket timed out." <<
+        qCritical() << "Waiting for the terminal helper to connect on the socket timed out." <<
             "QLocalServer error string:" << server->errorString();
         delete server;
         delete terminal;

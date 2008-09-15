@@ -20,7 +20,7 @@
 #include "processioconnector_p.h"
 #include <KProcess>
 #include <QIODevice>
-#include <KDebug>
+#include <QDebug>
 
 LIBQTWINE_BEGIN_NAMESPACE
 
@@ -53,7 +53,7 @@ void ProcessIOConnector::connectIODevice(QIODevice *device, ProcessChannels chan
             openMode |= QIODevice::WriteOnly;
 
         if ( !device->open(openMode) ) {
-            kError() << "Cannot open QIODevice. QIODevice error message:"
+            qCritical() << "Cannot open QIODevice. QIODevice error message:"
                      << device->errorString();
             return;
         }
@@ -75,7 +75,7 @@ void ProcessIOConnector::disconnectIODevice(QIODevice *device)
         m_connectedDevices.remove(device);
         device->close();
     } else
-        kDebug() << "Cannot disconnect device. Device is not connected.";
+        qDebug() << "Cannot disconnect device. Device is not connected.";
 }
 
 void ProcessIOConnector::disconnectAll()
