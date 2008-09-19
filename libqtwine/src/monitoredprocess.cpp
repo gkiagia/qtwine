@@ -18,6 +18,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 #include "private/monitoredprocess_p.h"
+#include "private/libqtwine_private.h"
 #include <QFile>
 #include <QMutex>
 #include <QMutexLocker>
@@ -56,7 +57,7 @@ private:
     MonitoredProcess::OpenTerminalFn function;
 };
 
-K_GLOBAL_STATIC(TerminalFunctionHelper, terminalFunctionHelper)
+LIBQTWINE_GLOBAL_STATIC(TerminalFunctionHelper, terminalFunctionHelper)
 
 
 /* This is a private slot that is called when the MonitoredProcess emits

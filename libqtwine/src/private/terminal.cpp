@@ -22,15 +22,15 @@
 #include <QFile>
 #include <KProcess>
 #include <QDebug>
-#include <KGlobal>
 #include "helpers.h"
 #include "../libqtwine_global.h"
+#include "libqtwine_private.h"
 
 #define HELPER_EXECUTABLE "qtwine-terminal-helper"
 
 LIBQTWINE_BEGIN_NAMESPACE
 
-K_GLOBAL_STATIC_WITH_ARGS(QString, terminalApplication, ("xterm"))
+LIBQTWINE_GLOBAL_STATIC_WITH_ARGS(QString, terminalApplication, ("xterm"))
 
 void setDefaultTerminalApplication(const QString & str)
 {
