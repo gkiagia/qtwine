@@ -21,6 +21,7 @@
 #include "../utils/urlrequestercapabledelegate.h"
 #include "../widgets/iconrequesterbutton.h"
 #include "../widgets/winedlloverridesrequester.h"
+#include "../widgets/executablerequester.h"
 #include "../qtwineapplication.h"
 #include "qtwinepreferences.h"
 
@@ -68,8 +69,7 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     hLine->setFrameShape(QFrame::HLine);
 
     QFormLayout *formLayout = new QFormLayout;
-    executableEdit = new KUrlRequester(page);
-    executableEdit->setMode(KFile::File | KFile::LocalOnly | KFile::ExistingOnly);
+    executableEdit = new ExecutableRequester(page);
     connect(executableEdit, SIGNAL(urlSelected(KUrl)), this, SLOT(slotExecutableChanged(KUrl)) );
     formLayout->addRow(i18n("&Executable:"), executableEdit);
 
@@ -85,7 +85,7 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     QWidget *configurationEdit =
                 delegate->createEditor(this, QStyleOptionViewItem(), configurationColumnIndex);
     formLayout->addRow(i18n("Uses wine &configuration:"), configurationEdit);
-    
+
     WineDllOverridesRequester *dllOverridesEdit = new WineDllOverridesRequester(this);
     formLayout->addRow(i18n("Wine &dll overrides:"), dllOverridesEdit);
 
@@ -128,7 +128,7 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     connect(terminalBox, SIGNAL(toggled(bool)), SLOT(enableChangesDependentButtons()) );
     connect(cuiAppBox, SIGNAL(toggled(bool)), SLOT(enableChangesDependentButtons()) );
     connect(dllOverridesEdit, SIGNAL(overridesChanged()), SLOT(enableChangesDependentButtons()) );
-    
+
     /* This is a HACK to load the default configuration in the combo box
      * because setting it from ShortcutsModel::slotPrimeInsert doesn't work
      * for some strange reason...
@@ -140,6 +140,11 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
         QtWineSqlTableModel *cfgModel = qtwineApp->wineConfigurationsModel();
         configurationCombo->setCurrentIndex(cfgModel->idToRow(QtWinePreferences::defaultWineConfiguration()));
     }
+
+    //this is to always start the KFileDialog of the executable requester
+    //in the "Program files" directory of the selected configuration
+    executableEdit->setWineConfiguration(configurationCombo->currentIndex());
+    connect(configurationCombo, SIGNAL(currentIndexChanged(int)), executableEdit, SLOT(setWineConfiguration(int)) );
 }
 
 void ProgramShortcutEditor::slotExecutableChanged(const KUrl & newUrl)
