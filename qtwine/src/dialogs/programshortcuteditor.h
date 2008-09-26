@@ -23,7 +23,6 @@
 #include "editorpagedialog.h"
 class KUrl;
 class KUrlRequester;
-class ExecutableRequester;
 class QDataWidgetMapper;
 
 /*!
@@ -44,7 +43,6 @@ protected:
 
 private:
     QDataWidgetMapper *mapper;
-    ExecutableRequester *executableEdit;
     KUrlRequester *workdirEdit;
 };
 

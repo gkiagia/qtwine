@@ -69,7 +69,7 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     hLine->setFrameShape(QFrame::HLine);
 
     QFormLayout *formLayout = new QFormLayout;
-    executableEdit = new ExecutableRequester(page);
+    ExecutableRequester *executableEdit = new ExecutableRequester(page);
     connect(executableEdit, SIGNAL(urlSelected(KUrl)), this, SLOT(slotExecutableChanged(KUrl)) );
     formLayout->addRow(i18n("&Executable:"), executableEdit);
 
