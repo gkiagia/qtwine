@@ -33,33 +33,33 @@ class QCheckBox;
  */
 class Launcher : public KPageDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	Launcher(QWidget *parent = 0);
+    Launcher(QWidget *parent = 0);
 
 public slots:
 #if 0
-	void setCommand(const QString & command);
-	void setCommand(const QStringList & command);
+    void setCommand(const QString & command);
+    void setCommand(const QStringList & command);
 #endif
-	void accept();
+    void accept();
 
 private slots:
     void slotExecutableChanged(const KUrl & newUrl);
 
 private:
-	//void loadSession();
-	//void storeSession();
+    //void loadSession();
+    //void storeSession();
 
     ExecutableRequester *m_executableRequester;
     KLineEdit *m_argumentsEdit;
     KUrlRequester *m_workdirRequester;
     QComboBox *m_configComboBox;
     WineDllOverridesRequester *m_dllOverridesRequester;
-	KUrlRequester *m_logfileRequester;
-	QCheckBox *m_terminalBox;
-	QCheckBox *m_wineconsoleBox;
-	QCheckBox *m_winedbgBox;
+    KUrlRequester *m_logfileRequester;
+    QCheckBox *m_terminalBox;
+    QCheckBox *m_wineconsoleBox;
+    QCheckBox *m_winedbgBox;
 };
 
 #endif

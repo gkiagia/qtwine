@@ -38,18 +38,18 @@
 
 
 Launcher::Launcher(QWidget *parent)
-	: KPageDialog(parent)
+    : KPageDialog(parent)
 {
-	setButtons(KDialog::Ok | KDialog::Cancel);
-	setCaption(makeStandardCaption(i18n("Run command in wine"), this));
+    setButtons(KDialog::Ok | KDialog::Cancel);
+    setCaption(makeStandardCaption(i18n("Run command in wine"), this));
 
-	QWidget *page1 = new QWidget(this);
-	KPageWidgetItem *firstPageItem = addPage(page1, i18n("Run command"));
-	firstPageItem->setIcon(KIcon("system-run"));
+    QWidget *page1 = new QWidget(this);
+    KPageWidgetItem *firstPageItem = addPage(page1, i18n("Run command"));
+    firstPageItem->setIcon(KIcon("system-run"));
 
-	QVBoxLayout *mainVlay = new QVBoxLayout(page1);
-	QFormLayout *formLayout = new QFormLayout;
-	mainVlay->addLayout(formLayout);
+    QVBoxLayout *mainVlay = new QVBoxLayout(page1);
+    QFormLayout *formLayout = new QFormLayout;
+    mainVlay->addLayout(formLayout);
 
     m_executableRequester = new ExecutableRequester(page1);
     connect(m_executableRequester, SIGNAL(urlSelected(KUrl)), this, SLOT(slotExecutableChanged(KUrl)) );
@@ -80,66 +80,66 @@ Launcher::Launcher(QWidget *parent)
     m_logfileRequester->setMode(KFile::File | KFile::LocalOnly);
     formLayout->addRow(i18n("&Log output to a file:"), m_logfileRequester);
 
-	// options groupbox
-	QGroupBox *optionsGroup = new QGroupBox(i18n("Options"), page1);
-	QVBoxLayout *optionsVlay = new QVBoxLayout(optionsGroup);
+    // options groupbox
+    QGroupBox *optionsGroup = new QGroupBox(i18n("Options"), page1);
+    QVBoxLayout *optionsVlay = new QVBoxLayout(optionsGroup);
 
-	m_terminalBox = new QCheckBox(i18n("Show output in a terminal"), optionsGroup);
-	optionsVlay->addWidget(m_terminalBox);
+    m_terminalBox = new QCheckBox(i18n("Show output in a terminal"), optionsGroup);
+    optionsVlay->addWidget(m_terminalBox);
 
-	m_wineconsoleBox = new QCheckBox(i18n("Use wineconsole (for CUI/DOS programs)"), optionsGroup);
-	optionsVlay->addWidget(m_wineconsoleBox);
+    m_wineconsoleBox = new QCheckBox(i18n("Use wineconsole (for CUI/DOS programs)"), optionsGroup);
+    optionsVlay->addWidget(m_wineconsoleBox);
 
-	m_winedbgBox = new QCheckBox(i18n("Start command in debugger (winedbg)"), optionsGroup);
-	optionsVlay->addWidget(m_winedbgBox);
+    m_winedbgBox = new QCheckBox(i18n("Start command in debugger (winedbg)"), optionsGroup);
+    optionsVlay->addWidget(m_winedbgBox);
 
-	resizeLayout(optionsVlay, marginHint(), spacingHint());
-	mainVlay->addWidget(optionsGroup);
-	resizeLayout(mainVlay, marginHint(), spacingHint());
+    resizeLayout(optionsVlay, marginHint(), spacingHint());
+    mainVlay->addWidget(optionsGroup);
+    resizeLayout(mainVlay, marginHint(), spacingHint());
 }
 #if 0
 void Launcher::setCommand(const QString & command)
 {
-	m_commandRequester->lineEdit()->setText( command );
+    m_commandRequester->lineEdit()->setText( command );
 }
 
 void Launcher::setCommand(const QStringList & command)
 {
-	if ( !command.isEmpty() )
-	{
+    if ( !command.isEmpty() )
+    {
 #if 0
-		for (int i=0; i < args.size(); i++) {
-			args[i].prepend('\"');
-			args[i].append('\"');
-		}
+        for (int i=0; i < args.size(); i++) {
+            args[i].prepend('\"');
+            args[i].append('\"');
+        }
 #endif
-		m_commandRequester->lineEdit()->setText(
-				command.join("\" \"").prepend('\"').append('\"') );
-	}
+        m_commandRequester->lineEdit()->setText(
+                command.join("\" \"").prepend('\"').append('\"') );
+    }
 }
 #endif
 void Launcher::accept()
 {
-	//check for valid values
-	if ( m_configComboBox->currentIndex() == -1 ) {
-		KMessageBox::sorry(this, i18n("No wine configuration selected. Please select one."));
-		return;
-	}
+    //check for valid values
+    if ( m_configComboBox->currentIndex() == -1 ) {
+        KMessageBox::sorry(this, i18n("No wine configuration selected. Please select one."));
+        return;
+    }
 
     if ( !m_executableRequester->url().isValid() ) {
         KMessageBox::sorry(this, i18n("No valid executable url was specified. Please specify an executable."));
         return;
     }
 
-	//everything is valid, continue to store the session
-	//storeSession();
+    //everything is valid, continue to store the session
+    //storeSession();
 
     // split by spaces but exclude spaces in quotes " "
     QStringList arguments = m_argumentsEdit->text().split(QRegExp("\\s(?!\"\\w+\\s\\w+\")"), QString::SkipEmptyParts);
 
-	//start wine
-	using namespace QtWine;
-	WineConfiguration wcfg =
+    //start wine
+    using namespace QtWine;
+    WineConfiguration wcfg =
             qtwineApp->wineConfigurationsModel()->configurationByModelRow(m_configComboBox->currentIndex());
 
     WineApplication app(m_executableRequester->url().path(), wcfg); //TODO support remote executable
@@ -150,23 +150,23 @@ void Launcher::accept()
     if ( !dllOverrides.isEmpty() )
         app.setWineDllOverrides( WineDllOverrides(dllOverrides) );
 
-	app.setWorkingDirectory( m_workdirRequester->url().path() );
-	app.setIsConsoleApplication( m_wineconsoleBox->isChecked() );
-	app.enableRunInDebugger( m_winedbgBox->isChecked() );
+    app.setWorkingDirectory( m_workdirRequester->url().path() );
+    app.setIsConsoleApplication( m_wineconsoleBox->isChecked() );
+    app.enableRunInDebugger( m_winedbgBox->isChecked() );
 
-	WineProcess *wine = new WineProcess(app);
+    WineProcess *wine = new WineProcess(app);
 
-	if ( !m_logfileRequester->url().path().isEmpty() )
-		wine->setLogFile( m_logfileRequester->url().path() ); //TODO support remote logfiles
+    if ( !m_logfileRequester->url().path().isEmpty() )
+        wine->setLogFile( m_logfileRequester->url().path() ); //TODO support remote logfiles
 
-	if ( m_terminalBox->isChecked() )
-		wine->openTerminal();
+    if ( m_terminalBox->isChecked() )
+        wine->openTerminal();
 
-	wine->setAutoDeleteEnabled(true);
-	wine->startMonitored();
+    wine->setAutoDeleteEnabled(true);
+    wine->startMonitored();
 
-	// exit the dialog
-	QDialog::accept();
+    // exit the dialog
+    QDialog::accept();
 }
 
 void Launcher::slotExecutableChanged(const KUrl & newUrl)
@@ -177,83 +177,83 @@ void Launcher::slotExecutableChanged(const KUrl & newUrl)
 #if 0
 void Launcher::loadSession()
 {
-	QSettings s( globalSettings->getValue("Launcher/session_file").toString(), QSettings::IniFormat);
-	s.beginGroup( executableInfo.fileName() );
+    QSettings s( globalSettings->getValue("Launcher/session_file").toString(), QSettings::IniFormat);
+    s.beginGroup( executableInfo.fileName() );
 
-	l.configComboBox->setCurrentId( s.value("configurationID", 0).toUInt() );
+    l.configComboBox->setCurrentId( s.value("configurationID", 0).toUInt() );
 
-	l.argsBox->setChecked( s.value("arguments_checkbox_checked", false).toBool() );
-	l.argsEdit->setText( s.value("arguments_lineEdit_text").toString() );
+    l.argsBox->setChecked( s.value("arguments_checkbox_checked", false).toBool() );
+    l.argsEdit->setText( s.value("arguments_lineEdit_text").toString() );
 
-	l.workdirBox->setChecked( s.value("workdir_checkbox_checked", false).toBool() );
-	if ( s.value("workdir_checkbox_checked", false).toBool() )
-		l.workdirEdit->setText( s.value("workdir_lineEdit_text").toString() );
+    l.workdirBox->setChecked( s.value("workdir_checkbox_checked", false).toBool() );
+    if ( s.value("workdir_checkbox_checked", false).toBool() )
+        l.workdirEdit->setText( s.value("workdir_lineEdit_text").toString() );
 
-	l.terminalBox->setChecked( s.value("terminal_checkbox_checked", false).toBool() );
-	l.wineconsoleBox->setChecked( s.value("wineconsole_checkbox_checked", false).toBool() );
+    l.terminalBox->setChecked( s.value("terminal_checkbox_checked", false).toBool() );
+    l.wineconsoleBox->setChecked( s.value("wineconsole_checkbox_checked", false).toBool() );
 
-	if ( s.value("advanced_button_checked").toBool() ) {
-		l.advancedButton->setChecked(true);
-		on_advancedButton_toggled(true);
-	}
+    if ( s.value("advanced_button_checked").toBool() ) {
+        l.advancedButton->setChecked(true);
+        on_advancedButton_toggled(true);
+    }
 
-	//advanced
-	l.winedbgBox->setChecked( s.value("winedbg_checkbox_checked", false).toBool() );
+    //advanced
+    l.winedbgBox->setChecked( s.value("winedbg_checkbox_checked", false).toBool() );
 
-	l.installationBox->setChecked( s.value("installation_checkbox_checked", false).toBool() );
+    l.installationBox->setChecked( s.value("installation_checkbox_checked", false).toBool() );
 
-	if ( s.value("installation_checkbox_checked", false).toBool() )
-		l.installationComboBox->setCurrentId( s.value("installationID", 0).toUInt() );
+    if ( s.value("installation_checkbox_checked", false).toBool() )
+        l.installationComboBox->setCurrentId( s.value("installationID", 0).toUInt() );
 
-	l.logBox->setChecked( s.value("log_checkbox_checked", false).toBool() );
-	l.logEdit->setText( s.value("log_lineEdit_text").toString() );
+    l.logBox->setChecked( s.value("log_checkbox_checked", false).toBool() );
+    l.logEdit->setText( s.value("log_lineEdit_text").toString() );
 
-	l.dlloverridesBox->setChecked( s.value("dlloverrides_checkbox_checked", false).toBool() );
-	l.dlloverridesEdit->setText( s.value("dlloverrides_lineEdit_text").toString() );
+    l.dlloverridesBox->setChecked( s.value("dlloverrides_checkbox_checked", false).toBool() );
+    l.dlloverridesEdit->setText( s.value("dlloverrides_lineEdit_text").toString() );
 
-	l.debugBox->setChecked( s.value("debug_checkbox_checked", false).toBool() );
-	l.debugEdit->setText( s.value("debug_lineEdit_text").toString() );
+    l.debugBox->setChecked( s.value("debug_checkbox_checked", false).toBool() );
+    l.debugEdit->setText( s.value("debug_lineEdit_text").toString() );
 
-	s.endGroup();
+    s.endGroup();
 }
 
 void Launcher::storeSession()
 {
-	QSettings s( globalSettings->getValue("Launcher/session_file").toString(), QSettings::IniFormat);
-	s.beginGroup( executableInfo.fileName() );
+    QSettings s( globalSettings->getValue("Launcher/session_file").toString(), QSettings::IniFormat);
+    s.beginGroup( executableInfo.fileName() );
 
-	s.setValue("configurationID", l.configComboBox->currentId());
-	
-	s.setValue("arguments_checkbox_checked", l.argsBox->isChecked());
-	s.setValue("arguments_lineEdit_text", l.argsEdit->text());
+    s.setValue("configurationID", l.configComboBox->currentId());
 
-	s.setValue("workdir_checkbox_checked", l.workdirBox->isChecked());
-	if ( l.workdirBox->isChecked() )
-		s.setValue("workdir_lineEdit_text", l.workdirEdit->text() );
+    s.setValue("arguments_checkbox_checked", l.argsBox->isChecked());
+    s.setValue("arguments_lineEdit_text", l.argsEdit->text());
 
-	s.setValue("terminal_checkbox_checked", l.terminalBox->isChecked());
-	s.setValue("wineconsole_checkbox_checked", l.wineconsoleBox->isChecked());
+    s.setValue("workdir_checkbox_checked", l.workdirBox->isChecked());
+    if ( l.workdirBox->isChecked() )
+        s.setValue("workdir_lineEdit_text", l.workdirEdit->text() );
 
-	s.setValue("advanced_button_checked", l.advancedButton->isChecked());
+    s.setValue("terminal_checkbox_checked", l.terminalBox->isChecked());
+    s.setValue("wineconsole_checkbox_checked", l.wineconsoleBox->isChecked());
 
-	//advanced
-	s.setValue("winedbg_checkbox_checked", l.winedbgBox->isChecked());
+    s.setValue("advanced_button_checked", l.advancedButton->isChecked());
 
-	s.setValue("installation_checkbox_checked", l.installationBox->isChecked());
+    //advanced
+    s.setValue("winedbg_checkbox_checked", l.winedbgBox->isChecked());
 
-	if ( l.installationBox->isChecked() )
-		s.setValue("installationID", l.installationComboBox->currentId());
+    s.setValue("installation_checkbox_checked", l.installationBox->isChecked());
 
-	s.setValue("log_checkbox_checked", l.logBox->isChecked());
-	s.setValue("log_lineEdit_text", l.logEdit->text());
+    if ( l.installationBox->isChecked() )
+        s.setValue("installationID", l.installationComboBox->currentId());
 
-	s.setValue("dlloverrides_checkbox_checked", l.dlloverridesBox->isChecked());
-	s.setValue("dlloverrides_lineEdit_text", l.dlloverridesEdit->text());
+    s.setValue("log_checkbox_checked", l.logBox->isChecked());
+    s.setValue("log_lineEdit_text", l.logEdit->text());
 
-	s.setValue("debug_checkbox_checked", l.debugBox->isChecked());
-	s.setValue("debug_lineEdit_text", l.debugEdit->text());
+    s.setValue("dlloverrides_checkbox_checked", l.dlloverridesBox->isChecked());
+    s.setValue("dlloverrides_lineEdit_text", l.dlloverridesEdit->text());
 
-	s.endGroup();
+    s.setValue("debug_checkbox_checked", l.debugBox->isChecked());
+    s.setValue("debug_lineEdit_text", l.debugEdit->text());
+
+    s.endGroup();
 }
 #endif
 
