@@ -19,6 +19,8 @@
  ***************************************************************************/
 #include "launcher.h"
 #include "../qtwineapplication.h"
+#include "../widgets/executablerequester.h"
+#include "../widgets/winedlloverridesrequester.h"
 
 #include "wineprocess.h"
 
@@ -49,27 +51,34 @@ Launcher::Launcher(QWidget *parent)
 	QFormLayout *formLayout = new QFormLayout;
 	mainVlay->addLayout(formLayout);
 
-	m_commandRequester = new KUrlRequester(page1);
-	m_commandRequester->setMode(KFile::File | KFile::LocalOnly | KFile::ExistingOnly);
-	m_commandRequester->setFilter("*.exe *.EXE *.exe.so *.EXE.SO|Wine executables (*.exe, *.exe.so)\n"
-			              "*.bat *.BAT|Windows batch files (*.bat)\n"
-				      "*.msi *.MSI|Windows installer packages (*.msi)\n"
-				      "*|All files");
-	formLayout->addRow(i18n("&Command:"), m_commandRequester);
+    m_executableRequester = new ExecutableRequester(page1);
+    connect(m_executableRequester, SIGNAL(urlSelected(KUrl)), this, SLOT(slotExecutableChanged(KUrl)) );
+    formLayout->addRow(i18n("&Executable:"), m_executableRequester);
 
-	m_configComboBox = new QComboBox(page1);
-	m_configComboBox->setModel(qtwineApp->wineConfigurationsModel());
-	m_configComboBox->setModelColumn(qtwineApp->wineConfigurationsModel()->fieldIndex("name"));
-	m_configComboBox->setCurrentIndex(0);
-	formLayout->addRow(i18n("Use wine confi&guration:"), m_configComboBox);
+    m_argumentsEdit = new KLineEdit(page1);
+    formLayout->addRow(i18n("&Arguments:"), m_argumentsEdit);
 
-	m_workdirRequester = new KUrlRequester(page1);
-	m_workdirRequester->setMode(KFile::Directory | KFile::LocalOnly | KFile::ExistingOnly);
-	formLayout->addRow(i18n("&Working directory:"), m_workdirRequester);
+    m_workdirRequester = new KUrlRequester(page1);
+    m_workdirRequester->setMode(KFile::Directory | KFile::LocalOnly | KFile::ExistingOnly);
+    formLayout->addRow(i18n("&Working directory:"), m_workdirRequester);
 
-	m_logfileRequester = new KUrlRequester(page1);
-	m_logfileRequester->setMode(KFile::File | KFile::LocalOnly);
-	formLayout->addRow(i18n("&Log output to a file:"), m_logfileRequester);
+    m_configComboBox = new QComboBox(page1);
+    m_configComboBox->setModel(qtwineApp->wineConfigurationsModel());
+    m_configComboBox->setModelColumn(qtwineApp->wineConfigurationsModel()->fieldIndex("name"));
+    m_configComboBox->setCurrentIndex(0);
+    formLayout->addRow(i18n("Use wine confi&guration:"), m_configComboBox);
+
+    //this is to always start the KFileDialog of the executable requester
+    //in the "Program files" directory of the selected configuration
+    m_executableRequester->setWineConfiguration(m_configComboBox->currentIndex());
+    connect(m_configComboBox, SIGNAL(currentIndexChanged(int)), m_executableRequester, SLOT(setWineConfiguration(int)) );
+
+    m_dllOverridesRequester = new WineDllOverridesRequester(page1);
+    formLayout->addRow(i18n("Wine &dll overrides:"), m_dllOverridesRequester);
+
+    m_logfileRequester = new KUrlRequester(page1);
+    m_logfileRequester->setMode(KFile::File | KFile::LocalOnly);
+    formLayout->addRow(i18n("&Log output to a file:"), m_logfileRequester);
 
 	// options groupbox
 	QGroupBox *optionsGroup = new QGroupBox(i18n("Options"), page1);
@@ -88,7 +97,7 @@ Launcher::Launcher(QWidget *parent)
 	mainVlay->addWidget(optionsGroup);
 	resizeLayout(mainVlay, marginHint(), spacingHint());
 }
-
+#if 0
 void Launcher::setCommand(const QString & command)
 {
 	m_commandRequester->lineEdit()->setText( command );
@@ -108,39 +117,7 @@ void Launcher::setCommand(const QStringList & command)
 				command.join("\" \"").prepend('\"').append('\"') );
 	}
 }
-
-#if 0
-void Launcher::on_configComboBox_currentIdChanged(quint16 id)
-{
-	if ( !l.installationBox->isChecked() )
-		l.installationComboBox->setCurrentId( ModelIndex(id, ModelManager::ConfigurationsModel)
-							.propertyData("InstallationID").toUInt() );
-}
-
-void Launcher::on_configCreateButton_clicked()
-{
-	QMessageBox::information(this, tr("Unimplemented"), tr("This option is not implemented yet.") );
-}
-
-void Launcher::on_advancedButton_toggled(bool on)
-{
-	if (on) {
-		l.advancedButton->setText(tr("<< Hide Advanced"));
-		l.advancedGroupBox->show();
-	} else {
-		l.advancedButton->setText(tr("Show Advanced >>"));
-		l.advancedGroupBox->hide();
-		qApp->processEvents();  // I've no idea why this is needed here, but it works!!!
-		resize(width()/2, height());
-	}
-}
-
-void Launcher::on_installationCustomButton_clicked()
-{
-	QMessageBox::information(this, tr("Unimplemented"), tr("This option is not implemented yet.") );
-}
 #endif
-
 void Launcher::accept()
 {
 	//check for valid values
@@ -149,26 +126,29 @@ void Launcher::accept()
 		return;
 	}
 
+    if ( !m_executableRequester->url().isValid() ) {
+        KMessageBox::sorry(this, i18n("No valid executable url was specified. Please specify an executable."));
+        return;
+    }
+
 	//everything is valid, continue to store the session
 	//storeSession();
 
-	QStringList arguments;
-	// split by spaces but exclude spaces in quotes " "
-	arguments = m_commandRequester->lineEdit()->text().split( QRegExp("\\s(?!\"\\w+\\s\\w+\")") );
-	arguments.removeAll(QString());
-
-	if ( arguments.size() == 0 ) {
-		KMessageBox::sorry(this, i18n("No command specified"));
-		return;
-	}	
+    // split by spaces but exclude spaces in quotes " "
+    QStringList arguments = m_argumentsEdit->text().split(QRegExp("\\s(?!\"\\w+\\s\\w+\")"), QString::SkipEmptyParts);
 
 	//start wine
 	using namespace QtWine;
 	WineConfiguration wcfg =
             qtwineApp->wineConfigurationsModel()->configurationByModelRow(m_configComboBox->currentIndex());
 
-	WineApplication app(arguments.takeFirst(), wcfg);
-	app << arguments;
+    WineApplication app(m_executableRequester->url().path(), wcfg); //TODO support remote executable
+    app << arguments;
+
+    //TODO add a validity check method in WineDllOverrides and stop using QString here
+    QString dllOverrides = m_dllOverridesRequester->dllOverridesString();
+    if ( !dllOverrides.isEmpty() )
+        app.setWineDllOverrides( WineDllOverrides(dllOverrides) );
 
 	app.setWorkingDirectory( m_workdirRequester->url().path() );
 	app.setIsConsoleApplication( m_wineconsoleBox->isChecked() );
@@ -178,13 +158,7 @@ void Launcher::accept()
 
 	if ( !m_logfileRequester->url().path().isEmpty() )
 		wine->setLogFile( m_logfileRequester->url().path() ); //TODO support remote logfiles
-#if 0
-	if ( l.dlloverridesBox->isChecked() )
-		wine->setWineDllOverrides( l.dlloverridesEdit->text() );
 
-	if ( l.debugBox->isChecked() )
-		wine->setWineDebug( l.debugEdit->text() );
-#endif
 	if ( m_terminalBox->isChecked() )
 		wine->openTerminal();
 
@@ -194,6 +168,12 @@ void Launcher::accept()
 	// exit the dialog
 	QDialog::accept();
 }
+
+void Launcher::slotExecutableChanged(const KUrl & newUrl)
+{
+    m_workdirRequester->setPath(newUrl.directory());
+}
+
 #if 0
 void Launcher::loadSession()
 {
