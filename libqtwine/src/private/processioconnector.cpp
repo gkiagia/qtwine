@@ -18,7 +18,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 #include "processioconnector_p.h"
-#include <KProcess>
+#include <QProcess>
 #include <QIODevice>
 #include <QDebug>
 
@@ -26,12 +26,12 @@ LIBQTWINE_BEGIN_NAMESPACE
 
 // PUBLIC
 
-ProcessIOConnector::ProcessIOConnector(KProcess *process)
+ProcessIOConnector::ProcessIOConnector(QProcess *process)
     : QObject(process), m_process(process)
 {
     Q_ASSERT(m_process);
 
-    m_process->setOutputChannelMode(KProcess::SeparateChannels);
+    m_process->setProcessChannelMode(QProcess::SeparateChannels);
     connect(m_process, SIGNAL(readyReadStandardOutput()), SLOT(processReadStdout()) );
     connect(m_process, SIGNAL(readyReadStandardError()), SLOT(processReadStderr()) );
 }
