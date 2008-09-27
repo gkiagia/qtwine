@@ -20,7 +20,7 @@
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QFile>
-#include <KProcess>
+#include <QProcess>
 #include <QDebug>
 #include "helpers.h"
 #include "../libqtwine_global.h"
@@ -68,17 +68,17 @@ QIODevice *defaultOpenTerminalFn(const QString & title)
         return NULL;
     }
 
-    KProcess *terminal = new KProcess;
+    QProcess *terminal = new QProcess;
     QLocalServer *server = new QLocalServer(terminal);
     server->listen(Helpers::generateSocketAddress("libqtwine_terminal_socket"));
 
-    *terminal << *terminalApplication << "-T" << title << "-e" <<
-                HELPER_EXECUTABLE << server->fullServerName();
-    terminal->start();
+    terminal->setProcessChannelMode(QProcess::ForwardedChannels); //that's better as a default. KProcess uses that too.
+    terminal->start(*terminalApplication, QStringList() << "-T" << title << "-e" <<
+                                          HELPER_EXECUTABLE << server->fullServerName() );
 
     if ( !terminal->waitForStarted(5000) ) {
         qCritical() << "Could not start the terminal."
-                 << "KProcess error message:" << terminal->errorString();
+                 << "QProcess error message:" << terminal->errorString();
         delete server;
         delete terminal;
         return NULL;
