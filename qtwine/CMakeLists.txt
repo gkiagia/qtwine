@@ -65,7 +65,7 @@ SET( QTWINE_RC_FILES
 )
 
 SET( QTWINE_UI_FILES
-    forms/behaviourPreferences.ui
+    forms/behaviorPreferences.ui
     forms/createConfigurationDialog.ui
 )
 

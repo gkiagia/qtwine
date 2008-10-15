@@ -20,7 +20,7 @@
 #include "qtwineapplication.h"
 #include "qtwinemainwindow.h"
 #include "qtwinepreferences.h"
-#include "ui_behaviourPreferences.h"
+#include "ui_behaviorPreferences.h"
 
 #include <QFile>
 #include <QStringList>
@@ -110,9 +110,9 @@ void QtWineApplication::shutDownDatabase()
 }
 
 
-class BehaviourPreferencesWidget : public QWidget, Ui::BehaviourPreferencesWidget {
+class BehaviorPreferencesWidget : public QWidget, Ui::BehaviorPreferencesWidget {
 public:
-    BehaviourPreferencesWidget(QWidget *parent = 0) : QWidget(parent) {
+    BehaviorPreferencesWidget(QWidget *parent = 0) : QWidget(parent) {
         setupUi(this);
     }
 };
@@ -124,8 +124,8 @@ void QtWineApplication::showPreferencesDialog()
 
     KConfigDialog* dialog = new KConfigDialog(0, "qtwinepreferences", QtWinePreferences::self()); 
 
-    BehaviourPreferencesWidget* bPrefs = new BehaviourPreferencesWidget(); 
-    dialog->addPage(bPrefs, i18n("Behaviour"), "configure"); 
+    BehaviorPreferencesWidget* bPrefs = new BehaviorPreferencesWidget();
+    dialog->addPage(bPrefs, i18n("Behavior"), "configure");
  
     connect( dialog, SIGNAL(settingsChanged(QString)), this, SIGNAL(preferencesChanged()) ); 
 

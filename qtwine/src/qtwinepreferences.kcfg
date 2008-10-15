@@ -3,7 +3,7 @@
 <kcfg>
     <kcfgfile/>
     <include>QDir</include>
-    <group name="behaviour">
+    <group name="behavior">
         <entry name="ClickMode" type="Enum">
             <label>How the icons are selected in the main window, with single or double mouse click.</label>
             <choices>

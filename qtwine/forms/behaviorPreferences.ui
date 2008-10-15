@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>BehaviourPreferencesWidget</class>
- <widget class="QWidget" name="BehaviourPreferencesWidget" >
+ <class>BehaviorPreferencesWidget</class>
+ <widget class="QWidget" name="BehaviorPreferencesWidget" >
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -27,7 +27,7 @@
     <widget class="QComboBox" name="kcfg_ClickMode" >
      <item>
       <property name="text" >
-       <string>Default KDE behaviour</string>
+       <string>Default KDE behavior</string>
       </property>
      </item>
      <item>
