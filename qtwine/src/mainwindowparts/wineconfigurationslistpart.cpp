@@ -140,7 +140,10 @@ void WineConfigurationsListPart::createConfiguration()
     CreateConfigurationDialog(widget()).exec();
 }
 
-void WineConfigurationsListPart::deleteConfiguration() {}
+void WineConfigurationsListPart::deleteConfiguration()
+{
+    model()->removeRow(selectedIndex().row());
+}
 
 void WineConfigurationsListPart::configurationProperties()
 {

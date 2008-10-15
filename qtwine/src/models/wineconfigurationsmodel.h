@@ -35,6 +35,8 @@ public:
     bool createConfiguration(const QString & name, int installationId);
     bool importConfiguration(const QString & name, const QString & wineprefix, int installationId);
 
+    bool removeRows(int row, int count, const QModelIndex & parent);
+
 private slots:
     void model_beforeInsert(QSqlRecord & record);
     void model_beforeUpdate(int row, QSqlRecord & record);
