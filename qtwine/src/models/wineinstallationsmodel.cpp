@@ -159,24 +159,6 @@ bool WineInstallationsModel::removeRows(int row, int count, const QModelIndex & 
     return true;
 }
 
-bool WineInstallationsModel::installationIsLocked(int id) const
-{
-    return m_lockedInstallations.value(id) != 0;
-}
-
-void WineInstallationsModel::lockInstallation(int id)
-{
-    kDebug() << "locking installation" << id;
-    m_lockedInstallations[id]++;
-}
-
-void WineInstallationsModel::unlockInstallation(int id)
-{
-    kDebug() << "unlocking installation" << id;
-    if ( m_lockedInstallations.value(id) > 0 )
-        m_lockedInstallations[id]--;
-}
-
 void WineInstallationsModel::model_beforeInsert(QSqlRecord & record)
 {
     WineInstallation i = installationFromRecord(record);
