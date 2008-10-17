@@ -21,9 +21,6 @@
 
 #include "winedlloverrides.h"
 #include <QScrollArea>
-template <class T1, class T2> class QPair;
-class WineDllOverridesEditPrivate;
-
 
 class WineDllOverridesEdit : public QScrollArea
 {
@@ -53,14 +50,13 @@ protected:
 Q_SIGNALS:
     void overridesChanged();
 
-private Q_SLOTS:
-    void addEmptyLine();
-    void addLine(const QPair<QString, QtWine::WineDllOverrides::DllOverrideType> & o);
-    void removeLine(QWidget *line);
-    void resizeCentralWidget();
-
 private:
-    WineDllOverridesEditPrivate *d;
+    class Private;
+    Private *const d;
+    Q_PRIVATE_SLOT(d, void addEmptyLine())
+    Q_PRIVATE_SLOT(d, void addLine(const QPair<QString, QtWine::WineDllOverrides::DllOverrideType> & o))
+    Q_PRIVATE_SLOT(d, void removeLine(QWidget *line))
+    Q_PRIVATE_SLOT(d, void resizeCentralWidget())
 };
 
 

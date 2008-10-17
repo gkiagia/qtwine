@@ -80,10 +80,13 @@ void WineDllOverridesRequester::Private::toolButtonClicked()
 {
     KDialog dialog;
     dialog.setCaption(KDialog::makeStandardCaption(i18n("Edit wine's dll overrides"), &dialog));
+
     WineDllOverridesEdit *edit = new WineDllOverridesEdit(&dialog);
-    edit->setDllOverrides(m_overrides);
+    if ( !m_overrides.isEmpty() )
+        edit->setDllOverrides(m_overrides);
     dialog.setMainWidget(edit);
     edit->updateGeometry();
+
     if ( dialog.exec() == QDialog::Accepted )
         q->setDllOverrides(edit->dllOverrides());
 }
