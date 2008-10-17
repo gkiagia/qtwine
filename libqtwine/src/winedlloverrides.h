@@ -97,6 +97,9 @@ public:
     ~WineDllOverrides();
 
 
+    /*! Returns true if this object holds no dll overrides and false otherwise */
+    bool isEmpty() const;
+
     /*! Parses the string \a dllOverridesStr which must be in the
      * same format that wine would expect to see in the WINEDLLOVERRIDES
      * environment variable and adds the overrides listed in the string

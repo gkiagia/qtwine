@@ -57,6 +57,11 @@ WineDllOverrides::WineDllOverrides(const char * dllOverridesStr)
     parseString(dllOverridesStr);
 }
 
+bool WineDllOverrides::isEmpty() const
+{
+    return d->m_overridesList.isEmpty();
+}
+
 bool WineDllOverrides::parseString(const QString & dllOverridesStr)
 {
     if ( dllOverridesStr.isEmpty() )
