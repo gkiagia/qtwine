@@ -145,10 +145,9 @@ void Launcher::accept()
     WineApplication app(m_executableRequester->url().path(), wcfg); //TODO support remote executable
     app << arguments;
 
-    //TODO add a validity check method in WineDllOverrides and stop using QString here
-    QString dllOverrides = m_dllOverridesRequester->dllOverridesString();
+    WineDllOverrides dllOverrides = m_dllOverridesRequester->dllOverrides();
     if ( !dllOverrides.isEmpty() )
-        app.setWineDllOverrides( WineDllOverrides(dllOverrides) );
+        app.setWineDllOverrides( dllOverrides );
 
     app.setWorkingDirectory( m_workdirRequester->url().path() );
     app.setIsConsoleApplication( m_wineconsoleBox->isChecked() );
