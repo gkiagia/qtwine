@@ -70,7 +70,7 @@ void ShortcutsListPart::setupActions()
 	actionCollection()->addAction("create_shortcut", create_shortcut);
 
 	KAction *delete_shortcut = new KAction(KIcon("edit-delete"), i18n("Delete"), this);
-	connect(delete_shortcut, SIGNAL(triggered(bool)), SLOT(deleteShortcut()) );
+	connect(delete_shortcut, SIGNAL(triggered(bool)), SLOT(removeSelectedItem()) );
 	actionCollection()->addAction("delete_shortcut", delete_shortcut);
 	addSelectionDependentAction("delete_shortcut");
 
@@ -112,11 +112,6 @@ void ShortcutsListPart::createShortcut()
     QModelIndex index = model()->index(model()->rowCount()-1, 0);
     if ( ProgramShortcutEditor(index, widget()).exec() == QDialog::Rejected )
         model()->removeRow(index.row());
-}
-
-void ShortcutsListPart::deleteShortcut()
-{
-    model()->removeRow(selectedIndex().row());
 }
 
 void ShortcutsListPart::runShortcut()

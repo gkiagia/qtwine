@@ -61,7 +61,7 @@ void WineConfigurationsListPart::setupActions()
     actionCollection()->addAction("create_configuration", create_configuration);
 
     KAction *delete_configuration = new KAction(KIcon("edit-delete"), i18n("Delete"), this);
-    connect(delete_configuration, SIGNAL(triggered(bool)), SLOT(deleteConfiguration()) );
+    connect(delete_configuration, SIGNAL(triggered(bool)), SLOT(removeSelectedItem()) );
     actionCollection()->addAction("delete_configuration", delete_configuration);
     addSelectionDependentAction("delete_configuration");
     addDefaultItemDependentAction("delete_configuration", false); //disabled when the default item is selected
@@ -138,11 +138,6 @@ void WineConfigurationsListPart::saveNewDefaultItem(int defaultItemRow)
 void WineConfigurationsListPart::createConfiguration()
 {
     CreateConfigurationDialog(widget()).exec();
-}
-
-void WineConfigurationsListPart::deleteConfiguration()
-{
-    model()->removeRow(selectedIndex().row());
 }
 
 void WineConfigurationsListPart::configurationProperties()

@@ -46,7 +46,7 @@ WineInstallationsListPart::WineInstallationsListPart(QObject *parent)
     actionCollection()->addAction("add_installation", add_installation);
 
     KAction *remove_installation = new KAction(KIcon("list-remove"), i18n("Remove"), this);
-    connect(remove_installation, SIGNAL(triggered(bool)), SLOT(removeInstallation()) );
+    connect(remove_installation, SIGNAL(triggered(bool)), SLOT(removeSelectedItem()) );
     actionCollection()->addAction("remove_installation", remove_installation);
     addSelectionDependentAction("remove_installation");
     addDefaultItemDependentAction("remove_installation", false); //disabled when the default item is selected
@@ -98,11 +98,6 @@ void WineInstallationsListPart::itemActivated(const QModelIndex & index)
 void WineInstallationsListPart::addInstallation()
 {
     CreateInstallationAssistant(widget()).exec();
-}
-
-void WineInstallationsListPart::removeInstallation()
-{
-    model()->removeRow(selectedIndex().row());
 }
 
 void WineInstallationsListPart::installationProperties()

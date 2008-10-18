@@ -86,7 +86,11 @@ protected slots:
      * (with single or double click, depending on settings).
      */
     virtual void itemActivated(const QModelIndex & index);
-    
+
+    /*! This slot removes the currently selected item.
+     * It is connected in the various remove/delete actions in the gui. */
+    virtual void removeSelectedItem();
+
     /*! makes the default item to be the item at the \a newDefaultRow row */
     void updateDefaultItemRow(int newDefaultRow);
 

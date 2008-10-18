@@ -35,6 +35,7 @@
 #include <KIcon>
 #include <KActionCollection>
 #include <KLocalizedString>
+#include <KMessageBox>
 
 
 class MetaListViewPart::ProxyModel : public QSortFilterProxyModel
@@ -196,6 +197,14 @@ void MetaListViewPart::enableDefaultItem(const QString & setDefaultAction, int c
 }
 
 void MetaListViewPart::itemActivated(const QModelIndex &) {}
+
+void MetaListViewPart::removeSelectedItem()
+{
+    if ( KMessageBox::questionYesNo(widget(), i18n("Are you sure you want to remove this item?"),
+         QString(), KStandardGuiItem::yes(), KStandardGuiItem::no(), "metalistviewpart_remove_confirmation")
+         == KMessageBox::Yes )
+        model()->removeRow(selectedIndex().row());
+}
 
 void MetaListViewPart::updateDefaultItemRow(int newDefaultRow)
 {
