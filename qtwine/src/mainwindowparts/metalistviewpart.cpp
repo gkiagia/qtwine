@@ -27,6 +27,7 @@
 #include <QSqlRecord>
 #include <QItemSelection>
 #include <QCursor>
+#include <QApplication>
 
 #include <KXMLGUIClient>
 #include <KXMLGUIFactory>
@@ -117,12 +118,17 @@ MetaListViewPart::MetaListViewPart(QObject *parent)
     KSelectAction *metabar_position = new KSelectAction(i18n("Metabar position"), this);
     connect(metabar_position, SIGNAL(triggered(int)), SLOT(changeMetaBarPosition(int)) );
     actionCollection()->addAction("metabar_position", metabar_position);
-    actionCollection()->addAction("metabar_position_left",
-                metabar_position->addAction(KIcon("view-list-details"), i18n("Left")) );
-    actionCollection()->addAction("metabar_position_right",
-                metabar_position->addAction(KIcon("view-list-icons"), i18n("Right")) );
-    actionCollection()->addAction("metabar_position_hidden",
-                metabar_position->addAction(KIcon("view-list-icons"), i18n("Hidden")) );
+
+    QString str_left = i18nc("Opposite of right", "Left");
+    QString str_right = i18nc("Opposite of left", "Right");
+    if ( QApplication::isLeftToRight() ) {
+        actionCollection()->addAction("metabar_position_left", metabar_position->addAction(str_left));
+        actionCollection()->addAction("metabar_position_right", metabar_position->addAction(str_right));
+    } else {
+        actionCollection()->addAction("metabar_position_right", metabar_position->addAction(str_right));
+        actionCollection()->addAction("metabar_position_left", metabar_position->addAction(str_left));
+    }
+    actionCollection()->addAction("metabar_position_hidden", metabar_position->addAction(i18n("Hidden")) );
 }
 
 // PROTECTED
