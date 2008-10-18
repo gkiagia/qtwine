@@ -20,6 +20,7 @@
 #include "metalistviewpart.h"
 #include "../widgets/metalistviewwidget.h"
 #include "../widgets/metabar.h"
+#include "qtwinepreferences.h"
 
 #include <QMenu>
 #include <QSortFilterProxyModel>
@@ -200,9 +201,8 @@ void MetaListViewPart::itemActivated(const QModelIndex &) {}
 
 void MetaListViewPart::removeSelectedItem()
 {
-    if ( KMessageBox::questionYesNo(widget(), i18n("Are you sure you want to remove this item?"),
-         QString(), KStandardGuiItem::yes(), KStandardGuiItem::no(), "metalistviewpart_remove_confirmation")
-         == KMessageBox::Yes )
+    if ( !QtWinePreferences::askBeforeDelete() or KMessageBox::Yes ==
+         KMessageBox::questionYesNo(widget(), i18n("Are you sure you want to remove this item?")) )
         model()->removeRow(selectedIndex().row());
 }
 

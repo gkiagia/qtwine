@@ -13,6 +13,10 @@
             </choices>
             <default>UseKdeDefault</default>
         </entry>
+        <entry name="AskBeforeDelete" type="Bool">
+            <label>Ask for confirmation before deleting items</label>
+            <default>true</default>
+        </entry>
     </group>
     <group name="defaults">
         <entry name="DefaultWineInstallation" type="Int">
