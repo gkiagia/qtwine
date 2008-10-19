@@ -50,40 +50,40 @@ QtWineApplication::~QtWineApplication()
 
 int QtWineApplication::newInstance()
 {
-	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-	int returnValue = 0;
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    int returnValue = 0;
 
-	if ( !m_mainWindow ) {
-		m_mainWindow = new QtWineMainWindow();
-		if ( !args->isSet("silent") )
-			m_mainWindow->show();
-	} else {
-		m_mainWindow->show();
-		m_mainWindow->raise();
-		m_mainWindow->activateWindow();
-	}
+    if ( !m_mainWindow ) {
+        m_mainWindow = new QtWineMainWindow();
+        if ( !args->isSet("silent") )
+            m_mainWindow->show();
+    } else {
+        m_mainWindow->show();
+        m_mainWindow->raise();
+        m_mainWindow->activateWindow();
+    }
 
-	args->clear();
-	return returnValue;
+    args->clear();
+    return returnValue;
 }
 
 void QtWineApplication::initializeDatabase()
 {
-	if ( !QSqlDatabase::isDriverAvailable("QSQLITE") ){
-		KMessage::message(KMessage::Fatal,
-				  i18n("The SQLite plugin for Qt is not installed. Please install it."));
-		exit(1);
-	}
+    if ( !QSqlDatabase::isDriverAvailable("QSQLITE") ){
+        KMessage::message(KMessage::Fatal,
+                          i18n("The SQLite plugin for Qt is not installed. Please install it."));
+        exit(1);
+    }
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
 
-	QString dbFile = KStandardDirs::locateLocal("data", "qtwine/qtwine.db", true);
-	db.setDatabaseName(dbFile);
+    QString dbFile = KStandardDirs::locateLocal("data", "qtwine/qtwine.db", true);
+    db.setDatabaseName(dbFile);
 
-	if ( !db.open() ) {
-		KMessage::message(KMessage::Fatal, i18n("Could not load qtwine's database"));
-		exit(1);
-	}
+    if ( !db.open() ) {
+        KMessage::message(KMessage::Fatal, i18n("Could not load qtwine's database"));
+        exit(1);
+    }
 }
 
 void QtWineApplication::initializeModels()
