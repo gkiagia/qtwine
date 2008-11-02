@@ -55,8 +55,7 @@ int QtWineApplication::newInstance()
 
     if ( !m_mainWindow ) {
         m_mainWindow = new QtWineMainWindow();
-        if ( !args->isSet("silent") )
-            m_mainWindow->show();
+        m_mainWindow->show();
     } else {
         m_mainWindow->show();
         m_mainWindow->raise();

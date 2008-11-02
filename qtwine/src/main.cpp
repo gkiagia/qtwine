@@ -39,37 +39,42 @@ static void qtMessageHandler(QtMsgType type, const char *msg)
 static inline void setupCmdLineOptions()
 {
     KCmdLineOptions options;
-    options.add("c");
-    options.add("configuration <name/id>", ki18n("The name or internal ID of the wine"
-                " configuration to be used for launching [file]."));
+    options.add("e");
+    options.add("execute", ki18n("Directly execute [file] if it is executable without showing a dialog"));
 
-    options.add("i");
-    options.add("installation <name/id>", ki18n("The name or internal ID of the wine"
-                " installation to be used for launching [file]."));
+    options.add("c");
+    options.add("configuration <name>", ki18n("Specify the name of the wine configuration to be"
+                " used for launching [file]\nIf not specified, the default wine configuration as"
+                " specified in qtwine's settings will be used"));
+
+    options.add("w");
+    options.add("workdir <directory>", ki18n("Specify the working directory where wine will be run into"
+                " for launching [file]\nIf not specified, the current working directory will be used"));
+
+    options.add("dlloverrides <overrides>", ki18n("Set the WINEDLLOVERRIDES environment variable to"
+                " be &lt;overrides&gt;\nIf not specified, the WINEDLLOVERRIDES environment variable will"
+                " be taken into account"), qgetenv("WINEDLLOVERRIDES") );
+
+    options.add("winedebug <dbgoptions>", ki18n("Set the WINEDEBUG environment variable to be &lt;dbgoptions&gt;"
+                "\nIf not specified, the WINEDEBUG environment variable will be taken into account"),
+                 qgetenv("WINEDEBUG"));
+
+    options.add("d");
+    options.add("cui", ki18n("Use wineconsole to launch [file]."
+                " Use this option if [file] is a CUI/DOS application"));
+
+    options.add("g");
+    options.add("debug", ki18n("Run [file] in winedbg to debug it, if it is a windows executable"));
+
+    options.add("t");
+    options.add("terminal", ki18n("Show wine's output in a terminal when launching [file]"));
 
     options.add("l");
     options.add("log <filename>", ki18n("A log file to save wine's output when launching [file]"));
 
-    options.add("w");
-    options.add("workdir <directory>", ki18n("The working directory where wine will"
-                " be run into for launching [file]."));
-
-    options.add("t");
-    options.add("terminal", ki18n("Run wine in a terminal when launching [file]."));
-
-    options.add("d");
-    options.add("cuiapp", ki18n("Use wineconsole to launch [file]."
-                " Use it if [file] is a CUI/DOS application."));
-
-    options.add("s");
-    options.add("silent", ki18n("Run in silent mode. No windows will appear and the specified"
-                " action will be executed if possible.\nCan also be used for launching qtwine on"
-                " the system tray only without showing the main window."));
-
-    options.add("!+[file] <arguments>", ki18n("A file to open (.exe, .msi, .bat or .reg)."));
-
-    options.add("", ki18n("If [file] is a windows executable, <arguments>"
-                " are passed to it when it is executed, otherwise <arguments> are ignored."));
+    options.add("!+[file <arguments>]", ki18n("A file to open (.exe, .msi, .bat or .reg). If [file] is a"
+                " windows executable,\n&lt;arguments&gt; are passed to it when it is executed, otherwise"
+                " &lt;arguments&gt; are ignored.\nIf [file] is not specified, qtwine's main window opens."));
     KCmdLineArgs::addCmdLineOptions(options);
 }
 
