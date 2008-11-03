@@ -91,7 +91,7 @@ int main (int argc, char *argv[])
                         ki18n("(C) 2006-2008, George Kiagiadakis") );
     aboutData.setOrganizationDomain("sourceforge.net");
     aboutData.setHomepage("http://qtwine.sourceforge.net");
-    aboutData.setBugAddress("http://bugs.devreactor.org");
+    aboutData.setBugAddress("gkiagia@users.sourceforge.net");
     aboutData.addAuthor(ki18n("George Kiagiadakis"), ki18n("Lead developer, main programer"),
                         "gkiagia@users.sourceforge.net", "http://www.devreactor.org/gkiagia");
     aboutData.addCredit(ki18n("Peter Penz"), ki18n("Dolphin metabar author"), "peter.penz@gmx.at");
