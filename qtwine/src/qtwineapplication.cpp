@@ -22,6 +22,10 @@
 #include "qtwinepreferences.h"
 #include "ui_behaviorPreferences.h"
 
+#include "wineprocess.h"
+#include "winedlloverrides.h"
+#include "winedebugoptions.h"
+
 #include <QFile>
 #include <QStringList>
 #include <QSqlDatabase>
@@ -51,19 +55,65 @@ QtWineApplication::~QtWineApplication()
 int QtWineApplication::newInstance()
 {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-    int returnValue = 0;
 
-    if ( !m_mainWindow ) {
-        m_mainWindow = new QtWineMainWindow();
-        m_mainWindow->show();
-    } else {
-        m_mainWindow->show();
-        m_mainWindow->raise();
-        m_mainWindow->activateWindow();
+    if ( args->count() == 0 ) {
+        /* No file was specified on the command line,
+         * proceed with opening the main window. */
+        if ( !m_mainWindow ) {
+            m_mainWindow = new QtWineMainWindow();
+            m_mainWindow->show();
+        } else {
+            m_mainWindow->show();
+            m_mainWindow->raise();
+            m_mainWindow->activateWindow();
+        }
+    } else { // we are launching the specified file
+        if ( args->isSet("execute") ) {
+            using namespace QtWine;
+            WineConfiguration c;
+
+            if ( args->isSet("configuration") ) {
+                QModelIndex start = m_configurationsModel->index(0, m_configurationsModel->fieldIndex("name"));
+                QModelIndexList results = m_configurationsModel->
+                            match( start, Qt::DisplayRole, QVariant(args->getOption("configuration")) );
+                if ( results.size() > 0 )
+                    c = m_configurationsModel->configurationByModelRow(results.at(0).row());
+                else {
+                    KMessage::message(KMessage::Fatal, i18n("The specified wine configuration \"%1\""
+                                        " does not exist").arg(args->getOption("configuration")) );
+                    args->clear();
+                    return 1;
+                }
+            } else {
+                c = m_configurationsModel->configurationById(QtWinePreferences::defaultWineConfiguration());
+            }
+
+            WineApplication a(args->arg(0), c);
+            for (int i=1; i<args->count(); i++)
+                a << args->arg(i);
+            a.setWorkingDirectory( args->isSet("workdir") ? args->getOption("workdir") : args->cwd() );
+            a.setWineDllOverrides( WineDllOverrides(args->getOption("dlloverrides")) );
+            a.setWineDebugOptions( WineDebugOptions(args->getOption("winedebug")) );
+            a.setIsConsoleApplication( args->isSet("cui") );
+            a.enableRunInDebugger( args->isSet("debug") );
+
+            WineProcess *wine = new WineProcess(a);
+            if ( args->isSet("log") )
+                wine->setLogFile( args->makeURL(args->getOption("log").toLocal8Bit()).path() );
+            if ( args->isSet("terminal") )
+                wine->openTerminal();
+            wine->setAutoDeleteEnabled(true);
+            wine->startMonitored(); //FIXME needs KGlobal::ref()/deref()
+
+        } else { // --noexecute
+            kDebug() << "Executing apps without --execute is not supported yet";
+            args->clear();
+            return 1;
+        }
     }
 
     args->clear();
-    return returnValue;
+    return 0;
 }
 
 void QtWineApplication::initializeDatabase()
