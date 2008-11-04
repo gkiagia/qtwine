@@ -29,8 +29,10 @@
 #include <QDir>
 
 #include <KMessage>
+#include <KMessageBox>
 #include <KLocalizedString>
 #include <KDebug>
+#include <KIO/NetAccess>
 
 using namespace QtWine;
 
@@ -45,11 +47,6 @@ WineConfigurationsModel::WineConfigurationsModel(QObject *parent)
     setTable("wine_configurations");
     setRelation(fieldIndex("wineinstallation"), QSqlRelation("wine_installations", "id", "name"));
     select();
-        
-    lockInstallations();
-    connect(this, SIGNAL(beforeInsert(QSqlRecord&)), SLOT(model_beforeInsert(QSqlRecord&)) );
-    connect(this, SIGNAL(beforeUpdate(int, QSqlRecord&)), SLOT(model_beforeUpdate(int, QSqlRecord&)) );
-    connect(this, SIGNAL(beforeDelete(int)), SLOT(model_beforeDelete(int)) );
 }
 
 void WineConfigurationsModel::createFirstTimeTable()
@@ -148,33 +145,51 @@ bool WineConfigurationsModel::importConfiguration(const QString & name,
     return submit();
 }
 
-
-/* The following functions are responsible for locking installations so that they cannot be deleted.
-This is because if an installation is deleted while a configuration is using it, the configuration
-will disappear from the view of the user but remain forever in the database.
-*/
-
-void WineConfigurationsModel::lockInstallations()
+bool WineConfigurationsModel::removeRows(int row, int count, const QModelIndex & parent)
 {
-    for (int i=0; i < rowCount(); ++i)
-        qtwineApp->wineInstallationsModel()->lockInstallation(relationId(i, "wineinstallation"));
-}
+    while ( count != 0 ) {
+        int current_row = row + count - 1;
+        int current_id = rowToId(current_row);
 
-void WineConfigurationsModel::model_beforeInsert(QSqlRecord & record)
-{
-    qtwineApp->wineInstallationsModel()->lockInstallation(record.value("wineinstallation").toInt());
-}
+        //find all the shorctuts refering to this wine configuration
+        QSqlQuery query;
+        query.prepare("SELECT id, name, wineconfiguration FROM shortcuts WHERE wineconfiguration=?");
+        query.bindValue(0, current_id);
+        kDebug() << query.exec();
 
-void WineConfigurationsModel::model_beforeUpdate(int row, QSqlRecord & record)
-{
-    WineInstallationsModel *m = qtwineApp->wineInstallationsModel();
-    m->unlockInstallation(relationId(row, "wineinstallation"));
-    m->lockInstallation(record.value("wineinstallation").toInt());
-}
+        if ( query.next() ) { //if the query returns any results, next() will return true here
+            QString msg = i18n("You are about to remove the wine configuration \"%1\". "
+                            "The following shortcuts point to applications that are installed in this "
+                            "wine configuration and will be also removed now:\n\n")
+                            .arg( record(current_row).value("name").toString() );
+            do {
+                msg += QString(" - %1\n").arg(query.value(1).toString());
+            } while (query.next());
+            msg.append(i18n("\nAre you sure that you want to remove this wine configuration?"));
+            if ( KMessageBox::questionYesNo(0, msg) == KMessageBox::No )
+                return false;
 
-void WineConfigurationsModel::model_beforeDelete(int row)
-{
-    qtwineApp->wineInstallationsModel()->unlockInstallation(relationId(row, "wineinstallation"));
+            //the user really wants to remove the shortcuts, so, go on...
+            ShortcutsModel *smodel = qtwineApp->programShortcutsModel();
+            query.first();
+            do {
+                smodel->removeRow( smodel->idToRow(query.value(0).toInt()) );
+            } while( query.next() );
+        }
+
+        QString winePrefix = record(current_row).value("wineprefix").toString();
+        if ( !KIO::NetAccess::del(KUrl(winePrefix), 0) ) {
+            KMessage::message(KMessage::Sorry, i18n("Failed to remove the directory %1").arg(winePrefix));
+            return false;
+        }
+
+        if ( !QtWineSqlTableModel::removeRows(current_row, 1, parent) ) {
+            kError() << "Failed to remove wine configuration from database";
+            return false;
+        }
+
+        --count;
+    }
+
+    return true;
 }
-    
-#include "wineconfigurationsmodel.moc"

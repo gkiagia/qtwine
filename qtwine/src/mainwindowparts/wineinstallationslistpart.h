@@ -35,7 +35,6 @@ protected slots:
 
 private slots:
     void addInstallation();
-    void removeInstallation();
     void installationProperties();
 };
 

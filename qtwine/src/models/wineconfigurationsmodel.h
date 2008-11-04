@@ -25,7 +25,6 @@ namespace QtWine { class WineConfiguration; }
 
 class WineConfigurationsModel : public QtWineSqlTableModel
 {
-    Q_OBJECT
 public:
     WineConfigurationsModel(QObject *parent = 0);
 
@@ -35,15 +34,11 @@ public:
     bool createConfiguration(const QString & name, int installationId);
     bool importConfiguration(const QString & name, const QString & wineprefix, int installationId);
 
-private slots:
-    void model_beforeInsert(QSqlRecord & record);
-    void model_beforeUpdate(int row, QSqlRecord & record);
-    void model_beforeDelete(int row);
+    bool removeRows(int row, int count, const QModelIndex & parent);
 
 private:
     QtWine::WineConfiguration configurationFromRecord(const QSqlRecord & record) const;
     void createFirstTimeTable();
-    void lockInstallations();
 };
 
 #endif

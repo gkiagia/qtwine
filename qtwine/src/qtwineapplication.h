@@ -28,9 +28,6 @@
 class QtWineMainWindow;
 
 #define qtwineApp static_cast<QtWineApplication*>(kapp)
-//#define installationsModel (qtwineApp->wineInstallationsModel())
-//#define configurationsModel (qtwineApp->wineConfigurationsModel())
-//#define shortcutsModel (qtwineApp->programShortcutsModel())
 
 
 class QtWineApplication : public KUniqueApplication

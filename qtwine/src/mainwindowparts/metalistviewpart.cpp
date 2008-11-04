@@ -20,6 +20,7 @@
 #include "metalistviewpart.h"
 #include "../widgets/metalistviewwidget.h"
 #include "../widgets/metabar.h"
+#include "qtwinepreferences.h"
 
 #include <QMenu>
 #include <QSortFilterProxyModel>
@@ -27,6 +28,7 @@
 #include <QSqlRecord>
 #include <QItemSelection>
 #include <QCursor>
+#include <QApplication>
 
 #include <KXMLGUIClient>
 #include <KXMLGUIFactory>
@@ -34,6 +36,7 @@
 #include <KIcon>
 #include <KActionCollection>
 #include <KLocalizedString>
+#include <KMessageBox>
 
 
 class MetaListViewPart::ProxyModel : public QSortFilterProxyModel
@@ -117,12 +120,17 @@ MetaListViewPart::MetaListViewPart(QObject *parent)
     KSelectAction *metabar_position = new KSelectAction(i18n("Metabar position"), this);
     connect(metabar_position, SIGNAL(triggered(int)), SLOT(changeMetaBarPosition(int)) );
     actionCollection()->addAction("metabar_position", metabar_position);
-    actionCollection()->addAction("metabar_position_left",
-                metabar_position->addAction(KIcon("view-list-details"), i18n("Left")) );
-    actionCollection()->addAction("metabar_position_right",
-                metabar_position->addAction(KIcon("view-list-icons"), i18n("Right")) );
-    actionCollection()->addAction("metabar_position_hidden",
-                metabar_position->addAction(KIcon("view-list-icons"), i18n("Hidden")) );
+
+    QString str_left = i18nc("Opposite of right", "Left");
+    QString str_right = i18nc("Opposite of left", "Right");
+    if ( QApplication::isLeftToRight() ) {
+        actionCollection()->addAction("metabar_position_left", metabar_position->addAction(str_left));
+        actionCollection()->addAction("metabar_position_right", metabar_position->addAction(str_right));
+    } else {
+        actionCollection()->addAction("metabar_position_right", metabar_position->addAction(str_right));
+        actionCollection()->addAction("metabar_position_left", metabar_position->addAction(str_left));
+    }
+    actionCollection()->addAction("metabar_position_hidden", metabar_position->addAction(i18n("Hidden")) );
 }
 
 // PROTECTED
@@ -190,6 +198,13 @@ void MetaListViewPart::enableDefaultItem(const QString & setDefaultAction, int c
 }
 
 void MetaListViewPart::itemActivated(const QModelIndex &) {}
+
+void MetaListViewPart::removeSelectedItem()
+{
+    if ( !QtWinePreferences::askBeforeDelete() or KMessageBox::Yes ==
+         KMessageBox::questionYesNo(widget(), i18n("Are you sure you want to remove this item?")) )
+        model()->removeRow(selectedIndex().row());
+}
 
 void MetaListViewPart::updateDefaultItemRow(int newDefaultRow)
 {

@@ -34,7 +34,6 @@ protected slots:
 
 private slots:
     void createConfiguration();
-    void deleteConfiguration();
     void configurationProperties();
     void virtualReboot();
     void importRegfile();

@@ -22,6 +22,9 @@
 
 #include <KPageDialog>
 class KUrlRequester;
+class ExecutableRequester;
+class WineDllOverridesRequester;
+class KLineEdit;
 class QComboBox;
 class QCheckBox;
 
@@ -30,36 +33,33 @@ class QCheckBox;
  */
 class Launcher : public KPageDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	Launcher(QWidget *parent = 0);
+    Launcher(QWidget *parent = 0);
 
 public slots:
-	void setCommand(const QString & command);
-	void setCommand(const QStringList & command);
-	void accept();
 #if 0
-private slots:
-	void on_configComboBox_currentIdChanged(quint16 id);
-	void on_configCreateButton_clicked();
-	void on_workdirBox_toggled(bool on);
-	void on_workdirBrowseButton_clicked();
-	void on_advancedButton_toggled(bool on);
-	void on_installationBox_toggled(bool on);
-	void on_installationCustomButton_clicked();
-	void on_logBrowseButton_clicked();
+    void setCommand(const QString & command);
+    void setCommand(const QStringList & command);
 #endif
-private:
-	//void loadSession();
-	//void storeSession();
+    void accept();
 
-	KUrlRequester *m_commandRequester;
-	QComboBox *m_configComboBox;
-	KUrlRequester *m_workdirRequester;
-	KUrlRequester *m_logfileRequester;
-	QCheckBox *m_terminalBox;
-	QCheckBox *m_wineconsoleBox;
-	QCheckBox *m_winedbgBox;
+private slots:
+    void slotExecutableChanged(const KUrl & newUrl);
+
+private:
+    //void loadSession();
+    //void storeSession();
+
+    ExecutableRequester *m_executableRequester;
+    KLineEdit *m_argumentsEdit;
+    KUrlRequester *m_workdirRequester;
+    QComboBox *m_configComboBox;
+    WineDllOverridesRequester *m_dllOverridesRequester;
+    KUrlRequester *m_logfileRequester;
+    QCheckBox *m_terminalBox;
+    QCheckBox *m_wineconsoleBox;
+    QCheckBox *m_winedbgBox;
 };
 
 #endif

@@ -21,9 +21,7 @@
 #define WINEINSTALLATIONSMODEL_H
 
 #include "qtwinesqltablemodel.h"
-#include <QHash>
 namespace QtWine { class WineInstallation; }
-class WineConfigurationsModel;
 
 class WineInstallationsModel : public QtWineSqlTableModel
 {
@@ -46,14 +44,6 @@ private:
     void createFirstTimeTable();
     void updateVersionFields();
     void updateDistroInstallation();
-    
-    // this is to lock installations so that they cannot be
-    // deleted because they are used by some configuration
-    friend class WineConfigurationsModel;
-    bool installationIsLocked(int id) const;
-    void lockInstallation(int id);
-    void unlockInstallation(int id);
-    QHash<int, int> m_lockedInstallations;
 };
 
 #endif

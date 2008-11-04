@@ -147,34 +147,26 @@ bool WineInstallationsModel::removeRows(int row, int count, const QModelIndex & 
 {
     while ( count != 0 ) {
         int current_row = row + count - 1;
-        if ( installationIsLocked(rowToId(current_row)) ) {
+        int current_id = rowToId(current_row);
+
+        //find all the shorctuts refering to this wine configuration
+        QSqlQuery query;
+        query.prepare("SELECT id FROM wine_configurations WHERE wineinstallation=?");
+        query.bindValue(0, current_id);
+        query.exec();
+
+        if ( query.next() ) { //if the query returns any results, next() will return true here
             KMessage::message(KMessage::Sorry, i18n("Sorry but you cannot delete this wine installation "
                                             "because it is currently used by some wine configuration.") );
             return false;
         }
-        if ( !QtWineSqlTableModel::removeRows(current_row, 1, parent) ) return false;
+
+        if ( !QtWineSqlTableModel::removeRows(current_row, 1, parent) )
+            return false;
         --count;
     }
 
     return true;
-}
-
-bool WineInstallationsModel::installationIsLocked(int id) const
-{
-    return m_lockedInstallations.value(id) != 0;
-}
-
-void WineInstallationsModel::lockInstallation(int id)
-{
-    kDebug() << "locking installation" << id;
-    m_lockedInstallations[id]++;
-}
-
-void WineInstallationsModel::unlockInstallation(int id)
-{
-    kDebug() << "unlocking installation" << id;
-    if ( m_lockedInstallations.value(id) > 0 )
-        m_lockedInstallations[id]--;
 }
 
 void WineInstallationsModel::model_beforeInsert(QSqlRecord & record)

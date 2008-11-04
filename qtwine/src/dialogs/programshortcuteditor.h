@@ -43,7 +43,6 @@ protected:
 
 private:
     QDataWidgetMapper *mapper;
-    KUrlRequester *executableEdit;
     KUrlRequester *workdirEdit;
 };
 

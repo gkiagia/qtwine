@@ -34,7 +34,6 @@ protected slots:
 
 private slots:
 	void createShortcut();
-	void deleteShortcut();
 	void runShortcut();
 	void shortcutProperties();
 	void placeOnDesktop();

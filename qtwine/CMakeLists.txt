@@ -47,6 +47,7 @@ SET( QTWINE_SOURCES
     src/widgets/iconrequesterbutton.cpp
     src/widgets/winedlloverridesedit.cpp
     src/widgets/winedlloverridesrequester.cpp
+    src/widgets/executablerequester.cpp
 
     src/utils/urlrequestercapabledelegate.cpp
 
@@ -64,7 +65,7 @@ SET( QTWINE_RC_FILES
 )
 
 SET( QTWINE_UI_FILES
-    forms/behaviourPreferences.ui
+    forms/behaviorPreferences.ui
     forms/createConfigurationDialog.ui
 )
 
