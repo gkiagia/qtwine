@@ -14,6 +14,7 @@ SET( LIBQTWINE_SOURCES
     wineconfiguration.cpp
     wineprocess.cpp
     monitoredprocess.cpp
+    extendedqprocess.cpp
     winepath.cpp
     regedit.cpp
     wineprefixcreate.cpp
@@ -35,6 +36,7 @@ SET( LIBQTWINE_PUBLIC_HEADERS
     wineconfiguration.h
     wineprocess.h
     monitoredprocess.h
+    extendedqprocess.h
     winepath.h
     regedit.h
     wineprefixcreate.h

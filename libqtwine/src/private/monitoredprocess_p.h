@@ -20,6 +20,7 @@
 #ifndef MONITOREDPROCESS_P_H
 #define MONITOREDPROCESS_P_H
 
+#include "extendedqprocess_p.h"
 #include "../monitoredprocess.h"
 #include <QPointer>
 #include "processioconnector_p.h"
@@ -27,23 +28,19 @@ class QFile;
 
 LIBQTWINE_BEGIN_NAMESPACE
 
-class MonitoredProcessPrivate
+class MonitoredProcessPrivate : public ExtendedQProcessPrivate
 {
     Q_DECLARE_PUBLIC(MonitoredProcess)
 public:
-    MonitoredProcessPrivate(MonitoredProcess *qq)
-        : m_connector(NULL), m_autoDelete(false), q_ptr(qq) {}
+    MonitoredProcessPrivate(MonitoredProcess *q)
+        : ExtendedQProcessPrivate(q), m_connector(NULL) {}
     virtual ~MonitoredProcessPrivate() {}
 
-    void _p_autoDeleteHandler();
+    virtual void _p_autoDeleteHandler();
 
     QPointer<QIODevice> m_terminalDevice;
     ProcessIOConnector *m_connector;
     QFile *m_logFile[3];
-    bool m_autoDelete;
-
-protected:
-    MonitoredProcess *const q_ptr;
 };
 
 LIBQTWINE_END_NAMESPACE

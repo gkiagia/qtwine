@@ -53,7 +53,7 @@ QString convertPath(const QString & path, PathConversionType convType,
     a << path;
 
     WineProcess process(a);
-    process.setOutputChannelMode(KProcess::OnlyStdoutChannel);
+    process.closeReadChannel(QProcess::StandardError);
     process.execute();
     return QString(process.readAllStandardOutput()).trimmed();
 }

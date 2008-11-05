@@ -95,50 +95,6 @@ void WineProcess::setWineApplication(const WineApplication & app)
         setWorkingDirectory( QFileInfo(app.executable()).absolutePath() );
 }
 
-/*! Sets the environment variable \a variable to have the value \a value.
- * This environment variable is added to the wine's environment variable list.
- * \a mode is useful when the \a variable is a semi-colon separated list of values
- * (like $PATH) and defines whether the \a value will be prepended or appended
- * in the list. The default mode is to replace the value of the \a variable
- * with \a value without checking if it is a list.
- */
-void WineProcess::setEnv(const QString & variable, const QString & value, SetEnvMode mode)
-{
-    if ( mode == Keep || mode == Replace ) {
-        KProcess::setEnv(variable, value, static_cast<bool>(mode));
-        return;
-    }
-
-    QStringList env = environment();
-    if ( env.isEmpty() )
-        env = systemEnvironment();
-
-    QString var(variable);
-    var.append('=');
-
-    for (QStringList::Iterator it = env.begin(); it != env.end(); ++it) {
-        if ((*it).startsWith(var)) {
-            int i;
-            switch(mode) {
-                case ListPrepend:
-                    i = (*it).indexOf('=') + 1;
-                    (*it).insert(i, value + ':');
-                    break;
-                case ListAppend:
-                    (*it).append(':').append(value);
-                    break;
-                default:
-                    Q_ASSERT(false);
-            }
-            setEnvironment(env);
-            return;
-        }
-    }
-
-    env << var.append(value);
-    setEnvironment(env);
-}
-
 bool WineProcess::wineHasError() const
 {
     const Q_D(WineProcess);

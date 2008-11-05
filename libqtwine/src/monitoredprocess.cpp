@@ -78,14 +78,14 @@ void MonitoredProcessPrivate::_p_autoDeleteHandler()
 }
 
 MonitoredProcess::MonitoredProcess(QObject *parent)
-    : KProcess(parent), d_ptr(new MonitoredProcessPrivate(this))
+    : ExtendedQProcess(new MonitoredProcessPrivate(this), parent)
 {
     Q_D(MonitoredProcess);
     d->m_connector = new ProcessIOConnector(this);
 }
 
 MonitoredProcess::MonitoredProcess(MonitoredProcessPrivate *dd, QObject *parent)
-    : KProcess(parent), d_ptr(dd)
+    : ExtendedQProcess(dd, parent)
 {
     Q_D(MonitoredProcess);
     d->m_connector = new ProcessIOConnector(this);
@@ -93,7 +93,6 @@ MonitoredProcess::MonitoredProcess(MonitoredProcessPrivate *dd, QObject *parent)
 
 MonitoredProcess::~MonitoredProcess()
 {
-    delete d_ptr;
 }
 
 QString MonitoredProcess::logFile(ProcessOutputChannel channel) const
@@ -131,25 +130,6 @@ void MonitoredProcess::setLogFile(const QString & fileName, ProcessOutputChannel
     if ( channel & StandardError ) c |= ProcessIOConnector::StandardError;
 
     d->m_connector->connectIODevice(log, c);
-}
-
-bool MonitoredProcess::autoDeleteEnabled() const
-{
-    const Q_D(MonitoredProcess);
-    return d->m_autoDelete;
-}
-
-void MonitoredProcess::setAutoDeleteEnabled(bool enabled)
-{
-    Q_D(MonitoredProcess);
-    d->m_autoDelete = enabled;
-
-    if ( enabled )
-        connect(this, SIGNAL(finished(int, QProcess::ExitStatus)),
-                this, SLOT(_p_autoDeleteHandler()) );
-    else
-        disconnect(this, SIGNAL(finished(int, QProcess::ExitStatus)),
-                   this, SLOT(_p_autoDeleteHandler()) );
 }
 
 void MonitoredProcess::setOpenTerminalFunction(OpenTerminalFn termFunc)

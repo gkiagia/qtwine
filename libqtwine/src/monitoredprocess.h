@@ -20,9 +20,7 @@
 #ifndef _QTWINE_MONITOREDPROCESS_H
 #define _QTWINE_MONITOREDPROCESS_H
 
-#include "libqtwine_export.h"
-#include "libqtwine_global.h"
-#include <KDE/KProcess>
+#include "extendedqprocess.h"
 
 LIBQTWINE_BEGIN_NAMESPACE
 
@@ -38,20 +36,11 @@ class MonitoredProcessPrivate;
  * and logging the output to a file.
  * \author George Kiagiadakis <gkiagia@users.sourceforge.net>
  */
-class LIBQTWINE_EXPORT MonitoredProcess : public KProcess
+class LIBQTWINE_EXPORT MonitoredProcess : public ExtendedQProcess
 {
     Q_OBJECT
     Q_FLAGS(ProcessOutputChannel)
-
-    /*! This property holds whether this class should be deleted
-     * automatically when the process has finished or not.
-     * \note When a terminal window is open and monitors the output of
-     * this process and autoDelete is enabled, the process will only be
-     * deleted when both the process has finished and the terminal window
-     * has been closed by the user.
-     */
-    Q_PROPERTY(bool autoDelete READ autoDeleteEnabled WRITE setAutoDeleteEnabled)
-
+    Q_DECLARE_PRIVATE(MonitoredProcess)
 public:
     enum ProcessOutputChannelFlags {
         StandardOutput = 0x1,
@@ -81,13 +70,6 @@ public:
      * the default is to monitor BothStdOutAndErr.
      */
     void setLogFile(const QString & fileName, ProcessOutputChannel channel = BothStdOutAndErr);
-
-
-    /*! \sa autoDelete */
-    bool autoDeleteEnabled() const;
-
-    /*! \sa autoDelete */
-    void setAutoDeleteEnabled(bool enabled);
 
 
     /*! This is a typedef for a function that opens a terminal emulator window
@@ -130,11 +112,6 @@ public Q_SLOTS:
 
 protected:
     MonitoredProcess(MonitoredProcessPrivate *dd, QObject *parent); //!< \internal
-    MonitoredProcessPrivate *const d_ptr; //!< \internal
-
-private:
-    Q_DECLARE_PRIVATE(MonitoredProcess)
-    Q_PRIVATE_SLOT(d_func(), void _p_autoDeleteHandler())
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(MonitoredProcess::ProcessOutputChannel)
