@@ -18,10 +18,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 #include "wineinstallation.h"
+#include "extendedqprocess.h"
 
 #include <QFile>
 #include <QDir>
-#include <KProcess>
 #include <QRegExp>
 #include <QDebug>
 
@@ -112,8 +112,8 @@ inline QString getWineVersion(const QString & wineloader)
         return QString();
     }
 
-    KProcess wine;
-    wine.setOutputChannelMode(KProcess::OnlyStdoutChannel);
+    ExtendedQProcess wine;
+    wine.closeReadChannel(QProcess::StandardError);
     wine.setProgram(wineloader);
     wine << "--version";
     if ( wine.execute(5000) != 0 ) { // 5 secs is more than enough imho
