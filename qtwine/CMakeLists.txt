@@ -35,7 +35,7 @@ SET( QTWINE_SOURCES
     src/dialogs/configurationeditor.cpp
     src/dialogs/programshortcuteditor.cpp
     src/dialogs/regfilemergedialog.cpp
-    src/dialogs/launcher.cpp
+    src/dialogs/runprogramdialog.cpp
     src/dialogs/createconfigurationdialog.cpp
 
     src/assistants/commonpages.cpp

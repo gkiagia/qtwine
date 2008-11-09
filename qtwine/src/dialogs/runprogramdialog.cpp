@@ -17,7 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
-#include "launcher.h"
+#include "runprogramdialog.h"
 #include "../qtwineapplication.h"
 #include "../widgets/executablerequester.h"
 #include "../widgets/winedlloverridesrequester.h"
@@ -37,7 +37,7 @@
 #include <KLineEdit>
 
 
-Launcher::Launcher(QWidget *parent)
+RunProgramDialog::RunProgramDialog(QWidget *parent)
     : KPageDialog(parent)
 {
     setButtons(KDialog::Ok | KDialog::Cancel);
@@ -98,12 +98,12 @@ Launcher::Launcher(QWidget *parent)
     resizeLayout(mainVlay, marginHint(), spacingHint());
 }
 #if 0
-void Launcher::setCommand(const QString & command)
+void RunProgramDialog::setCommand(const QString & command)
 {
     m_commandRequester->lineEdit()->setText( command );
 }
 
-void Launcher::setCommand(const QStringList & command)
+void RunProgramDialog::setCommand(const QStringList & command)
 {
     if ( !command.isEmpty() )
     {
@@ -118,7 +118,7 @@ void Launcher::setCommand(const QStringList & command)
     }
 }
 #endif
-void Launcher::accept()
+void RunProgramDialog::accept()
 {
     //check for valid values
     if ( m_configComboBox->currentIndex() == -1 ) {
@@ -168,15 +168,15 @@ void Launcher::accept()
     QDialog::accept();
 }
 
-void Launcher::slotExecutableChanged(const KUrl & newUrl)
+void RunProgramDialog::slotExecutableChanged(const KUrl & newUrl)
 {
     m_workdirRequester->setPath(newUrl.directory());
 }
 
 #if 0
-void Launcher::loadSession()
+void RunProgramDialog::loadSession()
 {
-    QSettings s( globalSettings->getValue("Launcher/session_file").toString(), QSettings::IniFormat);
+    QSettings s( globalSettings->getValue("RunProgramDialog/session_file").toString(), QSettings::IniFormat);
     s.beginGroup( executableInfo.fileName() );
 
     l.configComboBox->setCurrentId( s.value("configurationID", 0).toUInt() );
@@ -216,9 +216,9 @@ void Launcher::loadSession()
     s.endGroup();
 }
 
-void Launcher::storeSession()
+void RunProgramDialog::storeSession()
 {
-    QSettings s( globalSettings->getValue("Launcher/session_file").toString(), QSettings::IniFormat);
+    QSettings s( globalSettings->getValue("RunProgramDialog/session_file").toString(), QSettings::IniFormat);
     s.beginGroup( executableInfo.fileName() );
 
     s.setValue("configurationID", l.configComboBox->currentId());
@@ -256,4 +256,4 @@ void Launcher::storeSession()
 }
 #endif
 
-#include "launcher.moc"
+#include "runprogramdialog.moc"

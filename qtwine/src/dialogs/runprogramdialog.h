@@ -17,8 +17,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
-#ifndef LAUNCHER_H
-#define LAUNCHER_H
+#ifndef RUNPROGRAMDIALOG_H
+#define RUNPROGRAMDIALOG_H
 
 #include <KPageDialog>
 class KUrlRequester;
@@ -31,11 +31,11 @@ class QCheckBox;
 /*!
  * \author George Kiagiadakis <gkiagia@users.sourceforge.net>
  */
-class Launcher : public KPageDialog
+class RunProgramDialog : public KPageDialog
 {
     Q_OBJECT
 public:
-    Launcher(QWidget *parent = 0);
+    RunProgramDialog(QWidget *parent = 0);
 
 public slots:
 #if 0
