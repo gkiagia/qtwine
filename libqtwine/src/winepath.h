@@ -31,10 +31,6 @@ namespace WinePath
     LIBQTWINE_EXPORT QString convertPath(const QString & path, PathConversionType convType,
                                          const WineConfiguration & configuration);
 
-    LIBQTWINE_EXPORT void convertWineArguments(QStringList & arguments,
-                                               const WineConfiguration & configuration);
-
-
     inline QString unixToWindows(const QString & path, const WineConfiguration & configuration)
     {
         return convertPath(path, UnixToWindows, configuration);
