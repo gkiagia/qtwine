@@ -14,8 +14,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef ARGUMENTSLIST_H
-#define ARGUMENTSLIST_H
+#ifndef _QTWINE_ARGUMENTSLIST_H
+#define _QTWINE_ARGUMENTSLIST_H
 
 #include "libqtwine_export.h"
 #include "libqtwine_global.h"
