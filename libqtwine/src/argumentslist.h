@@ -20,6 +20,7 @@
 #include "libqtwine_export.h"
 #include "libqtwine_global.h"
 #include <QtCore/QStringList>
+#include <QtCore/QMetaType>
 
 LIBQTWINE_BEGIN_NAMESPACE
 
@@ -42,5 +43,7 @@ public:
 };
 
 LIBQTWINE_END_NAMESPACE
+
+Q_DECLARE_METATYPE(LIBQTWINE_PREPEND_NAMESPACE(ArgumentsList))
 
 #endif
