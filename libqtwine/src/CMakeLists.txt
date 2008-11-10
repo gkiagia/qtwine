@@ -18,6 +18,8 @@ SET( LIBQTWINE_SOURCES
     regedit.cpp
     wineprefixcreate.cpp
     argumentslist.cpp
+    filerunner.cpp
+    filerunnerplugin.cpp
 
     private/wineerrordetector.cpp
     private/processioconnector.cpp
@@ -40,6 +42,8 @@ SET( LIBQTWINE_PUBLIC_HEADERS
     regedit.h
     wineprefixcreate.h
     argumentslist.h
+    filerunner.h
+    filerunnerplugin.h
 )
 
 # setup misc includes
