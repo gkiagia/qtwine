@@ -59,7 +59,6 @@ private:
     KUrlRequester *m_logfileRequester;
     QCheckBox *m_terminalBox;
     QCheckBox *m_wineconsoleBox;
-    QCheckBox *m_winedbgBox;
 };
 
 #endif

@@ -45,13 +45,12 @@ public:
 
     //qtwine misc
     bool isConsoleApplication;
-    bool runInDebugger;
 };
 
 WineApplicationData::WineApplicationData()
     : QSharedData()
 {
-    isConsoleApplication = runInDebugger = false;
+    isConsoleApplication = false;
     executable = workingDirectory = winePrefix = NULL;
     arguments = NULL;
     wineInstallation = NULL;
@@ -71,7 +70,6 @@ WineApplicationData::WineApplicationData(const WineApplicationData & other)
     COPY(WineDllOverrides, wineDllOverrides);
     COPY(WineDebugOptions, wineDebugOptions);
     isConsoleApplication = other.isConsoleApplication;
-    runInDebugger = other.runInDebugger;
 #undef COPY
 }
 
@@ -196,10 +194,6 @@ void WineApplication::setIsConsoleApplication(bool isCuiApp)
     d->isConsoleApplication = isCuiApp;
 }
 
-void WineApplication::enableRunInDebugger(bool enable)
-{
-    d->runInDebugger = enable;
-}
 
 #undef ASSIGN_VAR
 
@@ -233,7 +227,6 @@ WineDebugOptions WineApplication::wineDebugOptions() const
 
 bool WineApplication::isConsoleApplication() const { return d->isConsoleApplication; }
 
-bool WineApplication::runsInDebugger() const { return d->runInDebugger; }
 
 #undef RETURN_VAR
 
@@ -246,8 +239,7 @@ QDebug operator<<(QDebug dbg, const WineApplication & a)
     dbg.nospace() << "[wineInstallation: " << a.wineInstallation() << "], ";
     dbg.nospace() << "[wineDllOverrides: " << a.wineDllOverrides() << "], ";
     dbg.nospace() << "[wineDebugOptions: " << a.wineDebugOptions() << "], ";
-    dbg.nospace() << "[isConsoleApplication: " << a.isConsoleApplication() << "], ";
-    dbg.nospace() << "[runsInDebugger: " << a.runsInDebugger() << "] )";
+    dbg.nospace() << "[isConsoleApplication: " << a.isConsoleApplication() << "] )";
 
     return dbg.space();
 }

@@ -63,9 +63,6 @@ static inline void setupCmdLineOptions()
     options.add("cui", ki18n("Use wineconsole to launch [file]."
                 " Use this option if [file] is a CUI/DOS application"));
 
-    options.add("g");
-    options.add("debug", ki18n("Run [file] in winedbg to debug it, if it is a windows executable"));
-
     options.add("t");
     options.add("terminal", ki18n("Show wine's output in a terminal when launching [file]"));
 

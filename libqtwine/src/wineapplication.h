@@ -135,13 +135,6 @@ public:
      */
     void setIsConsoleApplication(bool isCuiApp);
 
-    /*! Enables this application to be run inside winedbg.exe for debugging purposes.
-     * \todo There is work to do with this option. It may not work as expected.
-     */
-    void enableRunInDebugger(bool enable);
-
-    // TODO void enableVirtualDesktop(const QString & name, const QPair<int, int> & resolution);
-
     // accessors
 
     /*! Returns the name (or filename) of the windows executable
@@ -169,9 +162,6 @@ public:
 
     /*! Returns true if this application is a Console User Interface (CUI) application. */
     bool isConsoleApplication() const;
-
-    /*! Returns true if this application is to be run inside winedbg.exe. */
-    bool runsInDebugger() const;
 
 private:
     QSharedDataPointer<WineApplicationData> d;

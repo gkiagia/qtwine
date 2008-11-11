@@ -90,9 +90,6 @@ RunProgramDialog::RunProgramDialog(QWidget *parent)
     m_wineconsoleBox = new QCheckBox(i18n("Use wineconsole (for CUI/DOS programs)"), optionsGroup);
     optionsVlay->addWidget(m_wineconsoleBox);
 
-    m_winedbgBox = new QCheckBox(i18n("Start command in debugger (winedbg)"), optionsGroup);
-    optionsVlay->addWidget(m_winedbgBox);
-
     resizeLayout(optionsVlay, marginHint(), spacingHint());
     mainVlay->addWidget(optionsGroup);
     resizeLayout(mainVlay, marginHint(), spacingHint());
@@ -151,7 +148,6 @@ void RunProgramDialog::accept()
 
     app.setWorkingDirectory( m_workdirRequester->url().path() );
     app.setIsConsoleApplication( m_wineconsoleBox->isChecked() );
-    app.enableRunInDebugger( m_winedbgBox->isChecked() );
 
     WineProcess *wine = new WineProcess(app);
 

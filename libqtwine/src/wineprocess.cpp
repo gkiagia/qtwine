@@ -68,8 +68,6 @@ void WineProcess::setWineApplication(const WineApplication & app)
     //setup argv
     if ( app.isConsoleApplication() )
         *this << "wineconsole.exe" << "--backend=user";
-    if ( app.runsInDebugger() )
-        *this << "winedbg.exe"; // FIXME any options here? before or after wineconsole?
 
     *this << app.executable();
     *this << app.arguments();

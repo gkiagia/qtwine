@@ -95,7 +95,6 @@ int QtWineApplication::newInstance()
             a.setWineDllOverrides( WineDllOverrides(args->getOption("dlloverrides")) );
             a.setWineDebugOptions( WineDebugOptions(args->getOption("winedebug")) );
             a.setIsConsoleApplication( args->isSet("cui") );
-            a.enableRunInDebugger( args->isSet("debug") );
 
             WineProcess *wine = new WineProcess(a);
             if ( args->isSet("log") )
