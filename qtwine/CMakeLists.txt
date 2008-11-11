@@ -24,6 +24,7 @@ SET( QTWINE_SOURCES
     src/main.cpp
     src/qtwinemainwindow.cpp
     src/qtwineapplication.cpp
+    src/qtwinefilerunner.cpp
 
     src/models/qtwinesqltablemodel.cpp
     src/models/wineinstallationsmodel.cpp
