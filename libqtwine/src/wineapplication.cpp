@@ -34,7 +34,7 @@ public:
 
     //basic stuff
     QString *executable;
-    QStringList *arguments;
+    ArgumentsList *arguments;
     QString *workingDirectory;
 
     //wine environment variables
@@ -63,7 +63,7 @@ WineApplicationData::WineApplicationData(const WineApplicationData & other)
 {
 #define COPY(T, var) var = (other.var) ? new T(*other.var) : NULL;
     COPY(QString, executable);
-    COPY(QStringList, arguments);
+    COPY(ArgumentsList, arguments);
     COPY(QString, workingDirectory);
     COPY(QString, winePrefix);
     COPY(WineInstallation, wineInstallation);
@@ -119,21 +119,21 @@ WineApplication & WineApplication::operator<<(const QString & arg)
     }
 
     if ( !d->arguments )
-        d->arguments = new QStringList;
+        d->arguments = new ArgumentsList;
     *d->arguments << arg;
     return *this;
 }
 
 WineApplication & WineApplication::operator<<(const QStringList & args)
 {
-    QStringList copy(args);
+    ArgumentsList copy(args);
     if ( !d->executable ) {
         d->executable = new QString;
         *d->executable = copy.takeFirst();
     }
 
     if ( !d->arguments )
-        d->arguments = new QStringList;
+        d->arguments = new ArgumentsList;
     *d->arguments << copy;
     return *this;
 }
@@ -153,7 +153,7 @@ WineApplication & WineApplication::operator=(const WineApplication & other)
         *d->d_var = var; \
     } while(0)
 
-void WineApplication::setApplication(const QString & executable, const QStringList & arguments)
+void WineApplication::setApplication(const QString & executable, const ArgumentsList & arguments)
 {
     ASSIGN_VAR(QString, executable, executable);
 
@@ -204,7 +204,7 @@ void WineApplication::setIsConsoleApplication(bool isCuiApp)
 
 QString WineApplication::executable() const { RETURN_VAR(QString, executable); }
 
-QStringList WineApplication::arguments() const { RETURN_VAR(QStringList, arguments); }
+ArgumentsList WineApplication::arguments() const { RETURN_VAR(ArgumentsList, arguments); }
 
 QString WineApplication::workingDirectory() const { RETURN_VAR(QString, workingDirectory); }
 

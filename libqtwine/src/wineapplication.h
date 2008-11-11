@@ -21,6 +21,7 @@
 #define _QTWINE_WINEAPPLICATION_H
 
 #include "wineconfiguration.h"
+#include "argumentslist.h"
 #include <QtCore/QStringList>
 class QDebug;
 
@@ -102,7 +103,7 @@ public:
 
     /*! Sets the executable name and command line arguments. */
     void setApplication(const QString & executable,
-                        const QStringList & arguments = QStringList());
+                        const ArgumentsList & arguments = ArgumentsList());
 
     /*! Sets the working directory of the windows application. */
     void setWorkingDirectory(const QString & dir);
@@ -143,7 +144,7 @@ public:
     QString executable() const;
 
     /*! Returns the command line arguments that are to be passed to the executable. */
-    QStringList arguments() const;
+    ArgumentsList arguments() const;
 
     /*! Returns the path to the working directory of the windows application. */
     QString workingDirectory() const;
