@@ -91,8 +91,7 @@ WineApplication ShortcutsModel::wineApplicationFromRecord(const QSqlRecord & rec
 
     WineConfiguration c = qtwineApp->wineConfigurationsModel()
                             ->configurationById(record.value("wineconfiguration").toInt());
-    a.setWinePrefix( c.winePrefix() );
-    a.setWineInstallation( c.wineInstallation() );
+    a.setWineConfiguration(c);
     return a;
 }
 

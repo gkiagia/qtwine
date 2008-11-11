@@ -37,9 +37,8 @@ public:
     ArgumentsList *arguments;
     QString *workingDirectory;
 
-    //wine environment variables
-    QString *winePrefix;
-    WineInstallation *wineInstallation;
+    //wine environment
+    WineConfiguration *wineConfiguration;
     WineDllOverrides *wineDllOverrides;
     WineDebugOptions *wineDebugOptions;
 
@@ -51,9 +50,9 @@ WineApplicationData::WineApplicationData()
     : QSharedData()
 {
     isConsoleApplication = false;
-    executable = workingDirectory = winePrefix = NULL;
+    executable = workingDirectory = NULL;
     arguments = NULL;
-    wineInstallation = NULL;
+    wineConfiguration = NULL;
     wineDllOverrides = NULL;
     wineDebugOptions = NULL;
 }
@@ -65,8 +64,7 @@ WineApplicationData::WineApplicationData(const WineApplicationData & other)
     COPY(QString, executable);
     COPY(ArgumentsList, arguments);
     COPY(QString, workingDirectory);
-    COPY(QString, winePrefix);
-    COPY(WineInstallation, wineInstallation);
+    COPY(WineConfiguration, wineConfiguration);
     COPY(WineDllOverrides, wineDllOverrides);
     COPY(WineDebugOptions, wineDebugOptions);
     isConsoleApplication = other.isConsoleApplication;
@@ -78,8 +76,7 @@ WineApplicationData::~WineApplicationData()
     delete executable;
     delete arguments;
     delete workingDirectory;
-    delete winePrefix;
-    delete wineInstallation;
+    delete wineConfiguration;
     delete wineDllOverrides;
     delete wineDebugOptions;
 }
@@ -92,8 +89,7 @@ WineApplication::WineApplication(const QString & executable,
     : d(new WineApplicationData)
 {
     setApplication(executable);
-    setWinePrefix(configuration.winePrefix());
-    setWineInstallation(configuration.wineInstallation());
+    setWineConfiguration(configuration);
 }
 
 WineApplication::WineApplication(const WineApplication & other) : d(other.d) {}
@@ -104,8 +100,7 @@ WineApplication::~WineApplication() {}
 bool WineApplication::isInvalid() const
 {
     return  executable().isEmpty() or
-        winePrefix().isEmpty() or
-        wineInstallation().isInvalid();
+        wineConfiguration().isInvalid();
 }
 
     //operators
@@ -169,14 +164,9 @@ void WineApplication::setWorkingDirectory(const QString & dir)
     ASSIGN_VAR(QString, workingDirectory, dir);
 }
 
-void WineApplication::setWinePrefix(const QString & winePrefixPath)
+void WineApplication::setWineConfiguration(const WineConfiguration & wineConfiguration)
 {
-    ASSIGN_VAR(QString, winePrefix, winePrefixPath);
-}
-
-void WineApplication::setWineInstallation(const WineInstallation & installation)
-{
-    ASSIGN_VAR(WineInstallation, wineInstallation, installation);
+    ASSIGN_VAR(WineConfiguration, wineConfiguration, wineConfiguration);
 }
 
 void WineApplication::setWineDllOverrides(const WineDllOverrides & dllOverrides)
@@ -208,11 +198,9 @@ ArgumentsList WineApplication::arguments() const { RETURN_VAR(ArgumentsList, arg
 
 QString WineApplication::workingDirectory() const { RETURN_VAR(QString, workingDirectory); }
 
-QString WineApplication::winePrefix() const { RETURN_VAR(QString, winePrefix); }
-
-WineInstallation WineApplication::wineInstallation() const
+WineConfiguration WineApplication::wineConfiguration() const
 {
-    RETURN_VAR(WineInstallation, wineInstallation);
+    RETURN_VAR(WineConfiguration, wineConfiguration);
 }
 
 WineDllOverrides WineApplication::wineDllOverrides() const
@@ -235,8 +223,7 @@ QDebug operator<<(QDebug dbg, const WineApplication & a)
     dbg.nospace() << "(WineApplication, [executable: " << a.executable() << "], ";
     dbg.nospace() << "[arguments: " << a.arguments() << "], ";
     dbg.nospace() << "[workingDirectory: " << a.workingDirectory() << "], ";
-    dbg.nospace() << "[winePrefix: " << a.winePrefix() << "], ";
-    dbg.nospace() << "[wineInstallation: " << a.wineInstallation() << "], ";
+    dbg.nospace() << "[wineConfiguration: " << a.wineConfiguration() << "], ";
     dbg.nospace() << "[wineDllOverrides: " << a.wineDllOverrides() << "], ";
     dbg.nospace() << "[wineDebugOptions: " << a.wineDebugOptions() << "], ";
     dbg.nospace() << "[isConsoleApplication: " << a.isConsoleApplication() << "] )";

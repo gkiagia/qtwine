@@ -62,7 +62,8 @@ void WineProcess::setWineApplication(const WineApplication & app)
         return;
     }
 
-    WineInstallation installation = app.wineInstallation();
+    WineConfiguration wineConfiguration = app.wineConfiguration();
+    WineInstallation installation = wineConfiguration.wineInstallation();
     setProgram(installation.wineLoader());
 
     //setup argv
@@ -73,7 +74,7 @@ void WineProcess::setWineApplication(const WineApplication & app)
     *this << app.arguments();
 
     //setup environment
-    setEnv("WINEPREFIX", app.winePrefix());
+    setEnv("WINEPREFIX", wineConfiguration.winePrefix());
     setEnv("WINELOADER", installation.wineLoader());
     setEnv("WINESERVER", installation.wineServer());
     setEnv("WINEDLLPATH", installation.wineDllPath());

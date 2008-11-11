@@ -108,13 +108,8 @@ public:
     /*! Sets the working directory of the windows application. */
     void setWorkingDirectory(const QString & dir);
 
-    /*! Sets the WINEPREFIX environment variable for the instance of
-     * wine that will execute this application.
-     */
-    void setWinePrefix(const QString & winePrefixPath);
-
-    /*! Sets the installation of wine that will be used to run this app. */
-    void setWineInstallation(const WineInstallation & installation);
+    /*! Sets the wine configuration that will be used to run this application. */
+    void setWineConfiguration(const WineConfiguration & configuration);
 
     /*! Sets the WINEDLLOVERRIDES environment variable for the
      * instance of wine that will execute this application.
@@ -149,11 +144,8 @@ public:
     /*! Returns the path to the working directory of the windows application. */
     QString workingDirectory() const;
 
-    /*! Returns the value that will be given to $WINEPREFIX. */
-    QString winePrefix() const;
-
-    /*! Returns the WineInstallation that will be used to launch this application. */
-    WineInstallation wineInstallation() const;
+    /*! Returns the wine configuration that will be used to run this application. */
+    WineConfiguration wineConfiguration() const;
 
     /*! Returns the value that will be given to $WINEDLLOVERRIDES. */
     WineDllOverrides wineDllOverrides() const;

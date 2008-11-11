@@ -57,8 +57,7 @@ bool WineExecutableRunnerPlugin::run()
             setLastError("Invalid WineConfiguration specified");
             return false;
         }
-        app.setWinePrefix(c.winePrefix());
-        app.setWineInstallation(c.wineInstallation());
+        app.setWineConfiguration(c);
     } else {
         setLastError("No WineConfiguration specified");
         return false;
@@ -121,8 +120,7 @@ bool RegistryFileRunnerPlugin::run()
             setLastError("Invalid WineConfiguration specified");
             return false;
         }
-        app.setWinePrefix(c.winePrefix());
-        app.setWineInstallation(c.wineInstallation());
+        app.setWineConfiguration(c);
     } else {
         setLastError("No WineConfiguration specified");
         return false;
