@@ -30,7 +30,6 @@ class LIBQTWINE_EXPORT ArgumentsList : public QStringList
 {
 public:
     ArgumentsList();
-    ArgumentsList(const QString & arguments);
     ArgumentsList(const QStringList & arguments);
 
     QString toSingleString() const;

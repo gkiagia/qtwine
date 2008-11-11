@@ -24,12 +24,6 @@ LIBQTWINE_BEGIN_NAMESPACE
 ArgumentsList::ArgumentsList() : QStringList() {}
 ArgumentsList::ArgumentsList(const QStringList & arguments) : QStringList(arguments) {}
 
-ArgumentsList::ArgumentsList(const QString & arguments)
-    : QStringList()
-{
-    addArgumentsFromString(arguments);
-}
-
 /*
     This function is copied from qprocess.cpp, which is part of the Qt toolkit.
     Copyright (C) 2008 Nokia Corporation and/or its subsidiary(-ies).
