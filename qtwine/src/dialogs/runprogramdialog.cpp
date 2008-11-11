@@ -131,16 +131,13 @@ void RunProgramDialog::accept()
     //everything is valid, continue to store the session
     //storeSession();
 
-    // split by spaces but exclude spaces in quotes " "
-    QStringList arguments = m_argumentsEdit->text().split(QRegExp("\\s(?!\"\\w+\\s\\w+\")"), QString::SkipEmptyParts);
-
     //start wine
     using namespace QtWine;
     WineConfiguration wcfg =
             qtwineApp->wineConfigurationsModel()->configurationByModelRow(m_configComboBox->currentIndex());
 
     WineApplication app(m_executableRequester->url().path(), wcfg); //TODO support remote executable
-    app << arguments;
+    app << ArgumentsList::fromSingleString(m_argumentsEdit->text());
 
     WineDllOverrides dllOverrides = m_dllOverridesRequester->dllOverrides();
     if ( !dllOverrides.isEmpty() )

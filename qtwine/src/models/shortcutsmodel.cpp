@@ -77,12 +77,8 @@ WineApplication ShortcutsModel::wineApplicationFromRecord(const QSqlRecord & rec
     WineApplication a;
     if ( record.isEmpty() ) return a;
 
-    a.setApplication( record.value("executable").toString() );
-
-    // split by spaces but exclude spaces in quotes " "
-    QStringList arguments = record.value("arguments").toString().split(QRegExp("\\s(?!\"\\w+\\s\\w+\")"));
-    arguments.removeAll(QString());
-    a << arguments;
+    a.setApplication( record.value("executable").toString(),
+                      ArgumentsList::fromSingleString(record.value("arguments").toString()) );
 
     a.setWorkingDirectory( record.value("workdir").toString() );
     a.setWineDllOverrides( WineDllOverrides(record.value("winedlloverrides").toString()) );
