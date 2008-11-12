@@ -162,13 +162,14 @@ bool FileRunner::run()
         return false;
     }
 
+    connect(plugin, SIGNAL(finished()), this, SLOT(deleteLater()));
+
     if ( !plugin->run() ) {
         qWarning() << "FileRunner::run:" << "Plugin for extension" << extension << "returned error:" << d->lastError;
         deleteLater();
         return false;
     }
 
-    connect(plugin, SIGNAL(finished()), this, SLOT(deleteLater()));
     return true;
 }
 

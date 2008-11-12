@@ -19,6 +19,10 @@
 #include "winedlloverrides.h"
 #include "winedebugoptions.h"
 #include "argumentslist.h"
+#include "regedit.h"
+
+#include <QTextStream>
+#include <QTemporaryFile>
 
 LIBQTWINE_BEGIN_NAMESPACE
 
@@ -110,26 +114,50 @@ DECLARE_FILE_RUNNER_PLUGIN_COMMON(RegistryFileRunnerPlugin)
 
 bool RegistryFileRunnerPlugin::run()
 {
-    WineApplication app;
-    app.setApplication("regedit", QStringList() << option("file").toString());
+    QFile regfile( option("file").toString() );
+    if ( !regfile.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+        setLastError(tr("Could not open the specified file"));
+        return false;
+    }
 
+    QTemporaryFile utf8File;
+    if ( !utf8File.open() ) {
+        setLastError(tr("Could not create a temporary file (maybe the disk is full?)"));
+        return false;
+    }
+
+    // we have to do this because windows regedit 5.0 or later uses utf16 for exported .reg files
+    // and wine's regedit cannot read them in utf16 format
+    QTextStream ts(&regfile);
+    while ( !ts.atEnd() ) {
+        utf8File.write( ts.readLine().toUtf8() );
+        utf8File.write("\n");
+    }
+
+    QString utf8FileName = utf8File.fileName();
+    regfile.close();
+    utf8File.close();
+
+    WineConfiguration c;
     QVariant v = option("wineConfiguration");
     if ( !v.isNull() && v.canConvert<WineConfiguration>() ) {
-        WineConfiguration c = v.value<WineConfiguration>();
+        c = v.value<WineConfiguration>();
         if ( c.isInvalid() ) {
             setLastError("Invalid WineConfiguration specified");
             return false;
         }
-        app.setWineConfiguration(c);
     } else {
         setLastError("No WineConfiguration specified");
         return false;
     }
 
-    WineProcess *process = new WineProcess(app, this);
-    connect(process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SIGNAL(finished()));
-    process->startMonitored();
-    return true;
+    if ( RegEdit::importRegFile(utf8FileName, c) ) {
+        emit finished();
+        return true;
+    } else {
+        setLastError("Could not start wine");
+        return false;
+    }
 }
 
 #include "filerunnerplugin.moc"
