@@ -18,6 +18,7 @@
 #include <QHash>
 #include <QStringList>
 #include <QRegExp>
+#include <QMetaClassInfo>
 #include <QDebug>
 #include <KGlobal>
 
@@ -28,33 +29,27 @@ LIBQTWINE_BEGIN_NAMESPACE
 class FileRunnerPluginFactory
 {
 public:
-    FileRunnerPluginFactory();
+    typedef FileRunnerPlugin *(*PluginInstanceFunction)(FileRunner *);
 
-    void registerPlugin(FileRunner::PluginInstanceFunction func, const QStringList & extensions);
-    FileRunner::PluginInstanceFunction pluginForExtension(const QString & extension);
+    void registerPlugin(PluginInstanceFunction func, const QStringList & types);
+    PluginInstanceFunction pluginForType(const QString & type);
 
 private:
-    QHash<QString, FileRunner::PluginInstanceFunction> m_hashMap;
+    QHash<QString, PluginInstanceFunction> m_hashMap;
 };
 
 K_GLOBAL_STATIC(FileRunnerPluginFactory, globalPluginFactory);
 
-FileRunnerPluginFactory::FileRunnerPluginFactory()
-{
-    m_hashMap.insert("exe", init_WineExecutableRunnerPlugin);
-    m_hashMap.insert("reg", init_RegistryFileRunnerPlugin);
-}
-
-void FileRunnerPluginFactory::registerPlugin(FileRunner::PluginInstanceFunction func, const QStringList & extensions)
+void FileRunnerPluginFactory::registerPlugin(PluginInstanceFunction func, const QStringList & types)
 {
     QStringList::const_iterator it;
-    for(it = extensions.constBegin(); it != extensions.constEnd(); ++it)
-        m_hashMap.insert((*it).toLower(), func);
+    for(it = types.constBegin(); it != types.constEnd(); ++it)
+        m_hashMap.insert(*it, func);
 }
 
-FileRunner::PluginInstanceFunction FileRunnerPluginFactory::pluginForExtension(const QString & extension)
+FileRunnerPluginFactory::PluginInstanceFunction FileRunnerPluginFactory::pluginForType(const QString & type)
 {
-    return m_hashMap.value(extension.toLower(), NULL);
+    return m_hashMap.value(type, NULL);
 }
 
 
@@ -102,75 +97,90 @@ QString FileRunner::lastError() const
     return d->lastError;
 }
 
-void FileRunner::setLastError(const QString & errorMessage)
+void FileRunner::emitError(const QString & errorMessage, ErrorSeverity severity)
 {
     d->lastError = errorMessage;
+    qDebug() << "FileRunner::emitError" << errorMessage;
+    emit error(errorMessage, severity);
 }
 
 //static
-void FileRunner::registerPlugin(PluginInstanceFunction func, const QStringList & supportedFileExtensions)
+void FileRunner::registerPlugin(PluginInstanceFunction func, const QMetaObject & metaObject)
 {
-    globalPluginFactory->registerPlugin(func, supportedFileExtensions);
+    QStringList fileTypes;
+    for(int i=0; i < metaObject.classInfoCount(); ++i) {
+        QMetaClassInfo ci = metaObject.classInfo(i);
+        if ( !qstrcmp(ci.name(), "FileRunner Filetype") )
+            fileTypes << ci.value();
+    }
+    globalPluginFactory->registerPlugin(func, fileTypes);
 }
 
-FileRunnerPlugin *FileRunner::initPlugin(const QString & fileExtension)
+//static
+void FileRunner::registerDefaultPlugins()
 {
-    PluginInstanceFunction f = globalPluginFactory->pluginForExtension(fileExtension);
+    FileRunner::registerPlugin<WineExecutableRunnerPlugin>();
+    FileRunner::registerPlugin<RegistryFileRunnerPlugin>();
+}
+
+FileRunnerPlugin *FileRunner::initPlugin(const QString & fileType)
+{
+    PluginInstanceFunction f = globalPluginFactory->pluginForType(fileType);
     if ( f == NULL ) {
-        d->lastError = "No plugin registered for extension " + fileExtension;
-        qWarning() << "FileRunner::initPlugin:" << d->lastError;
+        emitError(tr("Unsupported file type \"%1\"").arg(fileType));
         return NULL;
     }
 
     FileRunnerPlugin *instance = f(this);
-    if ( instance == NULL ) {
-        d->lastError = "Failed to load plugin for extension " + fileExtension;
-        qWarning() << "FileRunner::initPlugin:" << d->lastError;
-        return NULL;
-    }
-
+    Q_ASSERT(instance);
     return instance;
 }
 
-bool FileRunner::run()
+bool FileRunner::start()
 {
+    connect(this, SIGNAL(finished(FinishStatus)), this, SLOT(deleteLater()));
+
     if ( d->file.isEmpty() ) {
-        d->lastError = "No file specified";
-        qWarning() << "FileRunner::run:" << d->lastError;
-        deleteLater();
+        emitError(tr("No file specified"));
+        emit finished(Failure);
         return false;
     }
 
-    QRegExp extensionRegExp(".*\\.(\\w+)$");
-    if ( extensionRegExp.indexIn(d->file) == -1 ) {
-        d->lastError = "Could not determine the type of the specified file";
-        qWarning() << "FileRunner::run:" << d->lastError;
-        deleteLater();
+    QString fileType = determineFileType(d->file);
+    if ( fileType.isEmpty() ) {
+        emitError(tr("Could not determine the type of the specified file"));
+        emit finished(Failure);
         return false;
     }
+
+    FileRunnerPlugin *plugin = initPlugin(fileType);
+    if ( plugin == NULL ) {
+        emit finished(Failure);
+        return false;
+    }
+
+    connect(plugin, SIGNAL(finished(FinishStatus)), this, SLOT(finish(FinishStatus)));
+    connect(plugin, SIGNAL(error(QString)), this, SLOT(emitError(QString)));
+    QMetaObject::invokeMethod(plugin, "run", Qt::QueuedConnection);
+    return true;
+}
+
+QString FileRunner::determineFileType(const QString & file)
+{
+    // that's quite stupid implementation, it should find the mime type instead,
+    // but it works for the needs of qtwine at least :)
+    QRegExp extensionRegExp(".*\\.(\\w+)$");
+    if ( extensionRegExp.indexIn(file) == -1 )
+        return QString();
 
     QString extension = extensionRegExp.cap(1);
+    extension = extension.toLower();
 
     // workaround to make wine's tools load too.
-    if ( extension == "so" && d->file.endsWith("exe.so", Qt::CaseInsensitive) )
+    if ( extension == "so" && file.endsWith("exe.so") )
         extension = "exe";
 
-    FileRunnerPlugin *plugin = initPlugin(extension);
-    if ( plugin == NULL ) {
-        //warning has been already shown by initPlugin()
-        deleteLater();
-        return false;
-    }
-
-    connect(plugin, SIGNAL(finished()), this, SLOT(deleteLater()));
-
-    if ( !plugin->run() ) {
-        qWarning() << "FileRunner::run:" << "Plugin for extension" << extension << "returned error:" << d->lastError;
-        deleteLater();
-        return false;
-    }
-
-    return true;
+    return extension.prepend("extension/");
 }
 
 #include "filerunner.moc"

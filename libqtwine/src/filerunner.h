@@ -30,29 +30,62 @@ class FileRunnerPlugin;
 class LIBQTWINE_EXPORT FileRunner : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(FinishStatus ErrorSeverity)
+    Q_DISABLE_COPY(FileRunner)
 public:
+    enum FinishStatus {
+        Failure = 0,
+        Success = 1
+    };
+
+    enum ErrorSeverity {
+        Important = 0,
+        Critical = 1,
+        ProgrammerError = 2
+    };
+
     FileRunner();
     FileRunner(const QString & file);
     virtual ~FileRunner();
 
+    QString lastError() const;
+
     void setFile(const QString & file);
     void setOption(const QString & name, const QVariant & value);
 
-    QString lastError() const;
+    template <class T>
+    static void registerPlugin()
+    {
+        registerPlugin(defaultPluginInstanceFunction<T>, T::staticMetaObject);
+    }
 
-    typedef FileRunnerPlugin *(*PluginInstanceFunction)(FileRunner *parent);
-    static void registerPlugin(PluginInstanceFunction func, const QStringList & supportedFileExtensions);
+    static void registerDefaultPlugins();
+
+Q_SIGNALS:
+    void error(const QString & errorMessage, ErrorSeverity severity);
+    void finished(FinishStatus status);
 
 public Q_SLOTS:
-    virtual bool run();
+    virtual bool start();
+
+protected Q_SLOTS:
+    void emitError(const QString & errorMessage, ErrorSeverity severity = Important);
 
 protected:
-    FileRunnerPlugin *initPlugin(const QString & fileExtension);
-
-    void setLastError(const QString & errorMessage);
+    virtual QString determineFileType(const QString & file);
+    FileRunnerPlugin *initPlugin(const QString & fileType);
     QVariant option(const QString & name) const;
 
 private:
+    typedef FileRunnerPlugin *(*PluginInstanceFunction)(FileRunner *);
+    static void registerPlugin(PluginInstanceFunction func, const QMetaObject & metaObject);
+
+    template <class T>
+    static FileRunnerPlugin *defaultPluginInstanceFunction(FileRunner *runner)
+    {
+        return new T(runner);
+    }
+
     friend class FileRunnerPlugin;
     class Private;
     Private *const d;

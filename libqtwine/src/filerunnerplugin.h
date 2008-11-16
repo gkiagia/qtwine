@@ -28,22 +28,18 @@ class LIBQTWINE_EXPORT FileRunnerPlugin : public QObject
 {
     Q_OBJECT
 public:
-    virtual bool run() = 0;
+    virtual ~FileRunnerPlugin() {}
+    virtual void run() = 0;
 
 Q_SIGNALS:
-    void finished();
+    void error(const QString & message, FileRunner::ErrorSeverity severity = FileRunner::Important);
+    void finished(FileRunner::FinishStatus status);
 
 protected:
     FileRunnerPlugin(FileRunner *parent);
     QVariant option(const QString & name) const;
-    void setLastError(const QString & errorMessage);
 };
 
-#ifdef MAKE_LIBQTWINE_LIB
-//plugin instance functions used internally
-FileRunnerPlugin *init_WineExecutableRunnerPlugin(FileRunner*);
-FileRunnerPlugin *init_RegistryFileRunnerPlugin(FileRunner*);
-#endif
 
 /*! A FileRunnerPlugin that supports running windows executables (.exe).
  * Supported options:
@@ -59,16 +55,17 @@ FileRunnerPlugin *init_RegistryFileRunnerPlugin(FileRunner*);
 class LIBQTWINE_EXPORT WineExecutableRunnerPlugin : public FileRunnerPlugin
 {
     Q_OBJECT
+    Q_CLASSINFO("FileRunner Filetype", "extension/exe")
 public:
-    virtual bool run();
+    WineExecutableRunnerPlugin(FileRunner *parent) : FileRunnerPlugin(parent) {}
+    virtual void run();
 
 protected:
     virtual WineProcess *initializeWineProcess();
 
-    WineExecutableRunnerPlugin(FileRunner *parent);
-#ifdef MAKE_LIBQTWINE_LIB
-    friend FileRunnerPlugin *init_WineExecutableRunnerPlugin(FileRunner*);
-#endif
+private Q_SLOTS:
+    void processFinished();
+    void processError();
 };
 
 /*! A FileRunnerPlugin that supports merging windows registry files (.reg)
@@ -79,14 +76,10 @@ protected:
 class LIBQTWINE_EXPORT RegistryFileRunnerPlugin : public FileRunnerPlugin
 {
     Q_OBJECT
+    Q_CLASSINFO("FileRunner Filetype", "extension/reg")
 public:
-    virtual bool run();
-
-protected:
-    RegistryFileRunnerPlugin(FileRunner *parent);
-#ifdef MAKE_LIBQTWINE_LIB
-    friend FileRunnerPlugin *init_RegistryFileRunnerPlugin(FileRunner*);
-#endif
+    RegistryFileRunnerPlugin(FileRunner *parent) : FileRunnerPlugin(parent) {}
+    virtual void run();
 };
 
 LIBQTWINE_END_NAMESPACE

@@ -26,13 +26,6 @@
 
 LIBQTWINE_BEGIN_NAMESPACE
 
-#define DECLARE_FILE_RUNNER_PLUGIN_COMMON(CLASS) \
-    CLASS::CLASS(FileRunner *parent) : FileRunnerPlugin(parent) {} \
-    FileRunnerPlugin * init_##CLASS(FileRunner *parent) \
-    { \
-        return new CLASS(parent); \
-    }
-
 FileRunnerPlugin::FileRunnerPlugin(FileRunner *parent) : QObject(parent) {}
 
 QVariant FileRunnerPlugin::option(const QString & name) const
@@ -40,15 +33,8 @@ QVariant FileRunnerPlugin::option(const QString & name) const
     return static_cast<FileRunner*>(parent())->option(name);
 }
 
-void FileRunnerPlugin::setLastError(const QString & errorMessage)
-{
-    static_cast<FileRunner*>(parent())->setLastError(errorMessage);
-}
 
-
-DECLARE_FILE_RUNNER_PLUGIN_COMMON(WineExecutableRunnerPlugin)
-
-bool WineExecutableRunnerPlugin::run()
+void WineExecutableRunnerPlugin::run()
 {
     QVariant v;
     WineApplication app;
@@ -58,13 +44,15 @@ bool WineExecutableRunnerPlugin::run()
     if ( !v.isNull() && v.canConvert<WineConfiguration>() ) {
         WineConfiguration c = v.value<WineConfiguration>();
         if ( c.isInvalid() ) {
-            setLastError("Invalid WineConfiguration specified");
-            return false;
+            emit error(tr("Invalid WineConfiguration specified"), FileRunner::ProgrammerError);
+            emit finished(FileRunner::Failure);
+            return;
         }
         app.setWineConfiguration(c);
     } else {
-        setLastError("No WineConfiguration specified");
-        return false;
+        emit error(tr("No WineConfiguration specified"), FileRunner::ProgrammerError);
+        emit finished(FileRunner::Failure);
+        return;
     }
 
     v = option("arguments");
@@ -100,9 +88,21 @@ bool WineExecutableRunnerPlugin::run()
         process->setLogFile(log);
     }
 
-    connect(process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SIGNAL(finished()));
+    connect(process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(processFinished()));
+    connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(processError()));
     process->startMonitored();
-    return true;
+}
+
+void WineExecutableRunnerPlugin::processFinished()
+{
+    emit finished(FileRunner::Success);
+}
+
+void WineExecutableRunnerPlugin::processError()
+{
+    //TODO show a friendly and translated user message
+    emit error("wineprocess returned error", FileRunner::Critical);
+    emit finished(FileRunner::Failure);
 }
 
 WineProcess *WineExecutableRunnerPlugin::initializeWineProcess()
@@ -110,20 +110,21 @@ WineProcess *WineExecutableRunnerPlugin::initializeWineProcess()
     return new WineProcess(this);
 }
 
-DECLARE_FILE_RUNNER_PLUGIN_COMMON(RegistryFileRunnerPlugin)
 
-bool RegistryFileRunnerPlugin::run()
+void RegistryFileRunnerPlugin::run()
 {
     QFile regfile( option("file").toString() );
     if ( !regfile.open(QIODevice::ReadOnly | QIODevice::Text) ) {
-        setLastError(tr("Could not open the specified file"));
-        return false;
+        emit error(tr("Could not open the specified file"));
+        emit finished(FileRunner::Failure);
+        return;
     }
 
     QTemporaryFile utf8File;
     if ( !utf8File.open() ) {
-        setLastError(tr("Could not create a temporary file (maybe the disk is full?)"));
-        return false;
+        emit error(tr("Could not create a temporary file (maybe the disk is full?)"));
+        emit finished(FileRunner::Failure);
+        return;
     }
 
     // we have to do this because windows regedit 5.0 or later uses utf16 for exported .reg files
@@ -143,20 +144,23 @@ bool RegistryFileRunnerPlugin::run()
     if ( !v.isNull() && v.canConvert<WineConfiguration>() ) {
         c = v.value<WineConfiguration>();
         if ( c.isInvalid() ) {
-            setLastError("Invalid WineConfiguration specified");
-            return false;
+            emit error(tr("Invalid WineConfiguration specified"), FileRunner::ProgrammerError);
+            emit finished(FileRunner::Failure);
+            return;
         }
     } else {
-        setLastError("No WineConfiguration specified");
-        return false;
+        emit error(tr("No WineConfiguration specified"), FileRunner::ProgrammerError);
+        emit finished(FileRunner::Failure);
+        return;
     }
 
     if ( RegEdit::importRegFile(utf8FileName, c) ) {
-        emit finished();
-        return true;
+        emit finished(FileRunner::Success);
+        return;
     } else {
-        setLastError("Could not start wine");
-        return false;
+        emit error(tr("Could not start wine"), FileRunner::Critical);
+        emit finished(FileRunner::Failure);
+        return;
     }
 }
 
