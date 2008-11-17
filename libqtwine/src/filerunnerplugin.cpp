@@ -33,6 +33,11 @@ QVariant FileRunnerPlugin::option(const QString & name) const
     return static_cast<FileRunner*>(parent())->option(name);
 }
 
+void FileRunnerPlugin::setOption(const QString & name, const QVariant & value)
+{
+    static_cast<FileRunner*>(parent())->setOption(name, value);
+}
+
 
 void WineExecutableRunnerPlugin::run()
 {

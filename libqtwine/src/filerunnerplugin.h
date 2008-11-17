@@ -40,6 +40,7 @@ Q_SIGNALS:
 protected:
     FileRunnerPlugin(FileRunner *parent);
     QVariant option(const QString & name) const;
+    void setOption(const QString & name, const QVariant & value);
 };
 
 
