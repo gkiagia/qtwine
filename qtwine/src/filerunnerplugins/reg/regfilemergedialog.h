@@ -21,22 +21,18 @@
 #define REGFILEMERGEDIALOG_H
 
 #include <KDialog>
-#include <KUrl>
 class QComboBox;
 
 class RegfileMergeDialog : public KDialog
 {
 	Q_OBJECT
 public:
-	RegfileMergeDialog(const KUrl & file, QWidget *parent = 0);
+    RegfileMergeDialog(const QString & file, QWidget *parent = 0);
 
-public slots:
-	void accept();
-	void setConfiguration(int id); // ### not used. remove?
-	void setConfigurationByModelRow(int row);
+    int configurationId() const;
+    void setConfigurationId(int id);
 
 private:
-	QString tempFile;
 	QComboBox *comboBox;
 };
 

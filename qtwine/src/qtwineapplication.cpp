@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include "qtwineapplication.h"
 #include "qtwinemainwindow.h"
+#include "qtwinefilerunner.h"
 #include "qtwinepreferences.h"
 #include "ui_behaviorPreferences.h"
 
@@ -42,6 +43,8 @@ QtWineApplication::QtWineApplication()
 {
     initializeDatabase();
     initializeModels();
+    KGlobal::setAllowQuit(true); //required by QtWineFileRunner
+    QtWineFileRunner::registerDefaultPlugins();
 }
 
 QtWineApplication::~QtWineApplication()

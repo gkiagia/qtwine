@@ -14,27 +14,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef QTWINEFILERUNNER_H
-#define QTWINEFILERUNNER_H
 
-#include "filerunner.h"
-class KUrl;
+#include "../qtwinefilerunner.h"
+#include "reg/registryfilerunnerplugin2.h"
 
-class QtWineFileRunner : public QtWine::FileRunner
+using namespace QtWine;
+
+void QtWineFileRunner::registerDefaultPlugins()
 {
-    Q_OBJECT
-public:
-    QtWineFileRunner();
-    QtWineFileRunner(const QString & file);
-    QtWineFileRunner(const KUrl & file);
-    virtual ~QtWineFileRunner();
-
-    void setFile(const KUrl & file);
-
-    static void registerDefaultPlugins();
-
-private slots:
-    void showErrorMessage(const QString & message, FileRunner::ErrorSeverity severity);
-};
-
-#endif
+    FileRunner::registerDefaultPlugins();
+    FileRunner::registerPlugin<RegistryFileRunnerPlugin2>();
+}

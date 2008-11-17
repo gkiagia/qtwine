@@ -20,8 +20,8 @@
 #include "wineconfigurationslistpart.h"
 #include "qtwinepreferences.h"
 #include "../qtwineapplication.h"
+#include "../qtwinefilerunner.h"
 #include "../dialogs/configurationeditor.h"
-#include "../dialogs/regfilemergedialog.h"
 #include "../dialogs/createconfigurationdialog.h"
 
 #include "wineprocess.h"
@@ -157,9 +157,10 @@ void WineConfigurationsListPart::importRegfile()
                     );
 
     if ( !regfile.url().isEmpty() ) {
-        RegfileMergeDialog d(regfile, widget());
-        d.setConfigurationByModelRow( selectedIndex().row() );
-        d.exec();
+        QtWineFileRunner *runner = new QtWineFileRunner(regfile);
+        int id = static_cast<QtWineSqlTableModel*>(model())->rowToId(selectedIndex().row());
+        runner->setOption("wineConfigurationId", id);
+        runner->start();
     }
 }
 
