@@ -19,6 +19,7 @@
 #include <KGlobal>
 #include <KMessageBox>
 #include <KIO/NetAccess>
+#include <KDebug>
 
 using namespace QtWine;
 
@@ -26,18 +27,24 @@ QtWineFileRunner::QtWineFileRunner()
     : FileRunner()
 {
     KGlobal::ref();
+    connect(this, SIGNAL(error(QString, FileRunner::ErrorSeverity)),
+            SLOT(showErrorMessage(QString, FileRunner::ErrorSeverity)));
 }
 
 QtWineFileRunner::QtWineFileRunner(const QString & file)
     : FileRunner(file)
 {
     KGlobal::ref();
+    connect(this, SIGNAL(error(QString, FileRunner::ErrorSeverity)),
+            SLOT(showErrorMessage(QString, FileRunner::ErrorSeverity)));
 }
 
 QtWineFileRunner::QtWineFileRunner(const KUrl & file)
     : FileRunner()
 {
     KGlobal::ref();
+    connect(this, SIGNAL(error(QString, FileRunner::ErrorSeverity)),
+            SLOT(showErrorMessage(QString, FileRunner::ErrorSeverity)));
     setFile(file);
 }
 
@@ -58,13 +65,19 @@ void QtWineFileRunner::setFile(const KUrl & file)
     }
 }
 
-bool QtWineFileRunner::run()
+void QtWineFileRunner::showErrorMessage(const QString & message, FileRunner::ErrorSeverity severity)
 {
-    if ( !FileRunner::run() ) {
-        KMessageBox::error(0, lastError());
-        return false;
+    switch(severity) {
+        case FileRunner::Important:
+            KMessageBox::sorry(0, message);
+            break;
+        case FileRunner::Critical:
+            KMessageBox::error(0, message);
+            break;
+        case FileRunner::ProgrammerError:
+        default: // <-- that's a programmer error too :)
+            kFatal() << message;
     }
-    return true;
 }
 
 #include "qtwinefilerunner.moc"

@@ -31,8 +31,8 @@ public:
 
     void setFile(const KUrl & file);
 
-public slots:
-    virtual bool run();
+private slots:
+    void showErrorMessage(const QString & message, FileRunner::ErrorSeverity severity);
 };
 
 #endif
