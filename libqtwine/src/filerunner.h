@@ -62,14 +62,14 @@ public:
     static void registerDefaultPlugins();
 
 Q_SIGNALS:
-    void error(const QString & errorMessage, ErrorSeverity severity);
-    void finished(FinishStatus status);
+    void error(const QString & errorMessage, FileRunner::ErrorSeverity severity);
+    void finished(FileRunner::FinishStatus status);
 
 public Q_SLOTS:
     virtual bool start();
 
 protected Q_SLOTS:
-    void emitError(const QString & errorMessage, ErrorSeverity severity = Important);
+    void emitError(const QString & errorMessage, FileRunner::ErrorSeverity severity = Important);
 
 protected:
     virtual QString determineFileType(const QString & file);

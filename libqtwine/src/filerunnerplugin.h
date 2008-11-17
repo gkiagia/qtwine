@@ -29,6 +29,8 @@ class LIBQTWINE_EXPORT FileRunnerPlugin : public QObject
     Q_OBJECT
 public:
     virtual ~FileRunnerPlugin() {}
+
+public Q_SLOTS:
     virtual void run() = 0;
 
 Q_SIGNALS:
@@ -58,6 +60,8 @@ class LIBQTWINE_EXPORT WineExecutableRunnerPlugin : public FileRunnerPlugin
     Q_CLASSINFO("FileRunner Filetype", "extension/exe")
 public:
     WineExecutableRunnerPlugin(FileRunner *parent) : FileRunnerPlugin(parent) {}
+
+public Q_SLOTS:
     virtual void run();
 
 protected:
@@ -79,6 +83,8 @@ class LIBQTWINE_EXPORT RegistryFileRunnerPlugin : public FileRunnerPlugin
     Q_CLASSINFO("FileRunner Filetype", "extension/reg")
 public:
     RegistryFileRunnerPlugin(FileRunner *parent) : FileRunnerPlugin(parent) {}
+
+public Q_SLOTS:
     virtual void run();
 };
 

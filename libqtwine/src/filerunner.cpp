@@ -138,7 +138,7 @@ FileRunnerPlugin *FileRunner::initPlugin(const QString & fileType)
 
 bool FileRunner::start()
 {
-    connect(this, SIGNAL(finished(FinishStatus)), this, SLOT(deleteLater()));
+    connect(this, SIGNAL(finished(FileRunner::FinishStatus)), this, SLOT(deleteLater()));
 
     if ( d->file.isEmpty() ) {
         emitError(tr("No file specified"));
@@ -159,8 +159,11 @@ bool FileRunner::start()
         return false;
     }
 
-    connect(plugin, SIGNAL(finished(FinishStatus)), this, SLOT(finish(FinishStatus)));
-    connect(plugin, SIGNAL(error(QString)), this, SLOT(emitError(QString)));
+    connect(plugin, SIGNAL(finished(FileRunner::FinishStatus)),
+            this, SIGNAL(finished(FileRunner::FinishStatus)));
+    connect(plugin, SIGNAL(error(QString, FileRunner::ErrorSeverity)),
+            this, SLOT(emitError(QString, FileRunner::ErrorSeverity)));
+
     QMetaObject::invokeMethod(plugin, "run", Qt::QueuedConnection);
     return true;
 }
