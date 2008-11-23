@@ -35,7 +35,6 @@ SET( QTWINE_SOURCES
     src/dialogs/installationeditor.cpp
     src/dialogs/configurationeditor.cpp
     src/dialogs/programshortcuteditor.cpp
-    src/dialogs/runprogramdialog.cpp
     src/dialogs/createconfigurationdialog.cpp
 
     src/assistants/commonpages.cpp
@@ -59,6 +58,7 @@ SET( QTWINE_SOURCES
     src/filerunnerplugins/registerplugins.cpp
     src/filerunnerplugins/reg/registryfilerunnerplugin2.cpp
     src/filerunnerplugins/reg/regfilemergedialog.cpp
+   # src/filerunnerplugins/exe/runprogramdialog.cpp
 )
 
 SET( QTWINE_RC_FILES

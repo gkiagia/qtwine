@@ -22,7 +22,7 @@
 #include "mainwindowparts/wineconfigurationslistpart.h"
 #include "mainwindowparts/wineinstallationslistpart.h"
 #include "mainwindowparts/shortcutslistpart.h"
-#include "dialogs/runprogramdialog.h"
+//#include "dialogs/runprogramdialog.h"
 
 #include <QMetaObject>
 
@@ -94,9 +94,11 @@ void QtWineMainWindow::setupActions()
 
 void QtWineMainWindow::slotRunCommand()
 {
+#if 0
 	RunProgramDialog *l = new RunProgramDialog(this);
 	l->show();
 	connect(l, SIGNAL(finished(int)), l, SLOT(deleteLater()) );
+#endif
 }
 
 #include "qtwinemainwindow.moc"
