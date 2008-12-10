@@ -17,10 +17,11 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
-#ifndef RUNPROGRAMDIALOG_H
-#define RUNPROGRAMDIALOG_H
+#ifndef DIALOGS_H
+#define DIALOGS_H
 
-#include <KPageDialog>
+#include <KDialog>
+#include "exerunnerpluginwithui.h"
 class KUrlRequester;
 class ExecutableRequester;
 class WineDllOverridesRequester;
@@ -28,21 +29,48 @@ class KLineEdit;
 class QComboBox;
 class QCheckBox;
 
+namespace QtWine {
+    class ArgumentsList;
+    class WineDllOverrides;
+}
+
 /*!
  * \author George Kiagiadakis <gkiagia@users.sourceforge.net>
  */
-class RunProgramDialog : public KPageDialog
+class RunProgramDialog : public KDialog
 {
     Q_OBJECT
 public:
     RunProgramDialog(QWidget *parent = 0);
 
+    QString executable() const;
+    void setExecutable(const QString & url);
+
+    QtWine::ArgumentsList arguments() const;
+    void setArguments(const QtWine::ArgumentsList & args);
+
+    QString workingDirectory() const;
+    void setWorkingDirectory(const QString & dir);
+
+    int wineConfigurationId() const;
+    void setWineConfigurationId(int id);
+
+    QtWine::WineDllOverrides wineDllOverrides() const;
+    void setWineDllOverrides(const QtWine::WineDllOverrides overrides);
+
+    KUrl logFile() const;
+    void setLogFile(const KUrl & logfile);
+
+    bool runInTerminal() const;
+    void setRunInTerminal(bool enabled);
+
+    bool isConsoleApplication() const;
+    void setIsConsoleApplication(bool enabled);
+
+    /*
 public slots:
-#if 0
-    void setCommand(const QString & command);
-    void setCommand(const QStringList & command);
-#endif
-    void accept();
+    virtual void accept();
+    */
 
 private slots:
     void slotExecutableChanged(const KUrl & newUrl);
@@ -59,6 +87,20 @@ private:
     KUrlRequester *m_logfileRequester;
     QCheckBox *m_terminalBox;
     QCheckBox *m_wineconsoleBox;
+};
+
+class ExeRunnerActionsDialog : public KDialog
+{
+    Q_OBJECT
+public:
+    ExeRunnerActionsDialog(QWidget *parent = 0);
+
+signals:
+    void actionSelected(ExeRunnerPluginWithUi::Action action);
+
+private slots:
+    virtual void reject();
+    void slotMapped(int who);
 };
 
 #endif

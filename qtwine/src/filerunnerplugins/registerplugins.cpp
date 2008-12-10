@@ -17,6 +17,7 @@
 
 #include "../qtwinefilerunner.h"
 #include "reg/registryfilerunnerplugin2.h"
+#include "exe/exerunnerpluginwithui.h"
 
 using namespace QtWine;
 
@@ -24,4 +25,5 @@ void QtWineFileRunner::registerDefaultPlugins()
 {
     FileRunner::registerDefaultPlugins();
     FileRunner::registerPlugin<RegistryFileRunnerPlugin2>();
+    FileRunner::registerPlugin<ExeRunnerPluginWithUi>();
 }

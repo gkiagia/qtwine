@@ -58,7 +58,8 @@ SET( QTWINE_SOURCES
     src/filerunnerplugins/registerplugins.cpp
     src/filerunnerplugins/reg/registryfilerunnerplugin2.cpp
     src/filerunnerplugins/reg/regfilemergedialog.cpp
-   # src/filerunnerplugins/exe/runprogramdialog.cpp
+    src/filerunnerplugins/exe/exerunnerpluginwithui.cpp
+    src/filerunnerplugins/exe/dialogs.cpp
 )
 
 SET( QTWINE_RC_FILES

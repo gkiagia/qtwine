@@ -17,52 +17,54 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
-#include "runprogramdialog.h"
-#include "../qtwineapplication.h"
-#include "../widgets/executablerequester.h"
-#include "../widgets/winedlloverridesrequester.h"
+#include "dialogs.h"
+#include "../../qtwineapplication.h"
+#include "../../widgets/executablerequester.h"
+#include "../../widgets/winedlloverridesrequester.h"
 
-#include "wineprocess.h"
+#include "argumentslist.h"
 
 #include <QFormLayout>
 #include <QComboBox>
 #include <QGroupBox>
 #include <QCheckBox>
 #include <QRegExp>
+#include <QLabel>
+#include <QCommandLinkButton>
+#include <QVBoxLayout>
+#include <QSignalMapper>
 
 #include <KMessageBox>
 #include <KUrlRequester>
-#include <KIcon>
 #include <KLocalizedString>
 #include <KLineEdit>
 
 
 RunProgramDialog::RunProgramDialog(QWidget *parent)
-    : KPageDialog(parent)
+    : KDialog(parent)
 {
     setButtons(KDialog::Ok | KDialog::Cancel);
-    setCaption(makeStandardCaption(i18n("Run command in wine"), this));
+    setCaption(makeStandardCaption(i18n("Run program in wine"), this));
 
-    QWidget *page1 = new QWidget(this);
-    KPageWidgetItem *firstPageItem = addPage(page1, i18n("Run command"));
-    firstPageItem->setIcon(KIcon("system-run"));
+    QWidget *mainWidget = new QWidget(this);
+    setMainWidget(mainWidget);
 
-    QVBoxLayout *mainVlay = new QVBoxLayout(page1);
+    QVBoxLayout *mainVlay = new QVBoxLayout(mainWidget);
     QFormLayout *formLayout = new QFormLayout;
     mainVlay->addLayout(formLayout);
 
-    m_executableRequester = new ExecutableRequester(page1);
+    m_executableRequester = new ExecutableRequester(mainWidget);
     connect(m_executableRequester, SIGNAL(urlSelected(KUrl)), this, SLOT(slotExecutableChanged(KUrl)) );
     formLayout->addRow(i18n("&Executable:"), m_executableRequester);
 
-    m_argumentsEdit = new KLineEdit(page1);
+    m_argumentsEdit = new KLineEdit(mainWidget);
     formLayout->addRow(i18n("&Arguments:"), m_argumentsEdit);
 
-    m_workdirRequester = new KUrlRequester(page1);
+    m_workdirRequester = new KUrlRequester(mainWidget);
     m_workdirRequester->setMode(KFile::Directory | KFile::LocalOnly | KFile::ExistingOnly);
     formLayout->addRow(i18n("&Working directory:"), m_workdirRequester);
 
-    m_configComboBox = new QComboBox(page1);
+    m_configComboBox = new QComboBox(mainWidget);
     m_configComboBox->setModel(qtwineApp->wineConfigurationsModel());
     m_configComboBox->setModelColumn(qtwineApp->wineConfigurationsModel()->fieldIndex("name"));
     m_configComboBox->setCurrentIndex(0);
@@ -73,15 +75,15 @@ RunProgramDialog::RunProgramDialog(QWidget *parent)
     m_executableRequester->setWineConfiguration(m_configComboBox->currentIndex());
     connect(m_configComboBox, SIGNAL(currentIndexChanged(int)), m_executableRequester, SLOT(setWineConfiguration(int)) );
 
-    m_dllOverridesRequester = new WineDllOverridesRequester(page1);
+    m_dllOverridesRequester = new WineDllOverridesRequester(mainWidget);
     formLayout->addRow(i18n("Wine &dll overrides:"), m_dllOverridesRequester);
 
-    m_logfileRequester = new KUrlRequester(page1);
+    m_logfileRequester = new KUrlRequester(mainWidget);
     m_logfileRequester->setMode(KFile::File | KFile::LocalOnly);
     formLayout->addRow(i18n("&Log output to a file:"), m_logfileRequester);
 
     // options groupbox
-    QGroupBox *optionsGroup = new QGroupBox(i18n("Options"), page1);
+    QGroupBox *optionsGroup = new QGroupBox(i18n("Options"), mainWidget);
     QVBoxLayout *optionsVlay = new QVBoxLayout(optionsGroup);
 
     m_terminalBox = new QCheckBox(i18n("Show output in a terminal"), optionsGroup);
@@ -94,27 +96,89 @@ RunProgramDialog::RunProgramDialog(QWidget *parent)
     mainVlay->addWidget(optionsGroup);
     resizeLayout(mainVlay, marginHint(), spacingHint());
 }
-#if 0
-void RunProgramDialog::setCommand(const QString & command)
+
+QString RunProgramDialog::executable() const
 {
-    m_commandRequester->lineEdit()->setText( command );
+    //TODO drop ExecutableRequester and use something similar with RegfileMergeDialog
+    return m_executableRequester->url().path();
 }
 
-void RunProgramDialog::setCommand(const QStringList & command)
+void RunProgramDialog::setExecutable(const QString & url)
 {
-    if ( !command.isEmpty() )
-    {
-#if 0
-        for (int i=0; i < args.size(); i++) {
-            args[i].prepend('\"');
-            args[i].append('\"');
-        }
-#endif
-        m_commandRequester->lineEdit()->setText(
-                command.join("\" \"").prepend('\"').append('\"') );
-    }
+    m_executableRequester->setUrl(url);
 }
-#endif
+
+QtWine::ArgumentsList RunProgramDialog::arguments() const
+{
+    return QtWine::ArgumentsList::fromSingleString(m_argumentsEdit->text());
+}
+
+void RunProgramDialog::setArguments(const QtWine::ArgumentsList & args)
+{
+    m_argumentsEdit->setText(args.toSingleString());
+}
+
+QString RunProgramDialog::workingDirectory() const
+{
+    return m_workdirRequester->url().path();
+}
+
+void RunProgramDialog::setWorkingDirectory(const QString & dir)
+{
+    m_workdirRequester->setUrl(dir);
+}
+
+int RunProgramDialog::wineConfigurationId() const
+{
+    return qtwineApp->wineConfigurationsModel()->rowToId(m_configComboBox->currentIndex());
+}
+
+void RunProgramDialog::setWineConfigurationId(int id)
+{
+    m_configComboBox->setCurrentIndex(qtwineApp->wineConfigurationsModel()->idToRow(id));
+}
+
+QtWine::WineDllOverrides RunProgramDialog::wineDllOverrides() const
+{
+    return m_dllOverridesRequester->dllOverrides();
+}
+
+void RunProgramDialog::setWineDllOverrides(const QtWine::WineDllOverrides overrides)
+{
+    m_dllOverridesRequester->setDllOverrides(overrides);
+}
+
+KUrl RunProgramDialog::logFile() const
+{
+    return m_logfileRequester->url();
+}
+
+void RunProgramDialog::setLogFile(const KUrl & logfile)
+{
+    m_logfileRequester->setUrl(logfile);
+}
+
+bool RunProgramDialog::runInTerminal() const
+{
+    return m_terminalBox->isChecked();
+}
+
+void RunProgramDialog::setRunInTerminal(bool enabled)
+{
+    m_terminalBox->setChecked(enabled);
+}
+
+bool RunProgramDialog::isConsoleApplication() const
+{
+    return m_wineconsoleBox->isChecked();
+}
+
+void RunProgramDialog::setIsConsoleApplication(bool enabled)
+{
+    m_wineconsoleBox->setChecked(enabled);
+}
+
+#if 0
 void RunProgramDialog::accept()
 {
     //check for valid values
@@ -160,6 +224,7 @@ void RunProgramDialog::accept()
     // exit the dialog
     QDialog::accept();
 }
+#endif
 
 void RunProgramDialog::slotExecutableChanged(const KUrl & newUrl)
 {
@@ -249,4 +314,60 @@ void RunProgramDialog::storeSession()
 }
 #endif
 
-#include "runprogramdialog.moc"
+
+ExeRunnerActionsDialog::ExeRunnerActionsDialog(QWidget *parent)
+    : KDialog(parent)
+{
+    setButtons(KDialog::Cancel);
+    setCaption(i18n("Select action"));
+
+    QWidget *mainWidget = new QWidget(this);
+    setMainWidget(mainWidget);
+
+    QLabel *info = new QLabel(mainWidget);
+    info->setWordWrap(true);
+    info->setText(i18n("Please select the action that you would like to do with this executable."));
+
+    QCommandLinkButton *runButton = new QCommandLinkButton(mainWidget);
+    runButton->setText(i18n("Run this program"));
+    runButton->setDescription(i18n("Select this option if you want just to run this program "
+                            "without installing it, or if it is already installed in a certain "
+                            "virtual windows installation."));
+
+    QCommandLinkButton *installButton = new QCommandLinkButton(mainWidget);
+    installButton->setText(i18n("Install this program"));
+    installButton->setDescription(i18n("Select this option if this program is an installer."));
+
+    QCommandLinkButton *createShortcutButton = new QCommandLinkButton(mainWidget);
+    createShortcutButton->setText(i18n("Add this program in QtWine's shortcuts"));
+
+    QVBoxLayout *layout = new QVBoxLayout(mainWidget);
+    layout->addWidget(info);
+    layout->addWidget(runButton);
+    layout->addWidget(installButton);
+    layout->addWidget(createShortcutButton);
+
+    QSignalMapper *mapper = new QSignalMapper(this);
+    mapper->setMapping(runButton, (int)ExeRunnerPluginWithUi::Run);
+    mapper->setMapping(installButton, (int)ExeRunnerPluginWithUi::Install);
+    mapper->setMapping(createShortcutButton, (int)ExeRunnerPluginWithUi::CreateShortcut);
+
+    connect(runButton, SIGNAL(clicked()), mapper, SLOT(map()));
+    connect(installButton, SIGNAL(clicked()), mapper, SLOT(map()));
+    connect(createShortcutButton, SIGNAL(clicked()), mapper, SLOT(map()));
+    connect(mapper, SIGNAL(mapped(int)), this, SLOT(slotMapped(int)));
+}
+
+void ExeRunnerActionsDialog::slotMapped(int who)
+{
+    accept();
+    emit actionSelected( (ExeRunnerPluginWithUi::Action) who );
+}
+
+void ExeRunnerActionsDialog::reject()
+{
+    KDialog::reject();
+    emit actionSelected( ExeRunnerPluginWithUi::NoAction );
+}
+
+#include "dialogs.moc"
