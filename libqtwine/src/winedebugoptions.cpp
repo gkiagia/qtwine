@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include "winedebugoptions.h"
 #include <KDebug>
+#include <QVariant>
 
 LIBQTWINE_BEGIN_NAMESPACE
 
@@ -101,6 +102,11 @@ void WineDebugOptions::disableChannel(const QString & channel, WineDebugOptions:
 WineDebugOptions::operator QString() const
 {
     return d->toString();
+}
+
+WineDebugOptions::operator QVariant() const
+{
+    return QVariant::fromValue(*this);
 }
 
 LIBQTWINE_END_NAMESPACE

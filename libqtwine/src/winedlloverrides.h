@@ -133,6 +133,9 @@ public:
      */
     operator QString() const;
 
+    /*! Casts this object to a QVariant that encapsulates this object */
+    operator QVariant() const;
+
     /*! Adds a dll override to the list of overrides that this class holds.
      * This is equivalent to addOverride().
      * \param p this is a pair of a string and a DllOverrideType;

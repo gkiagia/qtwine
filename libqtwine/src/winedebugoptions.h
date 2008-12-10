@@ -54,6 +54,10 @@ public:
     void disableChannel(const QString & channel, DebugClass ch_class = All);
 
     operator QString() const;
+
+    /*! Casts this object to a QVariant that encapsulates this object */
+    operator QVariant() const;
+
     WineDebugOptions & operator=(const WineDebugOptions &other);
 
 private:

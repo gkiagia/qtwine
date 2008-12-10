@@ -24,6 +24,7 @@
 #include <KProcess>
 #include <QRegExp>
 #include <KDebug>
+#include <QVariant>
 
 LIBQTWINE_BEGIN_NAMESPACE
 
@@ -250,6 +251,11 @@ void WineInstallation::setWineServer(const QString & server)
     if ( !d->wineServer )
         d->wineServer = new QString;
     *d->wineServer = server;
+}
+
+WineInstallation::operator QVariant() const
+{
+    return QVariant::fromValue(*this);
 }
 
 QDebug operator<<(QDebug dbg, const WineInstallation & i)

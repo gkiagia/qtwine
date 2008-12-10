@@ -156,6 +156,9 @@ public:
     /*! Returns true if this application is a Console User Interface (CUI) application. */
     bool isConsoleApplication() const;
 
+    /*! Casts this object to a QVariant that encapsulates this object */
+    operator QVariant() const;
+
 private:
     QSharedDataPointer<WineApplicationData> d;
 };

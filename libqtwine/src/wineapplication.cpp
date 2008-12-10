@@ -20,6 +20,7 @@
 #include "wineapplication.h"
 
 #include <QDebug>
+#include <QVariant>
 #include "winedlloverrides.h"
 #include "winedebugoptions.h"
 
@@ -215,6 +216,10 @@ WineDebugOptions WineApplication::wineDebugOptions() const
 
 bool WineApplication::isConsoleApplication() const { return d->isConsoleApplication; }
 
+WineApplication::operator QVariant() const
+{
+    return QVariant::fromValue(*this);
+}
 
 #undef RETURN_VAR
 
@@ -224,8 +229,8 @@ QDebug operator<<(QDebug dbg, const WineApplication & a)
     dbg.nospace() << "[arguments: " << a.arguments() << "], ";
     dbg.nospace() << "[workingDirectory: " << a.workingDirectory() << "], ";
     dbg.nospace() << "[wineConfiguration: " << a.wineConfiguration() << "], ";
-    dbg.nospace() << "[wineDllOverrides: " << a.wineDllOverrides() << "], ";
-    dbg.nospace() << "[wineDebugOptions: " << a.wineDebugOptions() << "], ";
+    dbg.nospace() << "[wineDllOverrides: " << (QString) a.wineDllOverrides() << "], ";
+    dbg.nospace() << "[wineDebugOptions: " << (QString) a.wineDebugOptions() << "], ";
     dbg.nospace() << "[isConsoleApplication: " << a.isConsoleApplication() << "] )";
 
     return dbg.space();
