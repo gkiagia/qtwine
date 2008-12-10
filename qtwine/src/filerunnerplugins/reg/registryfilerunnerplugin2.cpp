@@ -21,6 +21,8 @@
 
 #include "wineconfiguration.h"
 
+#include <KLocalizedString>
+
 using namespace QtWine;
 
 void RegistryFileRunnerPlugin2::run()
@@ -71,7 +73,7 @@ void RegistryFileRunnerPlugin2::runSuperClassImplementation(int configurationId)
     if (configurationId > 0) {
         WineConfiguration c = qtwineApp->wineConfigurationsModel()->configurationById(configurationId);
         if ( KDE_ISUNLIKELY(c.isInvalid()) ) {
-            emit error("There is no wine configuration with this id");
+            emit error(i18n("There is no wine configuration with this id"));
             emit finished(FileRunner::Failure);
             return;
         } else {
