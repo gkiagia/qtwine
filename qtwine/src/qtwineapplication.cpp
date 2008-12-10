@@ -23,12 +23,8 @@
 #include "qtwinepreferences.h"
 #include "ui_behaviorPreferences.h"
 
-#include "wineprocess.h"
-#include "winedlloverrides.h"
-#include "winedebugoptions.h"
+#include "argumentslist.h"
 
-#include <QFile>
-#include <QStringList>
 #include <QSqlDatabase>
 #include <QSqlQuery>
 
@@ -43,8 +39,12 @@ QtWineApplication::QtWineApplication()
 {
     initializeDatabase();
     initializeModels();
-    KGlobal::setAllowQuit(true); //required by QtWineFileRunner
     QtWineFileRunner::registerDefaultPlugins();
+
+    /* quit only when KGlobal refcount reaches zero.
+      this is required for QtWineFileRunner to work properly */
+    setQuitOnLastWindowClosed(false);
+    KGlobal::setAllowQuit(true);
 }
 
 QtWineApplication::~QtWineApplication()
@@ -71,47 +71,34 @@ int QtWineApplication::newInstance()
             m_mainWindow->activateWindow();
         }
     } else { // we are launching the specified file
+
+        QtWineFileRunner *runner = new QtWineFileRunner();
+        runner->setFile(args->url(0));
+
+        QtWine::ArgumentsList arglist;
+        for (int i=1; i<args->count(); i++)
+            arglist << args->arg(i); /* FIXME relative urls? */
+        runner->setOption("arguments", arglist);
+
+        if ( args->isSet("configuration") )
+            runner->setOption("wineConfigurationId", args->getOption("configuration"));
+
+        if ( args->isSet("log") )
+            runner->setOption("logFile", args->makeURL(args->getOption("log").toLocal8Bit()));
+
         if ( args->isSet("execute") ) {
-            using namespace QtWine;
-            WineConfiguration c;
-
-            if ( args->isSet("configuration") ) {
-                QModelIndex start = m_configurationsModel->index(0, m_configurationsModel->fieldIndex("name"));
-                QModelIndexList results = m_configurationsModel->
-                            match( start, Qt::DisplayRole, QVariant(args->getOption("configuration")) );
-                if ( results.size() > 0 )
-                    c = m_configurationsModel->configurationByModelRow(results.at(0).row());
-                else {
-                    KMessage::message(KMessage::Fatal, i18n("The specified wine configuration \"%1\""
-                                        " does not exist").arg(args->getOption("configuration")) );
-                    args->clear();
-                    return 1;
-                }
-            } else {
-                c = m_configurationsModel->configurationById(QtWinePreferences::defaultWineConfiguration());
-            }
-
-            WineApplication a(args->arg(0), c);
-            for (int i=1; i<args->count(); i++)
-                a << args->arg(i);
-            a.setWorkingDirectory( args->isSet("workdir") ? args->getOption("workdir") : args->cwd() );
-            a.setWineDllOverrides( WineDllOverrides(args->getOption("dlloverrides")) );
-            a.setWineDebugOptions( WineDebugOptions(args->getOption("winedebug")) );
-            a.setIsConsoleApplication( args->isSet("cui") );
-
-            WineProcess *wine = new WineProcess(a);
-            if ( args->isSet("log") )
-                wine->setLogFile( args->makeURL(args->getOption("log").toLocal8Bit()).path() );
-            if ( args->isSet("terminal") )
-                wine->openTerminal();
-            wine->setAutoDeleteEnabled(true);
-            wine->startMonitored(); //FIXME needs KGlobal::ref()/deref()
-
-        } else { // --noexecute
-            kDebug() << "Executing apps without --execute is not supported yet";
-            args->clear();
-            return 1;
+            runner->setOption("noDialog", true);
+            runner->setOption("action", QString("Run"));
         }
+
+        runner->setOption("workingDirectory", args->isSet("workdir") ?
+                        args->makeURL(args->getOption("workdir").toLocal8Bit()).path() : args->cwd() );
+        runner->setOption("wineDllOverrides", args->getOption("dlloverrides")); //FIXME test type casting
+        runner->setOption("wineDebugOptions", args->getOption("winedebug"));
+        runner->setOption("isConsoleApplication", args->isSet("cui"));
+        runner->setOption("runInTerminal", args->isSet("terminal"));
+
+        runner->start();
     }
 
     args->clear();
