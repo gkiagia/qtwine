@@ -111,7 +111,7 @@ void ExeRunnerPluginWithUi::runDialogFinished(int status)
 
     setOption("arguments", dlg->arguments());
     setOption("workdir", dlg->workingDirectory());
-    setOption("wineDllOverrides", QVariant::fromValue(dlg->wineDllOverrides())); //FIXME operator QVariant()
+    setOption("wineDllOverrides", dlg->wineDllOverrides());
     setOption("logFile", dlg->logFile()); //FIXME that may be a KUrl !!!
     setOption("runInTerminal", dlg->runInTerminal());
     setOption("isConsoleApplication", dlg->isConsoleApplication());
@@ -128,7 +128,7 @@ void ExeRunnerPluginWithUi::runSuperClassImplementation(int configurationId)
             emit finished(FileRunner::Failure);
             return;
         } else {
-            setOption("wineConfiguration", QVariant::fromValue(c));
+            setOption("wineConfiguration", c);
         }
     }
 

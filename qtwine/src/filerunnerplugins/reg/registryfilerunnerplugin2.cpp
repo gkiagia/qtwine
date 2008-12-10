@@ -77,7 +77,7 @@ void RegistryFileRunnerPlugin2::runSuperClassImplementation(int configurationId)
             emit finished(FileRunner::Failure);
             return;
         } else {
-            setOption("wineConfiguration", QVariant::fromValue(c));
+            setOption("wineConfiguration", c);
         }
     }
 
