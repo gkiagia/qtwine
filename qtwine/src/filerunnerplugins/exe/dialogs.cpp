@@ -19,7 +19,6 @@
  ***************************************************************************/
 #include "dialogs.h"
 #include "../../qtwineapplication.h"
-#include "../../widgets/executablerequester.h"
 #include "../../widgets/winedlloverridesrequester.h"
 
 #include "argumentslist.h"
@@ -33,12 +32,13 @@
 #include <QCommandLinkButton>
 #include <QVBoxLayout>
 #include <QSignalMapper>
+#include <QFileInfo>
 
 #include <KMessageBox>
 #include <KUrlRequester>
 #include <KLocalizedString>
 #include <KLineEdit>
-
+#include <KSqueezedTextLabel>
 
 RunProgramDialog::RunProgramDialog(QWidget *parent)
     : KDialog(parent)
@@ -53,9 +53,8 @@ RunProgramDialog::RunProgramDialog(QWidget *parent)
     QFormLayout *formLayout = new QFormLayout;
     mainVlay->addLayout(formLayout);
 
-    m_executableRequester = new ExecutableRequester(mainWidget);
-    connect(m_executableRequester, SIGNAL(urlSelected(KUrl)), this, SLOT(slotExecutableChanged(KUrl)) );
-    formLayout->addRow(i18n("&Executable:"), m_executableRequester);
+    m_executableLabel = new KSqueezedTextLabel(mainWidget);
+    formLayout->addRow(i18n("&Executable:"), m_executableLabel);
 
     m_argumentsEdit = new KLineEdit(mainWidget);
     formLayout->addRow(i18n("&Arguments:"), m_argumentsEdit);
@@ -69,11 +68,6 @@ RunProgramDialog::RunProgramDialog(QWidget *parent)
     m_configComboBox->setModelColumn(qtwineApp->wineConfigurationsModel()->fieldIndex("name"));
     m_configComboBox->setCurrentIndex(0);
     formLayout->addRow(i18n("Use wine confi&guration:"), m_configComboBox);
-
-    //this is to always start the KFileDialog of the executable requester
-    //in the "Program files" directory of the selected configuration
-    m_executableRequester->setWineConfiguration(m_configComboBox->currentIndex());
-    connect(m_configComboBox, SIGNAL(currentIndexChanged(int)), m_executableRequester, SLOT(setWineConfiguration(int)) );
 
     m_dllOverridesRequester = new WineDllOverridesRequester(mainWidget);
     formLayout->addRow(i18n("Wine &dll overrides:"), m_dllOverridesRequester);
@@ -99,13 +93,14 @@ RunProgramDialog::RunProgramDialog(QWidget *parent)
 
 QString RunProgramDialog::executable() const
 {
-    //TODO drop ExecutableRequester and use something similar with RegfileMergeDialog
-    return m_executableRequester->url().path();
+    return m_executableLabel->text();
 }
 
 void RunProgramDialog::setExecutable(const QString & url)
 {
-    m_executableRequester->setUrl(url);
+    Q_ASSERT(!url.isEmpty()); //executable is the only field that MUST NOT be empty.
+    m_executableLabel->setText(url);
+    setWorkingDirectory(QFileInfo(url).absolutePath());
 }
 
 QtWine::ArgumentsList RunProgramDialog::arguments() const
@@ -125,6 +120,7 @@ QString RunProgramDialog::workingDirectory() const
 
 void RunProgramDialog::setWorkingDirectory(const QString & dir)
 {
+    if ( dir.isEmpty() ) return; //keep the url set by setExecutable()
     m_workdirRequester->setUrl(dir);
 }
 
@@ -178,141 +174,6 @@ void RunProgramDialog::setIsConsoleApplication(bool enabled)
     m_wineconsoleBox->setChecked(enabled);
 }
 
-#if 0
-void RunProgramDialog::accept()
-{
-    //check for valid values
-    if ( m_configComboBox->currentIndex() == -1 ) {
-        KMessageBox::sorry(this, i18n("No wine configuration selected. Please select one."));
-        return;
-    }
-
-    if ( !m_executableRequester->url().isValid() ) {
-        KMessageBox::sorry(this, i18n("No valid executable url was specified. Please specify an executable."));
-        return;
-    }
-
-    //everything is valid, continue to store the session
-    //storeSession();
-
-    //start wine
-    using namespace QtWine;
-    WineConfiguration wcfg =
-            qtwineApp->wineConfigurationsModel()->configurationByModelRow(m_configComboBox->currentIndex());
-
-    WineApplication app(m_executableRequester->url().path(), wcfg); //TODO support remote executable
-    app << ArgumentsList::fromSingleString(m_argumentsEdit->text());
-
-    WineDllOverrides dllOverrides = m_dllOverridesRequester->dllOverrides();
-    if ( !dllOverrides.isEmpty() )
-        app.setWineDllOverrides( dllOverrides );
-
-    app.setWorkingDirectory( m_workdirRequester->url().path() );
-    app.setIsConsoleApplication( m_wineconsoleBox->isChecked() );
-
-    WineProcess *wine = new WineProcess(app);
-
-    if ( !m_logfileRequester->url().path().isEmpty() )
-        wine->setLogFile( m_logfileRequester->url().path() ); //TODO support remote logfiles
-
-    if ( m_terminalBox->isChecked() )
-        wine->openTerminal();
-
-    wine->setAutoDeleteEnabled(true);
-    wine->startMonitored();
-
-    // exit the dialog
-    QDialog::accept();
-}
-#endif
-
-void RunProgramDialog::slotExecutableChanged(const KUrl & newUrl)
-{
-    m_workdirRequester->setPath(newUrl.directory());
-}
-
-#if 0
-void RunProgramDialog::loadSession()
-{
-    QSettings s( globalSettings->getValue("RunProgramDialog/session_file").toString(), QSettings::IniFormat);
-    s.beginGroup( executableInfo.fileName() );
-
-    l.configComboBox->setCurrentId( s.value("configurationID", 0).toUInt() );
-
-    l.argsBox->setChecked( s.value("arguments_checkbox_checked", false).toBool() );
-    l.argsEdit->setText( s.value("arguments_lineEdit_text").toString() );
-
-    l.workdirBox->setChecked( s.value("workdir_checkbox_checked", false).toBool() );
-    if ( s.value("workdir_checkbox_checked", false).toBool() )
-        l.workdirEdit->setText( s.value("workdir_lineEdit_text").toString() );
-
-    l.terminalBox->setChecked( s.value("terminal_checkbox_checked", false).toBool() );
-    l.wineconsoleBox->setChecked( s.value("wineconsole_checkbox_checked", false).toBool() );
-
-    if ( s.value("advanced_button_checked").toBool() ) {
-        l.advancedButton->setChecked(true);
-        on_advancedButton_toggled(true);
-    }
-
-    //advanced
-    l.winedbgBox->setChecked( s.value("winedbg_checkbox_checked", false).toBool() );
-
-    l.installationBox->setChecked( s.value("installation_checkbox_checked", false).toBool() );
-
-    if ( s.value("installation_checkbox_checked", false).toBool() )
-        l.installationComboBox->setCurrentId( s.value("installationID", 0).toUInt() );
-
-    l.logBox->setChecked( s.value("log_checkbox_checked", false).toBool() );
-    l.logEdit->setText( s.value("log_lineEdit_text").toString() );
-
-    l.dlloverridesBox->setChecked( s.value("dlloverrides_checkbox_checked", false).toBool() );
-    l.dlloverridesEdit->setText( s.value("dlloverrides_lineEdit_text").toString() );
-
-    l.debugBox->setChecked( s.value("debug_checkbox_checked", false).toBool() );
-    l.debugEdit->setText( s.value("debug_lineEdit_text").toString() );
-
-    s.endGroup();
-}
-
-void RunProgramDialog::storeSession()
-{
-    QSettings s( globalSettings->getValue("RunProgramDialog/session_file").toString(), QSettings::IniFormat);
-    s.beginGroup( executableInfo.fileName() );
-
-    s.setValue("configurationID", l.configComboBox->currentId());
-
-    s.setValue("arguments_checkbox_checked", l.argsBox->isChecked());
-    s.setValue("arguments_lineEdit_text", l.argsEdit->text());
-
-    s.setValue("workdir_checkbox_checked", l.workdirBox->isChecked());
-    if ( l.workdirBox->isChecked() )
-        s.setValue("workdir_lineEdit_text", l.workdirEdit->text() );
-
-    s.setValue("terminal_checkbox_checked", l.terminalBox->isChecked());
-    s.setValue("wineconsole_checkbox_checked", l.wineconsoleBox->isChecked());
-
-    s.setValue("advanced_button_checked", l.advancedButton->isChecked());
-
-    //advanced
-    s.setValue("winedbg_checkbox_checked", l.winedbgBox->isChecked());
-
-    s.setValue("installation_checkbox_checked", l.installationBox->isChecked());
-
-    if ( l.installationBox->isChecked() )
-        s.setValue("installationID", l.installationComboBox->currentId());
-
-    s.setValue("log_checkbox_checked", l.logBox->isChecked());
-    s.setValue("log_lineEdit_text", l.logEdit->text());
-
-    s.setValue("dlloverrides_checkbox_checked", l.dlloverridesBox->isChecked());
-    s.setValue("dlloverrides_lineEdit_text", l.dlloverridesEdit->text());
-
-    s.setValue("debug_checkbox_checked", l.debugBox->isChecked());
-    s.setValue("debug_lineEdit_text", l.debugEdit->text());
-
-    s.endGroup();
-}
-#endif
 
 
 ExeRunnerActionsDialog::ExeRunnerActionsDialog(QWidget *parent)

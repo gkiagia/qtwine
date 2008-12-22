@@ -23,7 +23,7 @@
 #include <KDialog>
 #include "exerunnerpluginwithui.h"
 class KUrlRequester;
-class ExecutableRequester;
+class KSqueezedTextLabel;
 class WineDllOverridesRequester;
 class KLineEdit;
 class QComboBox;
@@ -67,19 +67,8 @@ public:
     bool isConsoleApplication() const;
     void setIsConsoleApplication(bool enabled);
 
-    /*
-public slots:
-    virtual void accept();
-    */
-
-private slots:
-    void slotExecutableChanged(const KUrl & newUrl);
-
 private:
-    //void loadSession();
-    //void storeSession();
-
-    ExecutableRequester *m_executableRequester;
+    KSqueezedTextLabel *m_executableLabel;
     KLineEdit *m_argumentsEdit;
     KUrlRequester *m_workdirRequester;
     QComboBox *m_configComboBox;
