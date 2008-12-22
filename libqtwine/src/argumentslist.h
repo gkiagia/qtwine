@@ -39,6 +39,9 @@ public:
     static ArgumentsList fromSingleString(const QString & arguments);
 
     void convertPathsToWindows(const WineConfiguration & configuration);
+
+    /*! Casts this object to a QVariant that encapsulates this object */
+    operator QVariant() const;
 };
 
 LIBQTWINE_END_NAMESPACE

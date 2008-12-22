@@ -24,6 +24,8 @@
 #include "ui_behaviorPreferences.h"
 
 #include "argumentslist.h"
+#include "winedlloverrides.h"
+#include "winedebugoptions.h"
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -93,8 +95,8 @@ int QtWineApplication::newInstance()
 
         runner->setOption("workingDirectory", args->isSet("workdir") ?
                         args->makeURL(args->getOption("workdir").toLocal8Bit()).path() : args->cwd() );
-        runner->setOption("wineDllOverrides", args->getOption("dlloverrides")); //FIXME test type casting
-        runner->setOption("wineDebugOptions", args->getOption("winedebug"));
+        runner->setOption("wineDllOverrides", QtWine::WineDllOverrides(args->getOption("dlloverrides")));
+        runner->setOption("wineDebugOptions", QtWine::WineDebugOptions(args->getOption("winedebug")));
         runner->setOption("isConsoleApplication", args->isSet("cui"));
         runner->setOption("runInTerminal", args->isSet("terminal"));
 

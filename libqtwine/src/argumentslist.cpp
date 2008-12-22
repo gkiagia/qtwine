@@ -18,6 +18,7 @@
 #include "winepath.h"
 #include <QtConcurrentMap>
 #include <QFile>
+#include <QVariant>
 
 LIBQTWINE_BEGIN_NAMESPACE
 
@@ -114,6 +115,11 @@ void ArgumentsList::convertPathsToWindows(const WineConfiguration & configuratio
     conversion_configuration = &configuration;
     QtConcurrent::blockingMap(*this, &unixToWindows2);
     conversion_configuration = NULL;
+}
+
+ArgumentsList::operator QVariant() const
+{
+    return QVariant::fromValue(*this);
 }
 
 LIBQTWINE_END_NAMESPACE

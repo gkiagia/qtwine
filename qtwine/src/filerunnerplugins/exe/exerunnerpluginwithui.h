@@ -53,6 +53,7 @@ private slots:
 private:
     void showRunDialog();
     void runSuperClassImplementation(int configurationId);
+    int getWineConfigurationId(bool idMustExist);
 };
 
 #endif

@@ -63,7 +63,7 @@ void ExeRunnerPluginWithUi::slotActionSelected(Action action)
             if ( !option("noDialog").toBool() )
                 showRunDialog();
             else
-                runSuperClassImplementation(option("wineConfigurationId").toInt());
+                runSuperClassImplementation(getWineConfigurationId(false));
             break;
         }
         default:
@@ -77,23 +77,14 @@ void ExeRunnerPluginWithUi::showRunDialog()
     RunProgramDialog *dlg = new RunProgramDialog();
     dlg->setExecutable(option("file").toString());
     dlg->setArguments(option("arguments").value<ArgumentsList>());
-    dlg->setWorkingDirectory(option("workdir").toString());
+    dlg->setWorkingDirectory(option("workingDirectory").toString());
     dlg->setWineDllOverrides(option("wineDllOverrides").value<WineDllOverrides>());
     //TODO wineDebugOptions
-    dlg->setLogFile(option("logFile").toString());
+    dlg->setLogFile( option("logFile").canConvert<KUrl>() ? option("logFile").value<KUrl>()
+                                                          : KUrl(option("logFile").toString()) );
     dlg->setRunInTerminal(option("runInTerminal").toBool());
     dlg->setIsConsoleApplication(option("isConsoleApplication").toBool());
-
-    /* check to see if the user specified a configuration id,
-      and if not, use the default configuration id */
-    int configurationId = -1;
-    QVariant v = option("wineConfigurationId");
-    if ( !v.isNull() && v.canConvert<int>() )
-        configurationId = v.toInt();
-    else
-        configurationId = QtWinePreferences::defaultWineConfiguration();
-
-    dlg->setWineConfigurationId(configurationId);
+    dlg->setWineConfigurationId(getWineConfigurationId(true));
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->show();
     connect(dlg, SIGNAL(finished(int)), this, SLOT(runDialogFinished(int)));
@@ -112,7 +103,7 @@ void ExeRunnerPluginWithUi::runDialogFinished(int status)
     setOption("arguments", dlg->arguments());
     setOption("workdir", dlg->workingDirectory());
     setOption("wineDllOverrides", dlg->wineDllOverrides());
-    setOption("logFile", dlg->logFile()); //FIXME that may be a KUrl !!!
+    setOption("logFile", dlg->logFile());
     setOption("runInTerminal", dlg->runInTerminal());
     setOption("isConsoleApplication", dlg->isConsoleApplication());
 
@@ -132,7 +123,30 @@ void ExeRunnerPluginWithUi::runSuperClassImplementation(int configurationId)
         }
     }
 
+    QVariant v = option("logFile");
+    if ( !v.isNull() && v.canConvert<KUrl>() ) {
+        KUrl logFile = v.value<KUrl>();
+        setOption("logFile", logFile.toLocalFile());
+        //TODO handle remote log files
+    }
+
     WineExecutableRunnerPlugin::run();
+}
+
+int ExeRunnerPluginWithUi::getWineConfigurationId(bool idMustExist)
+{
+    /* check to see if the user specified a configuration id,
+    and if not, use the default configuration id */
+    int configurationId = -1;
+    QVariant v = option("wineConfigurationId");
+    if ( !v.isNull() && v.canConvert<int>() )
+        configurationId = v.toInt();
+    else {
+        v = option("wineConfiguration");
+        if ( idMustExist || v.isNull() || !v.canConvert<WineConfiguration>() )
+            configurationId = QtWinePreferences::defaultWineConfiguration();
+    }
+    return configurationId;
 }
 
 #include "exerunnerpluginwithui.moc"
