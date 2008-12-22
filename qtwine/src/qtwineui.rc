@@ -2,7 +2,6 @@
 <!DOCTYPE kpartgui SYSTEM 'kpartgui.dtd'>
 <gui version="1" name="qtwine" >
     <ToolBar noMerge="1" name="mainToolBar" >
-        <Action name="installWindowsApp" />
         <Action name="runCommand" />
         <Separator name="separator_0" />
         <Merge/>
@@ -12,7 +11,7 @@
     </ToolBar>
     <MenuBar>
         <Menu name="file" >
-            <Action name="installWindowsApp" />
+            <Action name="runCommand" />
         </Menu>
         <Merge/>
         <Menu name="settings" />
