@@ -201,6 +201,12 @@ ExeRunnerActionsDialog::ExeRunnerActionsDialog(QWidget *parent)
 
     QCommandLinkButton *createShortcutButton = new QCommandLinkButton(mainWidget);
     createShortcutButton->setText(i18n("Add this program in QtWine's shortcuts"));
+    createShortcutButton->setDescription(i18n("Create a new shortcut in QtWine's shorcuts list"
+                                        "that runs this executable."));
+
+    /* temporarily disable actions that don't work */
+    installButton->setEnabled(false);
+    createShortcutButton->setEnabled(false);
 
     QVBoxLayout *layout = new QVBoxLayout(mainWidget);
     layout->addWidget(info);
