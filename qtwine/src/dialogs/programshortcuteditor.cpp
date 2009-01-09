@@ -69,6 +69,15 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     hLine->setFrameShape(QFrame::HLine);
 
     QFormLayout *formLayout = new QFormLayout;
+    
+    // Paths depend on the selected configuration. So let it be the first
+    // setting to configure.
+    QModelIndex configurationColumnIndex =
+                model->index(index.row(), model->fieldIndex("wine_configurations_name"));
+    QWidget *configurationEdit =
+                delegate->createEditor(this, QStyleOptionViewItem(), configurationColumnIndex);
+    formLayout->addRow(i18n("Uses wine &configuration:"), configurationEdit);
+    
     ExecutableRequester *executableEdit = new ExecutableRequester(page);
     connect(executableEdit, SIGNAL(urlSelected(KUrl)), this, SLOT(slotExecutableChanged(KUrl)) );
     formLayout->addRow(i18n("&Executable:"), executableEdit);
@@ -79,12 +88,6 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     workdirEdit = new KUrlRequester(page);
     workdirEdit->setMode(KFile::Directory | KFile::LocalOnly | KFile::ExistingOnly);
     formLayout->addRow(i18n("&Working directory:"), workdirEdit);
-
-    QModelIndex configurationColumnIndex =
-                model->index(index.row(), model->fieldIndex("wine_configurations_name"));
-    QWidget *configurationEdit =
-                delegate->createEditor(this, QStyleOptionViewItem(), configurationColumnIndex);
-    formLayout->addRow(i18n("Uses wine &configuration:"), configurationEdit);
 
     WineDllOverridesRequester *dllOverridesEdit = new WineDllOverridesRequester(this);
     formLayout->addRow(i18n("Wine &dll overrides:"), dllOverridesEdit);
