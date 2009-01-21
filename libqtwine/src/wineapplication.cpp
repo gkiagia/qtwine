@@ -45,6 +45,7 @@ public:
 
     //qtwine misc
     bool isConsoleApplication;
+    QString *language;
 };
 
 WineApplicationData::WineApplicationData()
@@ -56,6 +57,7 @@ WineApplicationData::WineApplicationData()
     wineConfiguration = NULL;
     wineDllOverrides = NULL;
     wineDebugOptions = NULL;
+    language = NULL;
 }
 
 WineApplicationData::WineApplicationData(const WineApplicationData & other)
@@ -68,6 +70,7 @@ WineApplicationData::WineApplicationData(const WineApplicationData & other)
     COPY(WineConfiguration, wineConfiguration);
     COPY(WineDllOverrides, wineDllOverrides);
     COPY(WineDebugOptions, wineDebugOptions);
+    COPY(QString, language);
     isConsoleApplication = other.isConsoleApplication;
 #undef COPY
 }
@@ -80,6 +83,7 @@ WineApplicationData::~WineApplicationData()
     delete wineConfiguration;
     delete wineDllOverrides;
     delete wineDebugOptions;
+    delete language;
 }
 
     //constructors
@@ -180,6 +184,11 @@ void WineApplication::setWineDebugOptions(const WineDebugOptions & wineDebug)
     ASSIGN_VAR(WineDebugOptions, wineDebugOptions, wineDebug);
 }
 
+void WineApplication::setLanguage(const QString & lang)
+{
+    ASSIGN_VAR(QString, language, lang);
+}
+
 void WineApplication::setIsConsoleApplication(bool isCuiApp)
 {
     d->isConsoleApplication = isCuiApp;
@@ -212,6 +221,11 @@ WineDllOverrides WineApplication::wineDllOverrides() const
 WineDebugOptions WineApplication::wineDebugOptions() const
 {
     RETURN_VAR(WineDebugOptions, wineDebugOptions);
+}
+
+QString WineApplication::language() const
+{
+    RETURN_VAR(QString, language);
 }
 
 bool WineApplication::isConsoleApplication() const { return d->isConsoleApplication; }

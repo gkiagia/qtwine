@@ -57,7 +57,7 @@ void ShortcutsModel::createFirstTimeTable()
                " name varchar(256), wineconfiguration int, icon varchar(1024),"
                " executable varchar(1024), arguments varchar(1024), workdir varchar(1024),"
                " winedlloverrides varchar(1024), winedebugoptions varchar(1024),"
-               " run_in_terminal boolean, is_cui_application boolean)");
+               " run_in_terminal boolean, is_cui_application boolean, language varchar(20))");
 }
 
 WineApplication ShortcutsModel::wineApplicationByModelRow(int row) const
@@ -66,8 +66,8 @@ WineApplication ShortcutsModel::wineApplicationByModelRow(int row) const
     // field "wineconfiguration" from the original model
     QSqlQueryModel qmodel;
     qmodel.setQuery("SELECT wineconfiguration, executable, arguments, workdir,"
-                    " winedlloverrides, winedebugoptions, is_cui_application"
-                    " FROM shortcuts");
+                    " winedlloverrides, winedebugoptions, is_cui_application,"
+                    " language FROM shortcuts");
     QSqlRecord record = qmodel.record(row);
     return wineApplicationFromRecord(record);
 }
@@ -84,6 +84,7 @@ WineApplication ShortcutsModel::wineApplicationFromRecord(const QSqlRecord & rec
     a.setWineDllOverrides( WineDllOverrides(record.value("winedlloverrides").toString()) );
     a.setWineDebugOptions( WineDebugOptions(record.value("winedebugoptions").toString()) );
     a.setIsConsoleApplication( record.value("is_cui_application").toBool() );
+    a.setLanguage( record.value("language").toString() );
 
     WineConfiguration c = qtwineApp->wineConfigurationsModel()
                             ->configurationById(record.value("wineconfiguration").toInt());

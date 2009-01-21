@@ -81,6 +81,9 @@ void WineProcess::setWineApplication(const WineApplication & app)
     setEnv("WINEDEBUG", app.wineDebugOptions());
     setEnv("WINEDLLOVERRIDES", app.wineDllOverrides());
     setEnv("PATH", installation.prefix() + "/bin", ListPrepend);
+    QString language = app.language();
+    if ( ! language.isEmpty() )
+        setEnv("LANG", language);
 
     //TODO check which other OSes use dyld (or maybe set both vars on all OSes?)
 #ifdef Q_OS_DARWIN

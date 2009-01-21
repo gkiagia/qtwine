@@ -120,6 +120,11 @@ public:
      * wine that will execute this application.
      */
     void setWineDebugOptions(const WineDebugOptions & wineDebug);
+    
+    /*! Sets the LANG environment variable for the instance of wine
+     * that will execute this application.
+     */
+    void setLanguage(const QString & lang);
 
     /*! Defines whether the windows application is a CUI
      * (Console User Interface / DOS) application.
@@ -152,6 +157,9 @@ public:
 
     /*! Returns the value that will be given to $WINEDEBUG. */
     WineDebugOptions wineDebugOptions() const;
+    
+    /*! Returns the value that will be given to $LANG. */
+    QString language() const;
 
     /*! Returns true if this application is a Console User Interface (CUI) application. */
     bool isConsoleApplication() const;

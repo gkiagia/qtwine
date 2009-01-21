@@ -91,6 +91,9 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
 
     WineDllOverridesRequester *dllOverridesEdit = new WineDllOverridesRequester(this);
     formLayout->addRow(i18n("Wine &dll overrides:"), dllOverridesEdit);
+    
+    KLineEdit *langEdit = new KLineEdit(page);
+    formLayout->addRow(i18n("&Language:"), langEdit);
 
     QGroupBox *optionsGroup = new QGroupBox(i18n("Options"), page);
     QCheckBox *terminalBox = new QCheckBox(i18n("Show debugging output in a terminal"), page);
@@ -120,6 +123,7 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     mapper->addMapping(terminalBox, model->fieldIndex("run_in_terminal"));
     mapper->addMapping(cuiAppBox, model->fieldIndex("is_cui_application"));
     mapper->addMapping(dllOverridesEdit, model->fieldIndex("winedlloverrides"));
+    mapper->addMapping(langEdit, model->fieldIndex("language"));
     mapper->setCurrentModelIndex(index);
 
     connect(iconButton, SIGNAL(iconChanged()), SLOT(enableChangesDependentButtons()) );
@@ -131,6 +135,7 @@ ProgramShortcutEditor::ProgramShortcutEditor(const QModelIndex & index, QWidget 
     connect(terminalBox, SIGNAL(toggled(bool)), SLOT(enableChangesDependentButtons()) );
     connect(cuiAppBox, SIGNAL(toggled(bool)), SLOT(enableChangesDependentButtons()) );
     connect(dllOverridesEdit, SIGNAL(overridesChanged()), SLOT(enableChangesDependentButtons()) );
+    connect(langEdit, SIGNAL(textChanged(QString)), SLOT(enableChangesDependentButtons()) );
 
     /* This is a HACK to load the default configuration in the combo box
      * because setting it from ShortcutsModel::slotPrimeInsert doesn't work
