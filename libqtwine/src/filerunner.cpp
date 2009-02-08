@@ -15,12 +15,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "filerunnerplugin.h"
+#include "private/libqtwine_private.h"
 #include <QHash>
 #include <QStringList>
 #include <QRegExp>
 #include <QMetaClassInfo>
 #include <QDebug>
-#include <KGlobal>
 
 LIBQTWINE_BEGIN_NAMESPACE
 
@@ -38,7 +38,7 @@ private:
     QHash<QString, PluginInstanceFunction> m_hashMap;
 };
 
-K_GLOBAL_STATIC(FileRunnerPluginFactory, globalPluginFactory);
+LIBQTWINE_GLOBAL_STATIC(FileRunnerPluginFactory, globalPluginFactory);
 
 void FileRunnerPluginFactory::registerPlugin(PluginInstanceFunction func, const QStringList & types)
 {
