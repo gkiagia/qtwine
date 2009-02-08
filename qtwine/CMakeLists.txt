@@ -24,6 +24,7 @@ SET( QTWINE_SOURCES
     src/main.cpp
     src/qtwinemainwindow.cpp
     src/qtwineapplication.cpp
+    src/qtwinefilerunner.cpp
 
     src/models/qtwinesqltablemodel.cpp
     src/models/wineinstallationsmodel.cpp
@@ -34,8 +35,6 @@ SET( QTWINE_SOURCES
     src/dialogs/installationeditor.cpp
     src/dialogs/configurationeditor.cpp
     src/dialogs/programshortcuteditor.cpp
-    src/dialogs/regfilemergedialog.cpp
-    src/dialogs/launcher.cpp
     src/dialogs/createconfigurationdialog.cpp
 
     src/assistants/commonpages.cpp
@@ -55,6 +54,12 @@ SET( QTWINE_SOURCES
     src/mainwindowparts/wineinstallationslistpart.cpp
     src/mainwindowparts/wineconfigurationslistpart.cpp
     src/mainwindowparts/shortcutslistpart.cpp
+
+    src/filerunnerplugins/registerplugins.cpp
+    src/filerunnerplugins/reg/registryfilerunnerplugin2.cpp
+    src/filerunnerplugins/reg/regfilemergedialog.cpp
+    src/filerunnerplugins/exe/exerunnerpluginwithui.cpp
+    src/filerunnerplugins/exe/dialogs.cpp
 )
 
 SET( QTWINE_RC_FILES
@@ -81,3 +86,4 @@ TARGET_LINK_LIBRARIES(qtwine ${KDE4_KPARTS_LIBS} ${LIBQTWINE} ${QT_QTSQL_LIBRARY
 ADD_SUBDIRECTORY(icons)
 INSTALL(TARGETS qtwine DESTINATION ${BIN_INSTALL_DIR} COMPONENT runtime)
 INSTALL(FILES ${QTWINE_RC_FILES} DESTINATION ${DATA_INSTALL_DIR}/qtwine COMPONENT runtime)
+INSTALL(FILES src/qtwine.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})

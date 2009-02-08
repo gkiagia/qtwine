@@ -19,10 +19,10 @@
  ***************************************************************************/
 #include "qtwinemainwindow.h"
 #include "qtwineapplication.h"
+#include "qtwinefilerunner.h"
 #include "mainwindowparts/wineconfigurationslistpart.h"
 #include "mainwindowparts/wineinstallationslistpart.h"
 #include "mainwindowparts/shortcutslistpart.h"
-#include "dialogs/launcher.h"
 
 #include <QMetaObject>
 
@@ -33,6 +33,7 @@
 #include <KIcon>
 #include <KLocalizedString>
 #include <KSystemTrayIcon>
+#include <KFileDialog>
 
 QtWineMainWindow::QtWineMainWindow()
 	: KParts::MainWindow()
@@ -80,11 +81,7 @@ void QtWineMainWindow::loadParts()
 
 void QtWineMainWindow::setupActions()
 {
-	KAction *installWindowsApp = new KAction(KIcon("tools-wizard"),
-					i18n("Install a Windows Application"), this);
-	actionCollection()->addAction("installWindowsApp", installWindowsApp);
-
-	KAction *runCommand = new KAction(KIcon("system-run"), i18n("Run command in wine"), this);
+	KAction *runCommand = new KAction(KIcon("system-run"), i18n("Run or install program in wine"), this);
 	connect(runCommand, SIGNAL(triggered(bool)), SLOT(slotRunCommand()) );
 	actionCollection()->addAction("runCommand", runCommand);
 
@@ -94,9 +91,15 @@ void QtWineMainWindow::setupActions()
 
 void QtWineMainWindow::slotRunCommand()
 {
-	Launcher *l = new Launcher(this);
-	l->show();
-	connect(l, SIGNAL(finished(int)), l, SLOT(deleteLater()) );
+    KUrl executable = KFileDialog::getOpenUrl(
+            KUrl("kfiledialog:///<runorinstallprogram>"),
+            i18n("*.exe *.exe.so|Windows executables (*.exe)"),
+            this, i18n("Choose a windows program to run or install") );
+
+    if ( !executable.url().isEmpty() ) {
+        QtWineFileRunner *runner = new QtWineFileRunner(executable);
+        runner->start();
+    }
 }
 
 #include "qtwinemainwindow.moc"

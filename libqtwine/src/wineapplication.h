@@ -21,6 +21,7 @@
 #define _QTWINE_WINEAPPLICATION_H
 
 #include "wineconfiguration.h"
+#include "argumentslist.h"
 #include <QtCore/QStringList>
 class QDebug;
 
@@ -102,18 +103,13 @@ public:
 
     /*! Sets the executable name and command line arguments. */
     void setApplication(const QString & executable,
-                        const QStringList & arguments = QStringList());
+                        const ArgumentsList & arguments = ArgumentsList());
 
     /*! Sets the working directory of the windows application. */
     void setWorkingDirectory(const QString & dir);
 
-    /*! Sets the WINEPREFIX environment variable for the instance of
-     * wine that will execute this application.
-     */
-    void setWinePrefix(const QString & winePrefixPath);
-
-    /*! Sets the installation of wine that will be used to run this app. */
-    void setWineInstallation(const WineInstallation & installation);
+    /*! Sets the wine configuration that will be used to run this application. */
+    void setWineConfiguration(const WineConfiguration & configuration);
 
     /*! Sets the WINEDLLOVERRIDES environment variable for the
      * instance of wine that will execute this application.
@@ -135,13 +131,6 @@ public:
      */
     void setIsConsoleApplication(bool isCuiApp);
 
-    /*! Enables this application to be run inside winedbg.exe for debugging purposes.
-     * \todo There is work to do with this option. It may not work as expected.
-     */
-    void enableRunInDebugger(bool enable);
-
-    // TODO void enableVirtualDesktop(const QString & name, const QPair<int, int> & resolution);
-
     // accessors
 
     /*! Returns the name (or filename) of the windows executable
@@ -150,16 +139,13 @@ public:
     QString executable() const;
 
     /*! Returns the command line arguments that are to be passed to the executable. */
-    QStringList arguments() const;
+    ArgumentsList arguments() const;
 
     /*! Returns the path to the working directory of the windows application. */
     QString workingDirectory() const;
 
-    /*! Returns the value that will be given to $WINEPREFIX. */
-    QString winePrefix() const;
-
-    /*! Returns the WineInstallation that will be used to launch this application. */
-    WineInstallation wineInstallation() const;
+    /*! Returns the wine configuration that will be used to run this application. */
+    WineConfiguration wineConfiguration() const;
 
     /*! Returns the value that will be given to $WINEDLLOVERRIDES. */
     WineDllOverrides wineDllOverrides() const;
@@ -170,8 +156,8 @@ public:
     /*! Returns true if this application is a Console User Interface (CUI) application. */
     bool isConsoleApplication() const;
 
-    /*! Returns true if this application is to be run inside winedbg.exe. */
-    bool runsInDebugger() const;
+    /*! Casts this object to a QVariant that encapsulates this object */
+    operator QVariant() const;
 
 private:
     QSharedDataPointer<WineApplicationData> d;

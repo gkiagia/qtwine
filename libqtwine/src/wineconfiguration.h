@@ -76,6 +76,9 @@ public:
     WineInstallation wineInstallation() const;
     void setWineInstallation(const WineInstallation & installation);
 
+    /*! Casts this object to a QVariant that encapsulates this object */
+    operator QVariant() const;
+
 private:
     QSharedDataPointer<WineConfigurationData> d;
 };

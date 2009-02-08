@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include "wineconfiguration.h"
 #include <QDebug>
+#include <QVariant>
 
 LIBQTWINE_BEGIN_NAMESPACE
 
@@ -98,6 +99,11 @@ void WineConfiguration::setWineInstallation(const WineInstallation & installatio
     if ( !d->installation )
         d->installation = new WineInstallation;
     *d->installation = installation;
+}
+
+WineConfiguration::operator QVariant() const
+{
+    return QVariant::fromValue(*this);
 }
 
 QDebug operator<<(QDebug dbg, const WineConfiguration & c)

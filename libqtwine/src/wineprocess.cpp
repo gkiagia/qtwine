@@ -58,20 +58,19 @@ void WineProcess::setWineApplication(const WineApplication & app)
 {
     Q_ASSERT( !app.isInvalid() );
 
-    WineInstallation installation = app.wineInstallation();
+    WineConfiguration wineConfiguration = app.wineConfiguration();
+    WineInstallation installation = wineConfiguration.wineInstallation();
     setProgram(installation.wineLoader());
 
     //setup argv
     if ( app.isConsoleApplication() )
         *this << "wineconsole.exe" << "--backend=user";
-    if ( app.runsInDebugger() )
-        *this << "winedbg.exe"; // FIXME any options here? before or after wineconsole?
 
     *this << app.executable();
     *this << app.arguments();
 
     //setup environment
-    setEnv("WINEPREFIX", app.winePrefix());
+    setEnv("WINEPREFIX", wineConfiguration.winePrefix());
     setEnv("WINELOADER", installation.wineLoader());
     setEnv("WINESERVER", installation.wineServer());
     setEnv("WINEDLLPATH", installation.wineDllPath());

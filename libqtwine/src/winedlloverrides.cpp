@@ -21,6 +21,7 @@
 #include <QDebug>
 #include <QLinkedList>
 #include <QStringList>
+#include <QVariant>
 
 LIBQTWINE_BEGIN_NAMESPACE
 
@@ -119,6 +120,11 @@ WineDllOverrides::operator QString() const
         ++i;
     }
     return list.join(";");
+}
+
+WineDllOverrides::operator QVariant() const
+{
+    return QVariant::fromValue(*this);
 }
 
 LIBQTWINE_END_NAMESPACE

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007-2008 by George Kiagiadakis                         *
+ *   Copyright (C) 2006-2008 by George Kiagiadakis                         *
  *   gkiagia@users.sourceforge.net                                         *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -15,51 +15,25 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef LAUNCHER_H
-#define LAUNCHER_H
+#ifndef REGFILEMERGEDIALOG_H
+#define REGFILEMERGEDIALOG_H
 
-#include <KPageDialog>
-class KUrlRequester;
-class ExecutableRequester;
-class WineDllOverridesRequester;
-class KLineEdit;
+#include <KDialog>
 class QComboBox;
-class QCheckBox;
 
-/*!
- * \author George Kiagiadakis <gkiagia@users.sourceforge.net>
- */
-class Launcher : public KPageDialog
+class RegfileMergeDialog : public KDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    Launcher(QWidget *parent = 0);
+    RegfileMergeDialog(const QString & file, QWidget *parent = 0);
 
-public slots:
-#if 0
-    void setCommand(const QString & command);
-    void setCommand(const QStringList & command);
-#endif
-    void accept();
-
-private slots:
-    void slotExecutableChanged(const KUrl & newUrl);
+    int configurationId() const;
+    void setConfigurationId(int id);
 
 private:
-    //void loadSession();
-    //void storeSession();
-
-    ExecutableRequester *m_executableRequester;
-    KLineEdit *m_argumentsEdit;
-    KUrlRequester *m_workdirRequester;
-    QComboBox *m_configComboBox;
-    WineDllOverridesRequester *m_dllOverridesRequester;
-    KUrlRequester *m_logfileRequester;
-    QCheckBox *m_terminalBox;
-    QCheckBox *m_wineconsoleBox;
-    QCheckBox *m_winedbgBox;
+	QComboBox *comboBox;
 };
 
 #endif

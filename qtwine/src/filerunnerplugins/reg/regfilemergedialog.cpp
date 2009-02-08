@@ -18,27 +18,24 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "regfilemergedialog.h"
-#include "../qtwineapplication.h"
+#include "../../qtwineapplication.h"
 
-#include "regedit.h"
-
-#include <QTextStream>
 #include <QScrollBar>
 #include <QComboBox>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QFile>
+#include <QTextStream>
 
 #include <KMessageBox>
-#include <KTemporaryFile>
-#include <KIO/NetAccess>
 #include <KLocalizedString>
 #include <KTextBrowser>
 
 using namespace QtWine;
 
 
-RegfileMergeDialog::RegfileMergeDialog(const KUrl & file, QWidget *parent)
+RegfileMergeDialog::RegfileMergeDialog(const QString & file, QWidget *parent)
 	: KDialog(parent)
 {
 	setButtons(KDialog::Ok | KDialog::Cancel);
@@ -65,13 +62,7 @@ RegfileMergeDialog::RegfileMergeDialog(const KUrl & file, QWidget *parent)
 
 	resizeLayout(vlay, marginHint(), spacingHint());
 
-	if ( !KIO::NetAccess::download(file, tempFile, 0) ) {
-		KMessageBox::sorry(this, KIO::NetAccess::lastErrorString());
-		enableButtonOk(false);
-		return;
-	}
-
-	QFile regfile( tempFile );
+	QFile regfile(file);
 	if ( regfile.open(QIODevice::ReadOnly | QIODevice::Text) )
 	{
 		QTextStream ts(&regfile);
@@ -90,54 +81,14 @@ RegfileMergeDialog::RegfileMergeDialog(const KUrl & file, QWidget *parent)
 				  Q_ARG(int, textBrowser->verticalScrollBar()->minimum()) );
 }
 
-void RegfileMergeDialog::accept()
+int RegfileMergeDialog::configurationId() const
 {
-	QFile regfile( tempFile );
-	if ( !regfile.open(QIODevice::ReadOnly | QIODevice::Text) )
-		Q_ASSERT(false); // the file will open because it was opened in the constructor... (see above)
-
-	KTemporaryFile utf8File;
-	if ( !utf8File.open() ) {
-		KMessageBox::error(this, i18n("QtWine could not open a temporary file"
-						" (maybe the disk is full?)") );
-		QDialog::reject();
-	}
-
-	// we have to do this because windows regedit 5.0 or later uses utf16 for exported .reg files
-	// and wine's regedit cannot read them in utf16 format
-	QTextStream ts(&regfile);
-	while ( !ts.atEnd() ) {
-		utf8File.write( ts.readLine().toUtf8() );
-		utf8File.write("\n");
-	}
-
-	QString utf8FileName = utf8File.fileName();
-	regfile.close();
-	utf8File.close();
-
-	// START WINE
-	WineConfiguration wcfg = qtwineApp->wineConfigurationsModel()->configurationByModelRow(comboBox->currentIndex());
-
-	bool ok = RegEdit::importRegFile(utf8FileName, wcfg);
-	if ( ok )
-		KMessageBox::information(this, i18n("The requested file was merged successfully"
-						" in the selected configuration's registry.") );
-	else
-		KMessageBox::sorry(this, i18n("Merging the requested file has failed.") );
-		//TODO give advice here to the user...
-
-	KIO::NetAccess::removeTempFile(tempFile);
-	QDialog::accept();
+    return qtwineApp->wineConfigurationsModel()->rowToId(comboBox->currentIndex());
 }
 
-void RegfileMergeDialog::setConfiguration(int id)
+void RegfileMergeDialog::setConfigurationId(int id)
 {
-    setConfigurationByModelRow(qtwineApp->wineConfigurationsModel()->idToRow(id));
-}
-
-void RegfileMergeDialog::setConfigurationByModelRow(int row)
-{
-	comboBox->setCurrentIndex(row);
+    comboBox->setCurrentIndex(qtwineApp->wineConfigurationsModel()->idToRow(id));
 }
 
 #include "regfilemergedialog.moc"

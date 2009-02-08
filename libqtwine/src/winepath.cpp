@@ -20,8 +20,6 @@
 #include "winepath.h"
 #include "winedebugoptions.h"
 #include "wineprocess.h"
-#include <QtConcurrentMap>
-#include <QFile>
 
 LIBQTWINE_BEGIN_NAMESPACE
 
@@ -56,22 +54,6 @@ QString convertPath(const QString & path, PathConversionType convType,
     process.closeReadChannel(QProcess::StandardError);
     process.execute();
     return QString(process.readAllStandardOutput()).trimmed();
-}
-
-
-static const WineConfiguration *conversion_configuration = NULL;
-
-static void unixToWindows2(QString & path)
-{
-    if ( QFile::exists(path) )
-        path = WinePath::unixToWindows(path, *conversion_configuration);
-}
-
-void convertWineArguments(QStringList & arguments, const WineConfiguration & configuration)
-{
-    conversion_configuration = &configuration;
-    QtConcurrent::blockingMap(arguments, &unixToWindows2);
-    conversion_configuration = NULL;
 }
 
 } // end namespace WinePath

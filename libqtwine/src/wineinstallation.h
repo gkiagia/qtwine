@@ -154,6 +154,9 @@ public:
      */
     static WineInstallation findWineInPath();
 
+    /*! Casts this object to a QVariant that encapsulates this object */
+    operator QVariant() const;
+
 private:
     QSharedDataPointer<WineInstallationData> d;
 };
