@@ -69,7 +69,7 @@ public:
      * (which combines stdout and stderr in one channel). If no channel is specified,
      * the default is to monitor BothStdOutAndErr.
      */
-    void setLogFile(const QString & fileName, ProcessOutputChannel channel = BothStdOutAndErr);
+    bool setLogFile(const QString & fileName, ProcessOutputChannel channel = BothStdOutAndErr);
 
 
     /*! This is a typedef for a function that opens a terminal emulator window

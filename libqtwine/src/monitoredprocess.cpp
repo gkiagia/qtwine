@@ -23,11 +23,7 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <QDebug>
-#include <KLocalizedString>
-#include <KMessage>
-#include <KGlobal>
-#include <KComponentData>
-#include <KAboutData>
+#include <QCoreApplication>
 
 LIBQTWINE_BEGIN_NAMESPACE
 
@@ -104,11 +100,11 @@ QString MonitoredProcess::logFile(ProcessOutputChannel channel) const
         return QString();
 }
 
-void MonitoredProcess::setLogFile(const QString & fileName, ProcessOutputChannel channel)
+bool MonitoredProcess::setLogFile(const QString & fileName, ProcessOutputChannel channel)
 {
     if ( fileName.isEmpty() ) {
         qDebug() << "log fileName is empty";
-        return;
+        return false;
     }
 
     Q_D(MonitoredProcess);
@@ -118,11 +114,10 @@ void MonitoredProcess::setLogFile(const QString & fileName, ProcessOutputChannel
     d->m_logFile[channel] = log;
 
     if ( !log->open(QIODevice::WriteOnly | QIODevice::Truncate) ) {
-        KMessage::message(KMessage::Error, i18n("Could not open the log file."
-                "Check that it (or its directory) has sufficient permissions."));
+        qDebug() << "Could not open the log file.";
         delete log;
         d->m_logFile[channel] = NULL;
-        return;
+        return false;
     }
 
     ProcessIOConnector::ProcessChannels c;
@@ -130,6 +125,7 @@ void MonitoredProcess::setLogFile(const QString & fileName, ProcessOutputChannel
     if ( channel & StandardError ) c |= ProcessIOConnector::StandardError;
 
     d->m_connector->connectIODevice(log, c);
+    return true;
 }
 
 void MonitoredProcess::setOpenTerminalFunction(OpenTerminalFn termFunc)
@@ -153,11 +149,9 @@ void MonitoredProcess::openTerminal(MonitoredProcess::ProcessOutputChannel chann
     OpenTerminalFn newTerminal = terminalFunctionHelper->get();
     Q_ASSERT_X(newTerminal, Q_FUNC_INFO, "OpenTerminalFunction has not been set");
 
-    QString title;
-    if ( KGlobal::hasMainComponent() )
-        title = KGlobal::mainComponent().aboutData()->appName();
-    else
-        title = i18n("<Unknown application>");
+    QString title = QCoreApplication::applicationName();
+    if ( title.isEmpty() )
+        title = tr("<Unknown application>");
 
     QStringList p = program();
     if ( !p.isEmpty() ) {
