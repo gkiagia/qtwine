@@ -23,7 +23,7 @@
 #include "../libqtwine_global.h"
 #include <QObject>
 #include <QHash>
-class KProcess;
+class QProcess;
 class QIODevice;
 
 LIBQTWINE_BEGIN_NAMESPACE
@@ -42,7 +42,7 @@ public:
     };
     Q_DECLARE_FLAGS(ProcessChannels, ProcessChannel)
 
-    ProcessIOConnector(KProcess *process);
+    ProcessIOConnector(QProcess *process);
     ~ProcessIOConnector();
 
 public slots:
@@ -59,7 +59,7 @@ private slots:
 private:
     void writeToIODevices(const QByteArray & data, ProcessIOConnector::ProcessChannels channel);
 
-    KProcess *m_process;
+    QProcess *m_process;
     QHash<QIODevice*, ProcessChannels> m_connectedDevices;
 };
 

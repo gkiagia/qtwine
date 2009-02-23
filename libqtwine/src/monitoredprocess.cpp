@@ -18,15 +18,12 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 #include "private/monitoredprocess_p.h"
+#include "private/libqtwine_private.h"
 #include <QFile>
 #include <QMutex>
 #include <QMutexLocker>
-#include <KDebug>
-#include <KLocalizedString>
-#include <KMessage>
-#include <KGlobal>
-#include <KComponentData>
-#include <KAboutData>
+#include <QDebug>
+#include <QCoreApplication>
 
 LIBQTWINE_BEGIN_NAMESPACE
 
@@ -56,7 +53,7 @@ private:
     MonitoredProcess::OpenTerminalFn function;
 };
 
-K_GLOBAL_STATIC(TerminalFunctionHelper, terminalFunctionHelper)
+LIBQTWINE_GLOBAL_STATIC(TerminalFunctionHelper, terminalFunctionHelper)
 
 
 /* This is a private slot that is called when the MonitoredProcess emits
@@ -77,14 +74,14 @@ void MonitoredProcessPrivate::_p_autoDeleteHandler()
 }
 
 MonitoredProcess::MonitoredProcess(QObject *parent)
-    : KProcess(parent), d_ptr(new MonitoredProcessPrivate(this))
+    : ExtendedQProcess(new MonitoredProcessPrivate(this), parent)
 {
     Q_D(MonitoredProcess);
     d->m_connector = new ProcessIOConnector(this);
 }
 
 MonitoredProcess::MonitoredProcess(MonitoredProcessPrivate *dd, QObject *parent)
-    : KProcess(parent), d_ptr(dd)
+    : ExtendedQProcess(dd, parent)
 {
     Q_D(MonitoredProcess);
     d->m_connector = new ProcessIOConnector(this);
@@ -92,7 +89,6 @@ MonitoredProcess::MonitoredProcess(MonitoredProcessPrivate *dd, QObject *parent)
 
 MonitoredProcess::~MonitoredProcess()
 {
-    delete d_ptr;
 }
 
 QString MonitoredProcess::logFile(ProcessOutputChannel channel) const
@@ -104,11 +100,11 @@ QString MonitoredProcess::logFile(ProcessOutputChannel channel) const
         return QString();
 }
 
-void MonitoredProcess::setLogFile(const QString & fileName, ProcessOutputChannel channel)
+bool MonitoredProcess::setLogFile(const QString & fileName, ProcessOutputChannel channel)
 {
     if ( fileName.isEmpty() ) {
-        kDebug() << "log fileName is empty";
-        return;
+        qDebug() << "log fileName is empty";
+        return false;
     }
 
     Q_D(MonitoredProcess);
@@ -118,11 +114,10 @@ void MonitoredProcess::setLogFile(const QString & fileName, ProcessOutputChannel
     d->m_logFile[channel] = log;
 
     if ( !log->open(QIODevice::WriteOnly | QIODevice::Truncate) ) {
-        KMessage::message(KMessage::Error, i18n("Could not open the log file."
-                "Check that it (or its directory) has sufficient permissions."));
+        qDebug() << "Could not open the log file.";
         delete log;
         d->m_logFile[channel] = NULL;
-        return;
+        return false;
     }
 
     ProcessIOConnector::ProcessChannels c;
@@ -130,25 +125,7 @@ void MonitoredProcess::setLogFile(const QString & fileName, ProcessOutputChannel
     if ( channel & StandardError ) c |= ProcessIOConnector::StandardError;
 
     d->m_connector->connectIODevice(log, c);
-}
-
-bool MonitoredProcess::autoDeleteEnabled() const
-{
-    const Q_D(MonitoredProcess);
-    return d->m_autoDelete;
-}
-
-void MonitoredProcess::setAutoDeleteEnabled(bool enabled)
-{
-    Q_D(MonitoredProcess);
-    d->m_autoDelete = enabled;
-
-    if ( enabled )
-        connect(this, SIGNAL(finished(int, QProcess::ExitStatus)),
-                this, SLOT(_p_autoDeleteHandler()) );
-    else
-        disconnect(this, SIGNAL(finished(int, QProcess::ExitStatus)),
-                   this, SLOT(_p_autoDeleteHandler()) );
+    return true;
 }
 
 void MonitoredProcess::setOpenTerminalFunction(OpenTerminalFn termFunc)
@@ -165,18 +142,16 @@ void MonitoredProcess::openTerminal(MonitoredProcess::ProcessOutputChannel chann
 {
     Q_D(MonitoredProcess);
     if ( d->m_terminalDevice ) {
-        kDebug() << "Terminal is already open";
+        qDebug() << "Terminal is already open";
         return;
     }
 
     OpenTerminalFn newTerminal = terminalFunctionHelper->get();
     Q_ASSERT_X(newTerminal, Q_FUNC_INFO, "OpenTerminalFunction has not been set");
 
-    QString title;
-    if ( KGlobal::hasMainComponent() )
-        title = KGlobal::mainComponent().aboutData()->appName();
-    else
-        title = i18n("<Unknown application>");
+    QString title = QCoreApplication::applicationName();
+    if ( title.isEmpty() )
+        title = tr("<Unknown application>");
 
     QStringList p = program();
     if ( !p.isEmpty() ) {

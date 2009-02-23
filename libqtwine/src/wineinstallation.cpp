@@ -18,12 +18,12 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 #include "wineinstallation.h"
+#include "extendedqprocess.h"
 
 #include <QFile>
 #include <QDir>
-#include <KProcess>
 #include <QRegExp>
-#include <KDebug>
+#include <QDebug>
 #include <QVariant>
 
 LIBQTWINE_BEGIN_NAMESPACE
@@ -109,22 +109,22 @@ inline QString defaultWineDllPath(QString prefix)
 inline QString getWineVersion(const QString & wineloader)
 {
     if ( wineloader.isEmpty() ) {
-        kDebug() << "no wineloader specified";
+        qDebug() << "no wineloader specified";
         return QString();
     }
 
-    KProcess wine;
-    wine.setOutputChannelMode(KProcess::OnlyStdoutChannel);
+    ExtendedQProcess wine;
+    wine.closeReadChannel(QProcess::StandardError);
     wine.setProgram(wineloader);
     wine << "--version";
     if ( wine.execute(5000) != 0 ) { // 5 secs is more than enough imho
-        kError() << "Cannot start wine. KProcess error string:" << wine.errorString();
+        qCritical() << "Cannot start wine. KProcess error string:" << wine.errorString();
         return QString();
     } else {
         QString output(wine.readAllStandardOutput());
         QRegExp regexp("([0-9]+(\\.[0-9]+){1,2}(-\\w+){0,1})");
         if ( regexp.indexIn(output) == -1 ) {
-            kDebug() << "Could not determine wine's version";
+            qDebug() << "Could not determine wine's version";
             return QString();
         } else
             return regexp.cap(0);

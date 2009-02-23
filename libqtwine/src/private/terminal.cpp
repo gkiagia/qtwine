@@ -20,17 +20,17 @@
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QFile>
-#include <KProcess>
-#include <KDebug>
-#include <KGlobal>
+#include <QProcess>
+#include <QDebug>
 #include "helpers.h"
 #include "../libqtwine_global.h"
+#include "libqtwine_private.h"
 
 #define HELPER_EXECUTABLE "qtwine-terminal-helper"
 
 LIBQTWINE_BEGIN_NAMESPACE
 
-K_GLOBAL_STATIC_WITH_ARGS(QString, terminalApplication, ("xterm"))
+LIBQTWINE_GLOBAL_STATIC_WITH_ARGS(QString, terminalApplication, ("xterm"))
 
 void setDefaultTerminalApplication(const QString & str)
 {
@@ -63,29 +63,29 @@ QIODevice *defaultOpenTerminalFn(const QString & title)
         }
     }
 
-    if ( KDE_ISUNLIKELY(not found) ) {
-        kError() << "Could not find the terminal helper executable";
+    if ( LIBQTWINE_ISUNLIKELY(not found) ) {
+        qCritical() << "Could not find the terminal helper executable";
         return NULL;
     }
 
-    KProcess *terminal = new KProcess;
+    QProcess *terminal = new QProcess;
     QLocalServer *server = new QLocalServer(terminal);
     server->listen(Helpers::generateSocketAddress("libqtwine_terminal_socket"));
 
-    *terminal << *terminalApplication << "-T" << title << "-e" <<
-                HELPER_EXECUTABLE << server->fullServerName();
-    terminal->start();
+    terminal->setProcessChannelMode(QProcess::ForwardedChannels); //that's better as a default. KProcess uses that too.
+    terminal->start(*terminalApplication, QStringList() << "-T" << title << "-e" <<
+                                          HELPER_EXECUTABLE << server->fullServerName() );
 
     if ( !terminal->waitForStarted(5000) ) {
-        kError() << "Could not start the terminal."
-                 << "KProcess error message:" << terminal->errorString();
+        qCritical() << "Could not start the terminal."
+                 << "QProcess error message:" << terminal->errorString();
         delete server;
         delete terminal;
         return NULL;
     }
 
     if ( !server->waitForNewConnection(5000) ) {
-        kError() << "Waiting for the terminal helper to connect on the socket timed out." <<
+        qCritical() << "Waiting for the terminal helper to connect on the socket timed out." <<
             "QLocalServer error string:" << server->errorString();
         delete server;
         delete terminal;

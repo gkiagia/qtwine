@@ -38,8 +38,6 @@ class LIBQTWINE_EXPORT WineProcess : public MonitoredProcess
     Q_OBJECT
     Q_DECLARE_PRIVATE(WineProcess)
 public:
-    enum SetEnvMode { Keep, Replace, ListPrepend, ListAppend };
-
     explicit WineProcess(QObject *parent = 0);
     explicit WineProcess(const WineApplication & app, QObject *parent = 0);
     virtual ~WineProcess();
@@ -47,7 +45,6 @@ public:
     bool wineHasError() const;
     QString lastWineError() const;
 
-    void setEnv(const QString & variable, const QString & value, SetEnvMode mode = Replace);
     void setWineApplication(const WineApplication & app);
 
 public Q_SLOTS:

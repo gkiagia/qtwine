@@ -18,14 +18,14 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 #include "wineerrordetector_p.h"
-#include <KDebug>
+#include <QDebug>
 
 LIBQTWINE_BEGIN_NAMESPACE
 
 bool WineErrorDetector::open(QIODevice::OpenMode mode)
 {
     if ( mode & QIODevice::ReadOnly ) {
-        kDebug() << "WineErrorDetector does not support reading";
+        qDebug() << "WineErrorDetector does not support reading";
         return false;
     }
 
@@ -53,7 +53,7 @@ qint64 WineErrorDetector::writeData( const char *data, qint64 maxSize )
                 else {
                     m_lastError = m_msg;
                     m_lastError = m_lastError.trimmed();
-                    kDebug() << "Wine error detected: " << m_lastError;
+                    qDebug() << "WineErrorDetector::writeData" << "Wine error detected: " << m_lastError;
                     emit errorDetected(m_lastError);
                     m_msg.clear();
                     m_state = 1;

@@ -14,6 +14,7 @@ SET( LIBQTWINE_SOURCES
     wineconfiguration.cpp
     wineprocess.cpp
     monitoredprocess.cpp
+    extendedqprocess.cpp
     winepath.cpp
     regedit.cpp
     wineprefixcreate.cpp
@@ -38,6 +39,7 @@ SET( LIBQTWINE_PUBLIC_HEADERS
     wineconfiguration.h
     wineprocess.h
     monitoredprocess.h
+    extendedqprocess.h
     winepath.h
     regedit.h
     wineprefixcreate.h
@@ -50,8 +52,8 @@ SET( LIBQTWINE_PUBLIC_HEADERS
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 # add build target
-KDE4_ADD_LIBRARY(libqtwine SHARED ${LIBQTWINE_SOURCES})
-TARGET_LINK_LIBRARIES(libqtwine ${KDE4_KDECORE_LIBS} ${QT_QTNETWORK_LIBRARY})
+AUTOMOC4_ADD_LIBRARY(libqtwine SHARED ${LIBQTWINE_SOURCES})
+TARGET_LINK_LIBRARIES(libqtwine ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY})
 
 # set library version
 SET_TARGET_PROPERTIES(libqtwine PROPERTIES VERSION ${LIBQTWINE_VERSION} SOVERSION ${LIBQTWINE_API_VERSION} OUTPUT_NAME qtwine)
@@ -60,8 +62,8 @@ SET_TARGET_PROPERTIES(libqtwine PROPERTIES VERSION ${LIBQTWINE_VERSION} SOVERSIO
 CONFIGURE_FILE("libqtwine.pc.in" "libqtwine.pc" @ONLY)
 
 # setup the "make install" target
-INSTALL(TARGETS libqtwine DESTINATION ${LIB_INSTALL_DIR} COMPONENT runtime)
-INSTALL(FILES "${CMAKE_BINARY_DIR}/libqtwine.pc" DESTINATION ${LIB_INSTALL_DIR}/pkgconfig COMPONENT development)
+INSTALL(TARGETS libqtwine DESTINATION lib COMPONENT runtime)
+INSTALL(FILES "${CMAKE_BINARY_DIR}/libqtwine.pc" DESTINATION lib/pkgconfig COMPONENT development)
 FOREACH(header ${LIBQTWINE_PUBLIC_HEADERS})
         GET_FILENAME_COMPONENT(header_path ${header} PATH)
         INSTALL(FILES ${header} DESTINATION include/qtwine/${header_path} COMPONENT development)

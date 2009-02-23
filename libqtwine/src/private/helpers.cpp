@@ -19,49 +19,56 @@
  ***************************************************************************/
 #include <QtGlobal>
 #include <QDir>
-#include <KGlobal>
-#include <KStandardDirs>
-#include <KRandom>
 #include "../libqtwine_global.h"
 
 LIBQTWINE_BEGIN_NAMESPACE
 
 namespace Helpers {
 
-/*! Generates a unique fileName for a temporary file. The fileName also contains
- * the path to it. If a KStandardDirs object is available via KGlobal, we use
- * the "tmp" resource as a temporary directory else we use QDir::tempPath().
+static QString randomString(int num_of_letters)
+{
+    char *x = new char[num_of_letters+1];
+    Q_CHECK_PTR(x);
+    int i;
+    for (i=0; i<num_of_letters; i++) {
+        switch (qrand() % 3) {
+            case 0: x[i] = (qrand() % 10) + 48; break; // numbers
+            case 1: x[i] = (qrand() % 26) + 65; break; // capital letters
+            case 2: x[i] = (qrand() % 26) + 97; break; // normal letters
+        }
+    }
+    x[num_of_letters] = '\0';
+    QString s(x);
+    delete x;
+    return s;
+}
+
+/*! Generates a unique fileName for a temporary file.
+ * The fileName also contains the path to it.
  */
 QString generateTempFileName(const QString & baseName)
 {
-    QString tmpDir = KGlobal::hasMainComponent() ?
-            KGlobal::dirs()->saveLocation("tmp") : QDir::tempPath();
-    Q_ASSERT(!tmpDir.isEmpty());
-
+    QString tmpDir = QDir::tempPath();
     if ( !tmpDir.endsWith('/') )
         tmpDir.append('/');
 
-    return tmpDir.append(baseName).append(KRandom::randomString(10)).append(".tmp");
+    return tmpDir.append(baseName).append(randomString(10)).append(".tmp");
 }
 
 /*! Generates a unique socket name. On unix, this also contains a
- * path to the socket. If a KStandardDirs object is available via KGlobal, we use
- * the "socket" resource as the socket directory else we use QDir::tempPath().
+ * path to the socket.
  */
 QString generateSocketAddress(const QString & baseName)
 {
 #ifdef Q_OS_UNIX
-    QString tmpDir = KGlobal::hasMainComponent() ?
-            KGlobal::dirs()->saveLocation("socket") : QDir::tempPath();
-    Q_ASSERT(!tmpDir.isEmpty());
-
+    QString tmpDir = QDir::tempPath();
     if ( !tmpDir.endsWith('/') )
         tmpDir.append('/');
 #else
     QString tmpDir;
 #endif
 
-    return tmpDir.append(baseName).append(KRandom::randomString(10)).append(".socket");
+    return tmpDir.append(baseName).append(randomString(10)).append(".socket");
 }
 
 }

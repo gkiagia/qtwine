@@ -18,20 +18,20 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 #include "processioconnector_p.h"
-#include <KProcess>
+#include <QProcess>
 #include <QIODevice>
-#include <KDebug>
+#include <QDebug>
 
 LIBQTWINE_BEGIN_NAMESPACE
 
 // PUBLIC
 
-ProcessIOConnector::ProcessIOConnector(KProcess *process)
+ProcessIOConnector::ProcessIOConnector(QProcess *process)
     : QObject(process), m_process(process)
 {
     Q_ASSERT(m_process);
 
-    m_process->setOutputChannelMode(KProcess::SeparateChannels);
+    m_process->setProcessChannelMode(QProcess::SeparateChannels);
     connect(m_process, SIGNAL(readyReadStandardOutput()), SLOT(processReadStdout()) );
     connect(m_process, SIGNAL(readyReadStandardError()), SLOT(processReadStderr()) );
 }
@@ -53,7 +53,7 @@ void ProcessIOConnector::connectIODevice(QIODevice *device, ProcessChannels chan
             openMode |= QIODevice::WriteOnly;
 
         if ( !device->open(openMode) ) {
-            kError() << "Cannot open QIODevice. QIODevice error message:"
+            qCritical() << "Cannot open QIODevice. QIODevice error message:"
                      << device->errorString();
             return;
         }
@@ -75,7 +75,7 @@ void ProcessIOConnector::disconnectIODevice(QIODevice *device)
         m_connectedDevices.remove(device);
         device->close();
     } else
-        kDebug() << "Cannot disconnect device. Device is not connected.";
+        qDebug() << "Cannot disconnect device. Device is not connected.";
 }
 
 void ProcessIOConnector::disconnectAll()
