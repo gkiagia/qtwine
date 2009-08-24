@@ -26,7 +26,6 @@
 # include <QtGui/QLabel>
 # include <QtGui/QVBoxLayout>
 # include <QtCore/QEventLoop>
-# include <KDE/KLocalizedString>
 # include "wineprocess.h"
 #endif
 
@@ -47,7 +46,7 @@ namespace WinePrefixCreate
 
 		QWidget container(parent, Qt::Dialog);
 		QVBoxLayout layout(&container);
-		QLabel label(i18n("Please wait while wineprefixcreate"
+		QLabel label(QObject::tr("Please wait while wineprefixcreate"
 			" is creating or updating this wine configuration."), &container);
 		label.setWordWrap(true);
 		layout.addWidget(&label);
